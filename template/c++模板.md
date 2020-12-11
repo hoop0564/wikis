@@ -47,6 +47,23 @@ int main(void) {
 
 
 
+## STL分配器 allocator
+
+STL中使用allocator为STL的容器分配内存，其中涉及到内存的数组形式、链表形式、数组+链表形式。
+
+```c++
+// TEMPLATE CLASS vector
+template <class _Ty,
+	class _Alloc = allocator<_Ty>>
+  class vector
+    : public _Vector_alloc<_Vec_base_types<_Ty, _Alloc>>
+  {...
+```
+
+- tips：VS中build之后，再点击代码中的 vector，转到定义，可以看到上面的代码。
+
+  
+
 ## 参考资料
 
 - [C++ 模板技术与 STL实战开发](https://www.bilibili.com/video/BV1wJ411h7GC?p=1)
