@@ -22,13 +22,13 @@
 
 ## 系统架构图：
 
-![Prometheus architecture](.\architecture.png)
+![Prometheus architecture](https://github.com/hoop0564/wikis/blob/main/devops/architecture.png)
 
 
 
 ## 安装部署
 
-![](.\OS监控.jpg)
+![](https://github.com/hoop0564/wikis/blob/main/devops/OS监控.jpg)
 
 ### 部署 Prometheus
 
