@@ -22,13 +22,13 @@
 
 ## 系统架构图：
 
-![Prometheus architecture](.\assets\architecture.png)
+![Prometheus architecture](.\architecture.png)
 
 
 
 ## 安装部署
 
-![](.\assets\OS监控.jpg)
+![](.\OS监控.jpg)
 
 ### 部署 Prometheus
 
