@@ -21,21 +21,42 @@
 
 
 
-## unique_guard
+## unique_lock
 
 与lock_guard基本一致，但更灵活
 
 - 所有权可以转移
-
 - 对象生命期内允许手动加锁和释放锁：提供了lock/unlock/try_lock等控制接口
-
 - 在程序抛出异常后，先前已被上锁的mutex对象可以正确进行解锁操作
 
-  | std::lock_guard  | 更简单，没有多余的接口，构造函数时拿到锁，析构函数时释放锁，但更省时 |
-  | ---------------- | ------------------------------------------------------------ |
-  | std::unique_lock | 更灵活，提供了lock，try_lock, try_lock_for, try_lock_until, unlock等接口 |
+| std::lock_guard  | 更简单，没有多余的接口，构造函数时拿到锁，析构函数时释放锁，但更省时 |
+| ---------------- | ------------------------------------------------------------ |
+| std::unique_lock | 更灵活，提供了lock，try_lock, try_lock_for, try_lock_until, unlock等接口 |
 
-  
+
+
+## lock选项
+
+- std::adopt_lock选项在lock_guard和unique_lock中的含义相同，需要自己把mutex给lock住，两者都无需再做lock的动作，用于后面对象析构后的自动释放锁
+
+- std::try_to_lock是试图获取锁，不能自己先做lock！它是不阻塞的：
+
+  ```c++
+  std::unique_lock(std::mutex) guard(mutex1, std::try_to_lock);
+  if (guard.owns_lock()) {
+    //拿到锁了
+    recvQueue.push_back(i);
+  }
+  else {
+    //没拿到锁
+  }
+  ```
+
+- std::defer_lock：是针对unique_lock做灵活的lock和unlock的自定义操作！在单个业务流程中灵活地随时上锁和解锁！
+
+- unique_lock的try_lock()方法返回bool，不阻塞，锁成功返回true，锁失败返回false。类似std::try_to_lock
+
+- unique_lock的release()方法：返回mutex指针，并释放mutex的所有权！
 
 ## 线程死锁
 
@@ -77,6 +98,9 @@ A线程持有了mutexA，在等待mutexB，B线程持有了mutexB，在等待mut
   
   	thread mytobj(myprint, mvar, mvary); // thread构造函数这里执行了参数的拷贝构造！所以i才是值引用
   	mytobj.detach(); // 异步的子线程和提前结束的主线程，引发线程资源回收的问题！
+    
+    std::chrono::millseconds dura(2000);
+    std::this_thread::sleep_for(dura); //休息2秒
     
     // 类对象
     thread myobj2(myprinxUP, std::ref(objA));
