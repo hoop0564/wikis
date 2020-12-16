@@ -52,11 +52,25 @@
   }
   ```
 
-- std::defer_lock：是针对unique_lock做灵活的lock和unlock的自定义操作！在单个业务流程中灵活地随时上锁和解锁！
+- std::defer_lock：给出后续的没有加锁的mutex，针对unique_lock做灵活的lock和unlock的自定义操作！在单个业务流程中灵活地随时上锁和解锁！
 
 - unique_lock的try_lock()方法返回bool，不阻塞，锁成功返回true，锁失败返回false。类似std::try_to_lock
 
 - unique_lock的release()方法：返回mutex指针，并释放mutex的所有权！
+
+- 所有权转移：unique_lock的对象可以把自己所拥有的mutex锁对象，释放给另一个unique_lock对象！
+
+  ```c++
+  std::unique_lock<std::mutex> guard2(std::move(guard1)); //左值转右值的移动语义,guard1指向空，guard2获得所有权
+  
+  std::unique_lock<std::mutex> rtn_unique_lock()
+  {
+    std::unique_lock<std::mutex> tmpguard(m_mutex1);
+    return tmpguard; // 从函数返回一个局部的unique_lock对象是可以的。反正这种局部对象tmpguard会导致系统调用unique_lock的移动构造函数，其间会生成临时unique_lock对象！
+  }
+  ```
+
+  
 
 ## 线程死锁
 
