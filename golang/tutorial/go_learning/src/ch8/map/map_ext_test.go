@@ -1,6 +1,27 @@
 package map_ext
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+	"unsafe"
+)
+
+type Employ struct {
+	Id   int
+	Name string
+}
+
+// 第一种方法在实例方法被调用时，实例会被值拷贝一次
+func (e Employ) GetString() string {
+	fmt.Printf("e name's address is %x\n", unsafe.Pointer(&e.Name)) // 发现指针地址和之前的对象实例不一样
+	return fmt.Sprintf("Id=%d, Name=%s", e.Id, e.Name)
+}
+
+// 第二种方法避免了内存拷贝，通常使用
+func (e *Employ) GetString2() string {
+	fmt.Printf("e name's address is %x\n", unsafe.Pointer(&e.Name)) // 指针地址和之前的对象实例一样
+	return fmt.Sprintf("Id=%d, Name=%s", e.Id, e.Name)
+}
 
 func TestMapWithFunValue(t *testing.T) {
 	m := map[int]func(op int) int{}
@@ -56,4 +77,13 @@ func TestStringToRun(t *testing.T) {
 	for _, c := range s { // range和字符串string配合迭代输出的是rune，而不是byte！
 		t.Logf("%[1]c %[1]x %[1]d", c) // [1]都是打印第一个字符
 	}
+}
+
+func TestStruct(t *testing.T) {
+	e := Employ{1, "jack"}
+	e1 := Employ{Id: 2, Name: "mike"}
+	e2 := new(Employ)
+	e2.Id = 3
+	e2.Name = "Tom"
+	t.Logf("e type is %T, e1 type is %T, e2 type is %T", e, e1, e2) // map_ext.Employ *map_ext.Employ
 }
