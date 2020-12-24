@@ -27,9 +27,29 @@ func FirstResponse() string {
 	return <-ch
 }
 
+// 用CSP等待所有任务都完成
+func AllResponse() {
+	numOfRunner := 10
+	ch := make(chan string, numOfRunner)
+	for i := 0; i < numOfRunner; i++ {
+		go func(i int) {
+			ret := runTask(i)
+			ch <- ret
+		}(i)
+	}
+
+	rets := ""
+	for j := 0; j < numOfRunner; j++ {
+		rets += <-ch + "\n"
+	}
+	fmt.Println(rets)
+}
+
 func TestFirstResponse(t *testing.T) {
 	t.Log("before goroutine num:", runtime.NumGoroutine())
 	t.Log(FirstResponse())
 	time.Sleep(100 * time.Millisecond)
 	t.Log("after goroutine num:", runtime.NumGoroutine())
+
+	AllResponse()
 }
