@@ -29,7 +29,7 @@ func TestSingleton_test(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			obj := GetSingletonObj()
-			fmt.Printf("%d\n", unsafe.Pointer(obj))
+			fmt.Printf("%x\n", unsafe.Pointer(obj))
 			wg.Done()
 		}()
 	}
