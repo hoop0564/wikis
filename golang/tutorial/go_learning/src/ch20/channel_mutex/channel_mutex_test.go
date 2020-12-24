@@ -51,29 +51,3 @@ func TestMutex(t *testing.T) {
 
 	time.Sleep(10e2)
 }
-
-func isCancelled(ch chan struct{}) bool {
-	_, ok := <-ch
-	return ok == false
-}
-
-func TestCancel(t *testing.T) {
-
-	cancelChan := make(chan struct{}, 0)
-	for i := 0; i < 5; i++ {
-		go func(i int, cancelCh chan struct{}) {
-			for {
-				if isCancelled(cancelCh) {
-					fmt.Printf("cancelled goroutine %d\n", i)
-					break
-				}
-				time.Sleep(time.Millisecond * 10)
-			}
-		}(i, cancelChan)
-	}
-
-	time.Sleep(time.Millisecond * 1000)
-	close(cancelChan)
-	time.Sleep(time.Millisecond * 1000)
-
-}

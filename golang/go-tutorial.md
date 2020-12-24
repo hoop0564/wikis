@@ -52,6 +52,15 @@ go内置集合中没有Set的实现，可以用 **map[type]bool** 来构造
 
 
 
+## struct结构体
+
+### 空结构体的使用场景
+
+- 定义空channel
+- 定义只包含一堆接口的结构做方法适配
+
+
+
 ## Go语言的函数
 
 GO语言中的函数是一等公民。
@@ -108,6 +117,8 @@ Java和Go做比较：
 
 
 
+## channel
+
 ### channel的关闭
 
 - 向关闭的channel发送数据，会导致panic
@@ -134,4 +145,22 @@ type semaphore chan Empty // 信号量
 
 
 ### 只读/只写channel
+
+
+
+## context与任务取消
+
+- 根context：通过context.Background()获得
+
+- 子context：通过context.WithCancel(parentContext)来创建
+
+  ```go
+  ctx, cancel := context.WithCancel(context.Background())
+  ```
+
+- 当前context被取消时，基于他的子context都会被取消
+
+- 接收取消通知：<-ctx.Done()
+
+- 
 
