@@ -1,4 +1,4 @@
-# Tutorial
+# go语言学习与实战
 
 
 
@@ -148,6 +148,18 @@ type semaphore chan Empty // 信号量
 
 
 
+### 构建对象池
+
+- 因为一些对象例如数据库连接池的创建性能可能较大，需要预先创建
+
+- 对象池需要有获取和归还接口
+
+- 使用buffered channel实现对象池
+
+  > 高可用系统中的一个金句：slow response比quick failure 更糟糕！
+
+
+
 ## context与任务取消
 
 - 根context：通过context.Background()获得
@@ -162,5 +174,5 @@ type semaphore chan Empty // 信号量
 
 - 接收取消通知：<-ctx.Done()
 
-- 
+  
 
