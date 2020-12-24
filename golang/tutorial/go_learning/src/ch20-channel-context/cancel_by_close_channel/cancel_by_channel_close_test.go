@@ -1,4 +1,4 @@
-package cancel_by_close
+package cancel_by_close_channel
 
 import (
 	"fmt"
