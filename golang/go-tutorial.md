@@ -158,6 +158,10 @@ type semaphore chan Empty // 信号量
 
   > 高可用系统中的一个金句：slow response比quick failure 更糟糕！
 
+```go
+runtime.GC() // 主动释放一次GC 会清除sync.pool中缓存的对象
+```
+
 
 
 ## context与任务取消
@@ -176,3 +180,32 @@ type semaphore chan Empty // 信号量
 
   
 
+## 单元测试
+
+- 表格测试法
+
+  ```go
+  func TestSquare(t *testing.T) {
+    inputs := [...]int{1,2,3}
+    expected := [...]int{1,4,9}
+    for i:=0; i<len(inputs); i++ {
+      if (squar(inputs[i])!=expected[i]) {
+        t.Error("unexpected !")
+      }
+    }
+  }
+  ```
+
+  
+
+- 代码覆盖率，且显示tlog
+
+  ```shell
+  go test -v -cover
+  ```
+
+- 断言
+
+  > github.com/stretchr/testify/assert
+
+  
