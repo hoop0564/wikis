@@ -178,9 +178,11 @@ runtime.GC() // 主动释放一次GC 会清除sync.pool中缓存的对象
 
 - 接收取消通知：<-ctx.Done()
 
-  
 
-## 单元测试
+
+## 测试
+
+### Unit Test单元测试
 
 - 表格测试法
 
@@ -208,4 +210,62 @@ runtime.GC() // 主动释放一次GC 会清除sync.pool中缓存的对象
 
   > github.com/stretchr/testify/assert
 
-  
+
+
+### Benchmark性能测试
+
+```bash
+# 能看出内存alloc次数
+go test -bench=. -benchmem
+```
+
+>goos: darwin
+>goarch: amd64
+>BenchmarkConcatStringByAdd-12            9171664               122 ns/op              16 B/op          4 allocs/op
+>BenchmarkConcatStringByBytesBuff-12     20660036                56.2 ns/op            64 B/op          1 allocs/op
+>PASS
+>ok      _/Users/apple/Documents/wikis/golang/tutorial/go_learning/src/ch35_benchmark    2.922s
+
+
+
+### BDD
+
+> Behavior Drive Design 行为驱动开发
+
+#### BDD in Go
+
+ - 项目网站
+
+   > https://github.com/smartystreets/goconvey
+
+- 安装
+
+  > go get -v -u github.com/smartystreets/goconvey/convey
+
+- 启动 WEB UI
+
+  > $GOPATH/bin/goconvey
+
+
+
+## 反射-reflect
+
+### 利用反射编写灵活的代码
+
+- 按名字访问结构的成员
+
+  ```go
+  reflect.ValueOf(*e).FieldByName("Name")
+  ```
+
+- 按名字访问结构的方法
+
+  ```go
+  reflect.ValueOf(*e).MethodByName("UpdateAge").Call([]reflect.Value{reflect.ValueOf(1)}) 
+  ```
+
+### 反射优缺点
+
+- 可以构建key-value获取和赋值的万能程序
+- 可读性变差，不如直接的set/get好，调试困难，也有性能问题
+
