@@ -269,3 +269,20 @@ go test -bench=. -benchmem
 - 可以构建key-value获取和赋值的万能程序
 - 可读性变差，不如直接的set/get好，调试困难，也有性能问题
 
+
+
+## Unsafe的不安全编程
+
+- 不适合的场景：无意义的强制类型转换，其值可能有丢失，比如float64和int的unsafe.Pointer转换
+
+  ```go
+  i := 10
+  f := *(*float64)(unsafe.Pointer(&i))
+  ```
+
+  
+
+- 适合的场景：
+
+  - 自定义了一个比如 type MyInt int，后面需要对int类的变量做使用MyInt的方法操作
+  - 并发读写中，可以先把数据写到一个buffer内存中，再用atomic一次替换到读内存中，以后使用的读内存块就是最新的了
