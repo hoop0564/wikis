@@ -286,3 +286,28 @@ go test -bench=. -benchmem
 
   - 自定义了一个比如 type MyInt int，后面需要对int类的变量做使用MyInt的方法操作
   - 并发读写中，可以先把数据写到一个buffer内存中，再用atomic一次替换到读内存中，以后使用的读内存块就是最新的了
+
+
+
+## Micro Kernel微内核架构
+
+### 特点
+
+- 易于扩展
+- 错误隔离
+- 保持架构一致性
+
+### 要点
+
+- 内核包含公共流程或通用逻辑
+- 讲可变或可扩展部分规划为扩展点
+- 抽象扩展点行为，定义接口
+- 利用插件进行扩展
+
+- <<Kernel>> Agent
+
+  >  Extension Point
+  - <<Plugin>> FileCollector
+  - <<Plugin>>ProcessCollector
+  - ...
+  - <<Plugin>>AppCollector

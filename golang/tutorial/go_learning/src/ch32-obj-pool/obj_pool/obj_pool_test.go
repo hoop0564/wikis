@@ -1,4 +1,4 @@
-package ch32_obj_pool
+package obj_pool
 
 import (
 	"fmt"

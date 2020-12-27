@@ -1,4 +1,4 @@
-package ch40_pipe_filter
+package pipe_filter
 
 import (
 	"github.com/pkg/errors"

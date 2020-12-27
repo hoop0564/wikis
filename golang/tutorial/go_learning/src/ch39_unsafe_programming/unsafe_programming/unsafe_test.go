@@ -1,4 +1,4 @@
-package ch39_unsafe_programming
+package unsafe_programming
 
 import (
 	"fmt"
