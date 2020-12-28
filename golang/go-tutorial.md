@@ -1,4 +1,4 @@
-# go语言学习与实战
+# go_learning
 
 
 
@@ -148,6 +148,14 @@ type semaphore chan Empty // 信号量
 
 
 
+### select
+
+- select语句使一个Go协程可以等待多个通信chann的操作
+- select 会阻塞到某个分支可以继续执行为止，这时就会执行该分支。
+- 当多个分支都准备好，会**随机选择**一个执行
+
+
+
 ### 构建对象池
 
 - 因为一些对象例如数据库连接池的创建性能可能较大，需要预先创建
@@ -264,6 +272,18 @@ go test -bench=. -benchmem
   reflect.ValueOf(*e).MethodByName("UpdateAge").Call([]reflect.Value{reflect.ValueOf(1)}) 
   ```
 
+- 内置的JSON解析就是利用反射实现，通过FieldTag来标识对应的json值
+
+- 更快的JSON解析：**EasyJson**，采用代码生成而非反射，用于生产环境，内置的json用了反射，性能不行，多用于配置文件解析
+
+  - 安装
+
+    > go get -u -v github.com/mailru/easyjson/ ...
+
+  - 使用
+
+    > easyjon -all <结构定义>.go
+
 ### 反射优缺点
 
 - 可以构建key-value获取和赋值的万能程序
@@ -311,3 +331,99 @@ go test -bench=. -benchmem
   - <<Plugin>>ProcessCollector
   - ...
   - <<Plugin>>AppCollector
+
+
+
+## HTTP服务
+
+- 内置的http服务
+
+> net/http
+
+- 路由规则：
+
+  - URL分为两种，末尾是/表示一个子树，后面可以跟其他子路径；
+
+  - 末尾不是/，表示一个叶子，固定的路径以/结尾的URL可以匹配他的任何子路径
+
+    > 比如 /images/ 会匹配 /images/cute-cat.jpg
+
+  - 它采用最长匹配原则，如果有多个匹配，一定采用匹配路径最长的那个进行处理
+  - 如果没有找到任何匹配项，会返回404错误。
+
+- 构建Restful服务，更好的router
+
+  > https://github.com/julienshmidt/httprouter
+
+
+
+## 性能工具
+
+### 火焰图
+
+- graphviz 安装
+
+  > brew install graphviz
+
+- go-torch ，安装
+  - go get github.com/uber/go-torch
+  - 下载并复制：flamegraph.pl (https://github.com/brendangregg/FlameGraph) 至 $GOPATH/bin路径下
+
+### 通过文件方式输出profile
+
+- 灵活性高，适用于特定代码段的分析
+- 通过手动调用runtime/pprof的API
+- API相关文档 https://studygolang.com/static/pkgdoc/pkg/runtime_pprof.htm
+- go tool pprof [binary] [binary.prof]
+
+### 通过http方式输出profile
+
+- 简单，适合于持续性运行的应用
+- 在应用程序中导入 import _ "net/http/pprof"，并启动http server即可
+- go tool pprof http://<host>:<port>/debug/pprof/profile?seconds=10 （默认值为30秒）
+- go-torch -seconds 10 http://<host>:<port>/debug/pprof/profifile
+
+### Go支持的多种Profile
+
+- go help testflag
+
+- 常见分析指标
+  - Wall Time: 墙上时钟时间
+  - CPU Time
+  - Block Time ??
+  - Memory Allocation
+  - GC times/time spent
+
+### go test 输出profile文件
+
+```shell
+# 生产profile
+go test -bench=. -cpuprofile=cpu.prof
+go test -bench=. -blockprofile=block.prof
+# 查看profile，用网页查看
+go tool pprof cpu.prof
+> top
+> svg
+> list GetFibonacci
+> exit
+go-torch cpu.prof
+```
+
+- 使用浏览器打开go tool中用命令svg生成的svg文件：红色或方框越大，就占比越高的！
+
+
+
+## 性能调优
+
+- 无锁的读，比有lock的读，性能高一个数量级！
+- strings.Build比+操作符性能要好很多！
+- sync.Map是协程安全的，适用于读多写少的场景
+- sync.Map比内置的map存储空间大，因为它用到了空间换时间的方案！它分为ReadOnly块和Diry块，前者负责读，后者负责写
+- [concurrent-map](https://github.com/orcaman/concurrent-map) 性能很好！
+- 用ringbuffer实现无锁编程，支持百万的QPS
+
+
+
+## 课件地址
+
+地址：https://gitee.com/geektime-geekbang/go_learning

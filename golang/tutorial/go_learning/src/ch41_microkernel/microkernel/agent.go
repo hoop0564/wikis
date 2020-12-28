@@ -4,15 +4,28 @@ import (
 	"context"
 	"fmt"
 	"github.com/pkg/errors"
+	"strings"
 	"sync"
 )
 
 const (
-	Waiting = 1
-	Running = 2
+	Waiting = iota
+	Running
 )
 
 var WrongStateError = errors.New("can not take the operation in the current state")
+
+type CollectorError struct {
+	CollectorErrors []error
+}
+
+func (ce CollectorError) Error() string {
+	var strs []string
+	for _, err := range ce.CollectorErrors {
+		strs = append(strs, err.Error())
+	}
+	return strings.Join(strs, ":")
+}
 
 type Event struct {
 	Name, Content string
@@ -29,10 +42,6 @@ type Collector interface {
 	Start(agtCtx context.Context) error   // 启动
 	Stop() error                          // 停止
 	Destroy() error                       // 释放掉自己使用的资源
-}
-
-type CollectorError struct {
-	CollectorErrors []error
 }
 
 type Agent struct {
@@ -93,8 +102,7 @@ func (agt *Agent) startCollectors() error {
 			}
 		}(name, collector, agt.ctx)
 	}
-	//return errs
-	return err
+	return errs
 }
 
 func (agt *Agent) stopCollectors() error {
@@ -106,8 +114,7 @@ func (agt *Agent) stopCollectors() error {
 			errs.CollectorErrors = append(errs.CollectorErrors, e)
 		}
 	}
-	//return errs
-	return err
+	return errs
 }
 
 func (agt *Agent) destroyCollectors() error {
@@ -120,8 +127,7 @@ func (agt *Agent) destroyCollectors() error {
 			errs.CollectorErrors = append(errs.CollectorErrors, e)
 		}
 	}
-	//return errs
-	return err
+	return errs
 }
 
 func (agt *Agent) Start() error {
