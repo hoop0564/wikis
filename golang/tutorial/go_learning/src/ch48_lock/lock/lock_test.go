@@ -68,7 +68,9 @@ func BenchmarkLock(b *testing.B) {
 	}
 }
 
-/**
+/*
+go test -v -bench=.
+
 BenchmarkLockFree-12                 393           2956155 ns/op
 BenchmarkLock-12                       7         144552627 ns/op
 */
