@@ -424,6 +424,41 @@ go-torch cpu.prof
 
 
 
+## go mod
+
+- GO111MODULE来设置go mod
+
+  - on：go命令行会使用modules，而一点也不会去GOPATH目录下查找
+  - off：go命令行将不会支持module功能，寻找依赖包的方式将会沿用旧版本的vendor或GOPATH模式
+  - auto：如项目放置在GOPATH/src中，则使用GOPATH，否则使用go mod
+
+- 环境修改：
+
+  ```shell
+  # 开启go mod
+  go env -w GO111MODULE=on
+  # 配置依赖包的下载代理为国内阿里云
+  go env -w GOPROXYhttp://mirrors.aliyun.com/goproxy/
+  ```
+
+- 常用指令：
+
+  ```shell
+  # 初始化模块
+  go mod init rt.server.manager
+  # 打印模块依赖图
+  go mod graph
+  # 解释为什么需要依赖
+  go mod why
+  # 下载依赖包
+  go mod download
+  
+  ```
+
+  
+
+- [参考资料](https://blog.csdn.net/weixin_39003229/article/details/97638573)
+
 ## 课件地址
 
 地址：https://gitee.com/geektime-geekbang/go_learning
