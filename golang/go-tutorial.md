@@ -2,6 +2,52 @@
 
 
 
+## 数组array
+
+- 声明
+
+  ```go
+  var a[3]int //声明并初始化为默认零值
+  b := [3]int{1,2,3}	//声明同时初始化
+  c := [2][2]int{{1,2},{3,4}}	//多维数组初始化
+  ```
+
+- 数组截取
+
+  > a[开始索引(包含), 结束索引(不包含)]
+
+  ```go
+  a := [...]int{1,2,3,4,5}
+  a[1,2] //2
+  a[1:len(a)] //2,3,4,5
+  a[1:]	//2,3,4,5
+  a[:3] //1,2,3
+  ```
+
+  
+
+## 切片slice
+
+- 内部是个结构体
+
+  ```go
+  type slice struct {
+    void* ptr //Element
+    len int //元素个数
+    cap int	//内部数组的容量
+  }
+  
+  var s0 [] int //声明len=0，cap=0的int切片
+  s0 = append(s0, 1) //len=1, cap=1
+  
+  s2 := make([]int, 3, 5) // len=3 cap=5
+  t.Log(s2[0], s2[1], s2[2], s2[3], s2[4]) // error index out of range! 后两个元素不可访问！
+  ```
+
+  
+
+
+
 ## Map
 
 ### Map与工厂模式
@@ -422,7 +468,7 @@ go-torch cpu.prof
 - [concurrent-map](https://github.com/orcaman/concurrent-map) 性能很好！
 - 用ringbuffer实现无锁编程，支持百万的QPS
 
-
+![profile001.svg](./profile001.svg.png)
 
 ## go mod
 
