@@ -12,6 +12,7 @@
 
 - ELK的使用
 - kubernates使用
+- 集群的redis，一个节点移除了，会怎么样
 
 
 
