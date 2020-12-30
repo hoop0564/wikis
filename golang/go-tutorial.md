@@ -286,6 +286,8 @@ go test -bench=. -benchmem
 
 > Behavior Drive Design 行为驱动开发
 
+![](./pictures/bdd-communication.png)
+
 #### BDD in Go
 
  - 项目网站
@@ -373,6 +375,7 @@ go test -bench=. -benchmem
 - <<Kernel>> Agent
 
   >  Extension Point
+
   - <<Plugin>> FileCollector
   - <<Plugin>>ProcessCollector
   - ...
@@ -459,6 +462,27 @@ go-torch cpu.prof
 
 
 
+## GC日志
+
+- 查看GC：在程序执行之前加上环境变量：`GODEBUG=gctrace=1`
+
+  ```bash
+  GODEBUG=gctrace=1 go test -bench=.
+  GODEBUG=gctrace=1 go run main.go
+  ```
+
+- 日志详细信息参考：**https://godoc.org/runtime**
+
+  ![](./pictures/gc-log-view.png)
+
+- 避免内存分配和复制
+  - 初始化至合适的大小，因为自动扩容是有代价的
+  - 复用内存，传引用
+
+
+
+
+
 ## 性能调优
 
 - 无锁的读，比有lock的读，性能高一个数量级！
@@ -468,7 +492,7 @@ go-torch cpu.prof
 - [concurrent-map](https://github.com/orcaman/concurrent-map) 性能很好！
 - 用ringbuffer实现无锁编程，支持百万的QPS
 
-![profile001.svg](./profile001.svg.png)
+![profile001.svg](./pictures/profile001.svg.png)
 
 ## go mod
 
@@ -501,10 +525,77 @@ go-torch cpu.prof
   
   ```
 
-  
 
-- [参考资料](https://blog.csdn.net/weixin_39003229/article/details/97638573)
 
-## 课件地址
+## CSP并发模型
 
-地址：https://gitee.com/geektime-geekbang/go_learning
+- CSP模型用于描述两个独立的实体通过共享的通讯channel（管道）进行通信的并发模型。
+
+- CSP中channel是第一类对象，它不关注发送消息的实体，而关注与发送消息时使用的channel。
+
+- Golang实现了CSP并发模型作为并发基础，底层使用goroutine作为并发实体
+
+- goroutine非常轻量级，可以创建几十万个实体。实体间通过channel继续匿名消息传递使之解耦！
+
+- go在语言层面实现了自动调度！屏蔽了很多内部细节，对外提供简单的语法关键字，大大简化了并发编程的思维转换和管理线程的复杂性。
+
+  ![img](file:///Users/apple/Documents/wikis/golang/pictures/MPG.jpg?lastModify=1609334830)
+
+- 其中
+
+  - M：是内核线程
+  - P：是协调调度，用于协调调度M和G的执行，内核线程只有拿到了P才能对goroutine继续调度执行，一般都是通过限定P的个数来控制golang的并发度！
+  - G：是待处理的协程，包含这个goroutine的栈空间
+  - G1/G2/..：灰色的背景的Gn是已经挂起的goroutine。它们被添加到执行队列中。
+  - 需要等待网络IO的goroutine，当P通过epoll查询到特定的fd的时候，会重新调度起对应的，正在挂起的goroutine重新运行。
+  - golang为了调度的公平性，在调度器加入了steal working算法：在一个P自己的执行队列，执行完之后，它会优先到全局的执行队列中偷G来进行处理；如果没有的话；再回到其他P的执行队列中抢G来进行处理。
+  - 
+
+
+
+## 架构设计的关键部分
+
+- 重用&隔离：即同一个系统，部署多份，每份起的作用可以不一样，起到隔离的作用
+
+- 冗余设计：负载均衡
+
+- 单点失效：譬如QPS是1500，分在两个各QPS1000的系统上，如果一个系统故障，会导致整个系统不可用
+
+- 慢响应：A quick rejection is better than a slow response.
+
+- 不要无休止的等待：给阻塞操作都加上一个期限
+
+- 拒绝单体系统
+
+- 面向错误和恢复的设计
+
+  - 在依赖服务不可用时，可以继续存活！
+  - 快速启动
+  - 无状态！
+
+- 与客户端协商：
+
+  > server：我太忙了，请慢点发数据
+  >
+  > client：好，我一分钟后再发送
+
+- 断路器：
+
+![](./pictures/断路器.png)
+
+
+
+- 令牌桶
+
+  ![](./pictures/token-bucket-ratelimit.png)
+
+
+
+- [github项目: service_decorator](https://github.com/easierway/service_decorators/blob/master/README.md)
+
+## 参考资料
+
+- [教程课件](https://gitee.com/geektime-geekbang/go_learning)
+- [Go go.mod入门](https://blog.csdn.net/weixin_39003229/article/details/97638573)
+- [golang CSP并发模型](https://www.jianshu.com/p/36e246c6153d)
+
