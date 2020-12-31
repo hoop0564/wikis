@@ -1,6 +1,4 @@
-# byte dance 
-
-## devops engineer
+## devops engineer-ByteDance 
 
 - 时序数据库的存储格式
 - 跳表的时间复杂度
@@ -16,7 +14,13 @@
 
 
 
-# IGG
+## backend software engineer-IGG
 
-## backend software engineer
+- std::move
+- mongo分片
+- graceful stop
+- skynet模型
+- go中select的多路选择和非阻塞
+- 什么时候必须要有拷贝构造函数
+- boost库中的asio
 
