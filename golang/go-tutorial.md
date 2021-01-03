@@ -192,7 +192,47 @@ type semaphore chan Empty // 信号量
 
 ### 只读/只写channel
 
+```go
+// 定义只读chann
+read_only := make(<-chan int)
+// 定义只写chann
+write_only := make(chan<- int)
+```
 
+定义只读或只写的channel意义不大，一般用于参数传递中：
+
+```go
+func send(<-ch int){
+  for i := 0; i < 10; i++ {
+    c <- i
+  }
+}
+
+func recv(c ch<- int) {
+  for i := range c {
+    fmt.Println(i)
+  }
+}
+```
+
+
+
+
+
+### 无缓冲chann和有缓冲chann
+
+默认情况下 `ch := make(chan int)`，发送和接收操作在另一端准备好之前都会阻塞！这使得Go协程可以在没有显式的锁或竞态变量的情况下进行同步！
+
+```go
+ch1 := make(chan int) //无缓冲
+ch2 := make(chan int, 1) //有缓冲
+```
+
+- 无缓冲：当向ch1中存值时，需要其他协程取值，否则一直阻塞在存值的那个step中！
+
+- 有缓冲：当向ch2中存值时，只有放到第二个值时，才阻塞！
+
+  
 
 ### select
 

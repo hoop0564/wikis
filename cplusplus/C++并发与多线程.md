@@ -148,6 +148,98 @@ A线程持有了mutexA，在等待mutexB，B线程持有了mutexB，在等待mut
 
 
 
+## condition_variable wait notify_one notify_all
+
+
+
+## aync/future/packaged_task/promise
+
+- std::async是个函数模板，用于启动一个异步线程
+
+- std::future是个类模板
+
+- std::async执行后，会返回一个std::future的类对象，其中的get方法可以获取线程的执行结果
+
+  ```c++
+  int myThread() {
+    cout << "[begin] thread id is: " << std::this_thread::get_id() << endl;
+    sleep(5000);
+    cout << "[end] thread id is: " << std::this_thread::get_id() << endl;
+    return 123;
+  }
+  
+  std::future<int> result = std::async(myThread); // 绑定关系
+  cout << "continuing.." << endl;
+  int def = result.get(); // 线程卡在这里，等待thread执行完毕，get返回结果！def=123
+  cout << def << endl;
+  /*
+  continuing..
+  [begin] thread id is:1732
+  [end] thread id is:1732
+  123
+  */
+  ```
+
+- std::future的对象析构时会自动调用`result.wait()`，导致调用线程等待
+
+- 类方法调用方式：`std::async(&A:myThread, &a, tmpVal);`
+
+- std::async中还可以再传递一个`std::launch::deferred`枚举变量，表示线程函数只有在调用`wait`或`get`时才开始执行，此时是直接在调用线程里同步执行的函数调用，没有产出新的线程！
+
+- `std::packeged_task`打包任务：
+
+  ```c++
+  int mythread(int param) {
+    ...
+  }
+  std::packeged_task<int(int)> mypt(mythread); // 打包多个任务
+  std::thread t1(std::ref(mypt), 1); // 线程直接开始执行 param=1
+  t1.join();
+  std::future<int> result = mypt.get_future();
+  ```
+
+  ```c++
+  std::packaged_task<int(int)> mypt([](int mypar)){
+    ...
+      return 5;
+  }
+  
+  std::packaged_task<int(int)> mytasks;
+  mytasks.push_back(std::move(mypt)); // 移动语义，入进去之后mypt就为空
+  auto iter = mytasks.begin();
+  mypt2 = std::move(*iter);
+  mytasks.erase(iter);
+  mypt2(123);
+  
+  ```
+
+- `std::promise`，类模板
+
+  ```c++
+  void mythread(std::promise<int> &tmpp, int calc) {
+    int result = calc++;
+    tmpp.set_value(result); // 结果保存在这个tmpp对象中
+  }
+  std::promise<int> myprom;
+  std::thread t1(mythread, std::ref(myprom), 1);
+  t1.join();
+  std::future<int> fu1 = myprom.get_future(); // promise和future绑定，用于获取线程返回值
+  auto result = ful.get(); // get只能调用一次，不能调用多次
+  ```
+
+  
+
+### future其他成员函数、shared_future、atomic
+
+- std::future_status，通过std::future<T>.wait_for(timeout) 返回的枚举：
+  - ready：执行完毕
+  - timeout：执行超时
+  - deferred：执行被延迟，使用了`std::launch::deferred`
+
+
+
+
+
 ## 参考资料
 
 - [C++并发与多线程](https://www.bilibili.com/video/BV1Yb411L7ak?p=1)
