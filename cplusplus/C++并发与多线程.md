@@ -236,12 +236,11 @@ A线程持有了mutexA，在等待mutexB，B线程持有了mutexB，在等待mut
   - timeout：执行超时
   - deferred：执行被延迟，使用了`std::launch::deferred`
 
-
+- shared_future是类模板，和future功能相似，但是其get()函数可以执行多次，因为是拷贝复制
 
 
 
 ## 参考资料
 
 - [C++并发与多线程](https://www.bilibili.com/video/BV1Yb411L7ak?p=1)
-
-  
+- [中文版cppreference参考文档](https://github.com/myfreeer/cppreference2mshelp/releases)
