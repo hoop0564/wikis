@@ -28,7 +28,8 @@
   - Kibana - web UI，高级的ES查询工具
 
 - elasticsearch-head是其可视化界面（需要nodejs环境）
-
+  - npm i && npm i -g grunt 
+  - open web: http://localhost:9100/
   - 修改elasticsearch.yml以支持跨域访问，增加：
 
     ```yml
