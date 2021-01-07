@@ -18,7 +18,10 @@ const schema = buildSchema(`
     }
 `)
 
-// 定义查询对应的处理器
+// hello: String
+// 其中的hello是方法名，String是返回值类型
+
+// 定义查询对应的处理器resolver
 const root = {
     hello: () => {
         return 'hello world'
@@ -49,3 +52,17 @@ app.use('/graphql', graphqlHttp.graphqlHTTP({
 
 app.listen(3000)
 console.log(`please go to: http://localhost:3000/graphql`)
+
+/**
+ * 左侧输入：
+ query {
+  hello
+  accountName
+  account {
+    name
+    age
+    sex
+    department
+  }
+}
+ */
