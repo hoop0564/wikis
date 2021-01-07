@@ -48,3 +48,27 @@ type Query {
 }
 ```
 
+
+
+## 如何在前端页面访问graphql的接口？
+
+```javascript
+const username = 3
+const query = `query Account($username: Int!) {
+	account(username: $username)
+}`
+
+fetch('/graphql', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  },
+  body: JSON.stringify({
+    query,
+    variables:{ username },
+  })
+}).then(r => r.json()).then(data => console.log('data returned:', data));
+
+```
+

@@ -56,6 +56,7 @@ app.use('/graphql', graphqlHttp.graphqlHTTP({
     graphiql: true
 }))
 
+app.use(express.static('public'))
 app.listen(3000)
 console.log(`please go to: http://localhost:3000/graphql`)
 
@@ -72,6 +73,28 @@ console.log(`please go to: http://localhost:3000/graphql`)
       "李四",
       "王五"
     ]
+  }
+}
+
+query {
+  getClassMates(classNo: 31)
+  account(username: "张三") {
+    name
+    salary(city: "上海")
+  }
+}
+
+{
+  "data": {
+    "getClassMates": [
+      "张三",
+      "李四",
+      "王五"
+    ],
+    "account": {
+      "name": "张三",
+      "salary": 10000
+    }
   }
 }
  */
