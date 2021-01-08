@@ -50,12 +50,14 @@ type Query {
 
 
 
-## 如何在前端页面访问graphql的接口？
+## 前端页面访问graphql的接口
 
 ```javascript
 const username = 3
 const query = `query Account($username: Int!) {
-	account(username: $username)
+	account(username: $username){
+		name: String
+	}
 }`
 
 fetch('/graphql', {
@@ -70,5 +72,21 @@ fetch('/graphql', {
   })
 }).then(r => r.json()).then(data => console.log('data returned:', data));
 
+```
+
+
+
+## 修改数据mutation
+
+```graphql
+input AccountInput {
+	name String
+	age Int
+}
+
+type Mutation {
+	createAccount(input: AccountInput): Account
+	updateAccount(id: ID!, input AccountInput): Account
+}
 ```
 
