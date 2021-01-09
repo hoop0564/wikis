@@ -90,3 +90,10 @@ type Mutation {
 }
 ```
 
+
+
+## 权限认证
+
+graphql把数据暴露出去了，需要就接口做鉴权。
+
+express中用中间件实现。
