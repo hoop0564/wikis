@@ -13,6 +13,7 @@ type Employ struct {
 
 // 第一种方法在实例方法被调用时，实例会被值拷贝一次
 func (e Employ) GetString() string {
+	fmt.Println("test pln")
 	fmt.Printf("e name's address is %x\n", unsafe.Pointer(&e.Name)) // 发现指针地址和之前的对象实例不一样
 	return fmt.Sprintf("Id=%d, Name=%s", e.Id, e.Name)
 }

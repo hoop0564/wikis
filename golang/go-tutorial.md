@@ -167,6 +167,54 @@ Java和Go做比较：
 - 对case的条件成立的执行是无序的，和switch不同！如果多个case都满足，随机只进入其中一个case！
 - 可以实现超时控制！
 
+#### 空select
+
+```go
+select {
+
+}
+```
+
+会直接阻塞当前的goroutine，使得该goroutine进入无法被唤醒的永久休眠状态！
+
+#### 只有一个case
+
+```go
+select {
+case <-ch1
+  ...
+}
+```
+
+该select就变成了一个阻塞的channel读写操作
+
+#### 有default语句
+
+```go
+select {
+  case <-ch1:
+  ...
+  deafult:
+  ...
+}
+```
+
+相当于做了一个有阻塞的channel读取操作
+
+#### 有优先级的select
+
+[参考资料](https://www.liwenzhou.com/posts/Go/priority_in_go_select/)
+
+```go
+func worker(ch1, ch2<-chan int, stopCh chan struct{}) {
+  for {
+    select {
+      case <-
+    }
+  }
+}
+```
+
 
 
 ## channel
@@ -644,4 +692,6 @@ go-torch cpu.prof
 - [教程课件](https://gitee.com/geektime-geekbang/go_learning)
 - [Go go.mod入门](https://blog.csdn.net/weixin_39003229/article/details/97638573)
 - [golang CSP并发模型](https://www.jianshu.com/p/36e246c6153d)
+
+- [Go语言在select语句中实现优先级-liwenzhou](https://www.liwenzhou.com/posts/Go/priority_in_go_select/)
 
