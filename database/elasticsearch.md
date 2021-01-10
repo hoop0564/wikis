@@ -159,13 +159,242 @@ kibana页面中有个🔧，是开发工具，类似postman的功能！
 
    打开kibana到console页面：http://localhost:5601/app/kibana#/dev_tools/console
 
-   ![image-20210110202002657](/Users/apple/wikis/database/pictures/kibana-ik.png)
+   ![image-20210110202002657](./pictures/kibana-ik.png)
+
+6. 更新配置分词库：`plugins/ik/config/IKAnalyzer.cfg.xml`，增加一个**xxx.dic**，并配置到xml中，重启es应用生效
+
+
+
+## Rest风格操作
+
+![image-20210110203142608](/Users/apple/wikis/database/pictures/rest-style.png)
+
+
+
+```json
+# 创建一个文档
+PUT /test1/type1/1 # 7.x版本以后，type1默认是_doc！且ES不推荐设置typeName了
+{
+  "name": "gzc",
+  "age": 22
+}
+# 执行结果
+{
+  "_index": "test1",
+  "_type": "type1",
+  "_id": "1",
+  "_version": 1,
+  "result": "created",
+  "_shards": {
+    "total": 2,
+    "successful": 1,
+    "failed": 0
+  },
+  "_seq_no": 0,
+  "_primary_term": 1
+}
+```
+
+
+
+PUT完成后，会自动增加了索引！在https://www.elastic.co/guide上可以查看example:
+
+```json
+# 创建一个index数据库
+PUT /my_index
+{
+	"mappings": {
+    "properties": {
+      "name": {
+        "type": "text"
+      },
+      "age": {
+        "type": "long"
+      }
+    }
+  }	
+}
+
+# 执行结果
+{
+  "acknowledged": true,
+  "shards_acknowledged": true,
+  "index": "my_index"
+}
+```
+
+获取ES的很多信息（命令在kibana中会有自动提示）：
+
+> GET _cat/indices?v
+
+POST如果不传值，就会全部覆盖！类同MongoDB。 
+
+复杂查询：
+
+```json
+GET test1/user/_search/?q=name:leo
+
+GET test1/user/_search
+{ # 查询的参数体
+	"query": {
+    "match": {
+      "name": "gzc"
+    }
+  },
+	"_source": ["name", "age"], // filter过滤字段
+	"sort": [{
+    "age": {
+      "order": "desc" // 有了此字段后，score就为null了
+    }
+  }],
+	"from": 0, // 分页 类同skip 此处等价于 /search/{current}/{pagesize}
+	"size": 2, // 要多少个，pageSize，只要2个，类同limit 
+}
+
+# 执行结果
+hits:
+索引和文档的信息
+查询的结果总数
+查询处理的具体的文档，包括了_score字段，表示匹配的权重！
+```
+
+
+
+按bool条件返回的查询：
+
+```json
+GET test1/user/_search
+{
+  "query": {
+    "bool": { // 结果返回true的
+      "must": [ // 都要满足的多条件查询，must相当于and。另外，should相当于or，must_not相当于not
+        {
+          "match": {
+            "name": "gzc"
+          }
+        },
+        {
+          "match": {
+            "age": 22
+          }
+        }
+      ],
+      "filter": { // 结果集中的过滤条件！
+        "range": { // 范围查询
+          "age": {
+            "gte": 10,
+            "lte": 20
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+
+
+数组类型的分词器查询
+
+```json
+GET test1/user/_search
+{ # 查询的参数体
+	"query": {
+    "match": { # 会使用分词器
+ 			"tags": "男 技术" //tags原始["直男", "技术狂热者", "篮球爱好者"], 此空格分隔的条件相当于百度中的关键词搜索
+		}
+	}
+}
+```
+
+**精确查找 term**
+
+会使用倒排索引做精确查找
+
+```json
+GET _analyze
+{
+  "analyzer": "keyword", // 不会被分词
+  "text": "gzc爱学习"
+}
+
+GET _analyze
+{
+  "analyzer": "standard", // 会被分词解析
+  "text": "gzc爱学习"
+}
+
+GET testdb/_search
+{
+  "query": {
+    "term": { // 精确查找
+      ”name": "g"
+    }
+  }
+}
+
+# 精确查询多个值
+GET testdb/_search
+{
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "term": {
+            "t1": "22"
+          }
+        },
+        {
+          "term": {
+            "t1": "33"
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+
+
+### 高亮查询
+
+```json
+GET testdb/user/_search
+{
+  "query": {
+    "match": {
+      "name": "gzc"
+    }
+  },
+  "highlight": { // 高亮
+    "fields": {
+      "pre_tags": "<p clas='key' style='color:red'>", // 自定义高亮条件！默认是<em>
+      "post_tags": "</p>", // 原默认是</em>
+      "name": {}
+    }
+  }
+}
+
+# 执行结果
+
+```
+
+
+
+### 数据类型
+
+- 字符串类型：text、keyword，其中tex类型t是可被分词器处理的，keyword表示最小集了，不可再被分词
+- 数值类型：long、integer、short、byte、double、float、half float、scaled float
+- 日期类型：date
+- 布尔值类型：Boolen
+- 二级制类型：binary
 
 
 
 ## 参考资料
 
 - [【狂神说Java】ElasticSearch7.6.x最新完整教程](https://www.bilibili.com/video/BV17a4y1x7zq?t=852&p=1)
-
 - [狂神说笔记](https://gitee.com/kuangstudy/openclass)
+- [复杂ES查询](https://www.bilibili.com/video/BV17a4y1x7zq?p=11)
 
