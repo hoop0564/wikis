@@ -62,3 +62,32 @@ World Wide Web Consortium 万维网联盟，W3C标准包括：
 | aside   | 相关内容或应用，常用于侧边栏                     |
 | nav     | 导航类辅助内容                                   |
 
+
+
+## 表单的元素格式
+
+| 属性      | 说明                                                         |
+| --------- | ------------------------------------------------------------ |
+| type      | 指定元素的类型。text、password，CheckBox、radio、submit、reset、file、hidden、image、buttone，默认为text |
+| name      | 指定表单元素的名称                                           |
+| value     | 元素的初始值。type为radio时必须指定一个值                    |
+| size      | 指定表单元素的初始宽度。type为text、password是，size表示字符。其他类型，是像素单位 |
+| maxlength | 输入的最大字符数                                             |
+| checked   | 表示是否选中                                                 |
+
+
+
+## 表单的应用
+
+- 隐藏域 hidden
+- 只读 readonly
+- 禁用  disabled
+
+
+
+## 表单初级验证
+
+- placeholder：提示信息
+- required：必须要填写的字段，否则提交不了！
+- pattern：正则表达式，百度搜索“常用正则表达式”，[常用正则表达式大全](https://blog.csdn.net/qianhaohong/article/details/53435253)
+

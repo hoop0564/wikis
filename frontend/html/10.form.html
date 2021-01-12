@@ -10,12 +10,12 @@
 <form action="1.first.html" method="get">
 <!--    <form action="1.first.html" method="post">-->
 <!--    maxlength="8" size="30"-->
-    <p>名字：<input type="text" name="username" value="gzc" ></p>
+    <p>名字：<input type="text" name="username" value="gzc" readonly></p>
     <p>密码：<input type="password" name="pwd"></p>
     <p>
 <!--        单选框标签 分组 值-->
         性别：
-        <input type="radio" value="boy" name="sex" checked>boy
+        <input type="radio" value="boy" name="sex" checked disabled>boy
         <input type="radio" value="girl" name="sex">girl
     </p>
     
@@ -46,6 +46,15 @@ reset   重置按钮
     <p>
         <input type="button" name="btn" value="btn">
         <input type="image" src="../resources/image/gzc.png" width="30px" height="30px">
+    </p>
+
+    <p>自动验证的输入框</p>
+    <p>
+        邮箱: <input type="email" name="email">
+        URL: <input type="url" name="url">
+        Number: <input type="number" name="num" max="100" min="1" step="5">
+        滑块：<input type="range" min="0" max="100" name="voice" step="5">
+        搜索框：<input type="search" name="search" placeholder="请输入要搜索的关键词">
     </p>
     <p>
         <input type="submit">
