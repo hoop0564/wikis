@@ -238,6 +238,48 @@ A线程持有了mutexA，在等待mutexB，B线程持有了mutexB，在等待mut
 
 - shared_future是类模板，和future功能相似，但是其get()函数可以执行多次，因为是拷贝复制
 
+- atomic的是否原子和写法有关：
+
+  ```c++
+  std::atomic<int> count=0;
+  count++;	// ok
+  count += 1;	// ok
+  count = count + 1; // fail
+  ```
+
+- std::async 异步执行任务
+
+  ```c++
+  std::future<int> result = std::async(mythread);
+  count << result.get() << endl; // 线程可能在此处才开始创建并执行，根据系统繁忙情况吧！
+  
+  std::future<int> result = std::async(std::launch::deferred, mythread);
+  count << result.get() << endl; // 此不创建新线程，是在主线程中执行！
+  
+  std::future<int> result = std::async(std::launch::async, mythread);
+  count << result.get() << endl; // 强制创建新线程
+  
+  // 位标志
+  std::future<int> result = std::async(std::launch::async | std::launch::deferred, mythread);
+  count << result.get() << endl; // 可能也可能不创建新线程！
+  ```
+
+  std::async 和 std::thread的区别是前者可能不创建新线程，后者肯定创建新线程，但创建线程是有可以失败的！
+
+  **经验：**一个程序里，线程数量不宜超过100-200。
+
+- std::chrono
+
+  ```c++
+  std::async(mythread).wait_for(10s);
+  
+  chrono::seconds operator ""s(unsigned long long _val) {
+    return (chrono::seconds(_val))
+  }
+  ```
+
+  
+
 
 
 ## 参考资料
