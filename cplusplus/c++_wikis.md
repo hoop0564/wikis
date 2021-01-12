@@ -70,5 +70,5 @@ template <class _Ty,
 ## 参考资料
 
 - [C++ 模板技术与 STL实战开发](https://www.bilibili.com/video/BV1wJ411h7GC?p=1)
-
+- [C++11 带来的新特性 （3）—— 关键字noexcept](https://www.cnblogs.com/sword03/p/10020344.html)
   
