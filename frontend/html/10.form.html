@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>form</title>
+</head>
+<body>
+<h1>注册</h1>
+<!--会提交一个get请求到1.first.html页面-->
+<form action="1.first.html" method="get">
+<!--    <form action="1.first.html" method="post">-->
+<!--    maxlength="8" size="30"-->
+    <p>名字：<input type="text" name="username" value="gzc" ></p>
+    <p>密码：<input type="password" name="pwd"></p>
+    <p>
+<!--        单选框标签 分组 值-->
+        性别：
+        <input type="radio" value="boy" name="sex" checked>boy
+        <input type="radio" value="girl" name="sex">girl
+    </p>
+    
+    <p>反馈的文本域：
+        <textarea name="textarea" id="" cols="30" rows="10"></textarea>
+    </p>
+
+<!--    多选框-->
+<!--    http://localhost:63342/frontend/html/1.first.html?username=gzc&pwd=&hobby=sleep&hobby=chat-->
+    <p>爱好：
+        <input type="checkbox" value="sleep" name="hobby">sleep
+        <input type="checkbox" value="code" name="hobby" checked>code
+        <input type="checkbox" value="chat" name="hobby">chat
+        <input type="checkbox" value="basketball" name="hobby">basketball
+    </p>
+    
+<!--    文件域-->
+    <p>
+        <input type="file" name="files">
+        <input type="button" value="上传" name="upload">
+    </p>
+<!--
+button  普通按钮
+image   图片按钮
+submit  提交按钮
+reset   重置按钮
+-->
+    <p>
+        <input type="button" name="btn" value="btn">
+        <input type="image" src="../resources/image/gzc.png" width="30px" height="30px">
+    </p>
+    <p>
+        <input type="submit">
+        <input type="reset">
+    </p>
+</form>
+</body>
+</html>
