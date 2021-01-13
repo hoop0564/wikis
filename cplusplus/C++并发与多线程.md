@@ -247,7 +247,7 @@ A线程持有了mutexA，在等待mutexB，B线程持有了mutexB，在等待mut
   count = count + 1; // fail
   ```
 
-- std::async 异步执行任务
+- std::async 异步执行任务，它有不确定问题：是否创建新线程执行任务
 
   ```c++
   std::future<int> result = std::async(mythread);
