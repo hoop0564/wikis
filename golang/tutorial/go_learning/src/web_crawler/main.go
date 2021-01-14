@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 type Fetcher interface {
 	// Fetch 返回 URL 的 body 内容，并且将在这个页面上找到的 URL 放到一个 slice 中。
@@ -77,6 +80,45 @@ func Crawl(url string, depth int, fetcher Fetcher) {
 	return
 }
 
+type User struct {
+	Id int
+	Name string
+}
+
+type Profile struct {
+	Users []User
+}
+
+func initUser()  {
+	var p Profile
+	p.Users = append(p.Users, User{1, ""})
+	p.Users = append(p.Users, User{2, ""})
+	updateUser(&p)
+	fmt.Printf("111111>>> %+v\n", p)
+
+	var users []User
+	users = append(users, User{100, ""})
+	users = append(users, User{101, ""})
+	update2(users)
+	fmt.Printf("222222>>> %+v\n", users)
+}
+
+func update2(users []User)  {
+	size := len(users)
+	for i:=0; i<size; i++ {
+		users[i].Name = "gzc"+strconv.Itoa(i+100)
+	}
+}
+
+func updateUser(p *Profile) {
+	size := len(p.Users)
+	for i:=0; i<size; i++ {
+		p.Users[i].Name = "gzc"+strconv.Itoa(i+1)
+	}
+}
+
 func main() {
+	initUser()
+	return
 	Crawl("https://golang.org/", 4, fetcher)
 }
