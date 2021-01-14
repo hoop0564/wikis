@@ -33,3 +33,33 @@ css 2.0 	div块+css，html和css结构分离的思想，网页变得简单，利
 css 2.1 	浮动，定位
 
 css 3.0	圆角，阴影，动画。。。浏览器兼容性 
+
+
+
+**css的导入方式**
+
+1. 行内样式
+
+2. 内部样式
+
+3. 外部样式（独立的.css文件）
+
+   1. 链接式
+
+      ```html
+      	<link rel="stylesheet" href="style.css">
+      ```
+
+   2. 导入式，不建议！
+
+      ```html
+      <style>
+        @import url("style.css")
+      </style>
+      ```
+
+      
+
+      
+
+样式生效的优先级是**就近原则**：哪个样式离html元素的渲染最近，就以哪个为准！

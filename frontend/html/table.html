@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>table-select</title>
+</head>
+<body>
+<table class="table table-hover" id="test123" border="1">
+<tr>
+    <th width="45">选择</th>
+    <th width="100">驾校名称</th>
+    <th width="100">合作驾校名称</th>
+    <th width="100">申请时间</th>
+    <th width="100">申请状态</th>
+    <th width="100">操作</th>
+</tr>
+<tr>
+    <td><input type="checkbox" name="id" value="1" /></td>
+    <td>中大驾校</td>
+    <td>潇湘驾校</td>
+    <td>2016-04-15 14:40:20</td>
+    <td class="tablestate">未处理</td>
+<!--    <td><a class="change button border-blue button-little update" href="#">修改申请状态</a></td>-->
+    <td><input type="button" onclick="LockClear()" value="解锁"></td>
+</tr>
+<tr>
+    <td><input type="checkbox" name="id" value="2" /></td>
+    <td>中大驾校</td>
+    <td>潇湘驾校</td>
+    <td>2016-04-15 14:40:20</td>
+    <td class="tablestate">未处理</td>
+    <td><a class="change button border-blue button-little update" href="#">修改申请状态</a></td>
+</tr>
+</table>
+
+<script type="text/javascript">
+    function LockClear() {
+        alert("value")
+
+    }
+</script>
+
+
+
+
+
+
+
+<div id="br_applicationStatus">
+    <span>修改申请状态</span>
+    <div class="radio" style="margin-top:1rem;"><input type="radio" name="br_radiobutton" value="未处理" checked="checked"> 未处理</div>
+    <div class="radio"><input type="radio" name="br_radiobutton" value="已处理"> 已处理</div>
+    <div class="radio"><input type="radio" name="br_radiobutton" value="无效"> 无效</div>
+    <div class="form-button br_confirm"><button class="button bg-main" type="submit" style="margin-left: 20%;margin-top: 1.5rem;">确认</button></div>
+    <div class="form-button br_cancel"><button class="button bg-main" type="submit" style="border: 1px solid #00BFFF;background-color: #fff;color: #00BFFF;position: relative;top:-2.2rem;margin-left: 62%;">取消</button></div>
+</div>
+</body>
+</html>
