@@ -7,8 +7,24 @@
 <!--    内部样式-->
     <style>
         h1 {
-            color: green;
+            color: white;
+            background-color: grey;
+            border-radius: 10px;
         }
+
+        /*类选择器的格式：.class的名称{} 且可复用*/
+        .classSelector {
+            color: #00BFFF;
+        }
+
+    /*    id选择器 #id名称{} id必须保证全局唯一*/
+        #id_selector {
+            color: pink;
+        }
+
+    /*    不遵循就近原则，优先级是：id选择器 > class选择器 > 标签选择器*/
+    /*    可以在F12里的Elements页签选中一个元素，在右侧的Styles里实时修改css的样式，譬如 display: now*/
+
     </style>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -16,6 +32,9 @@
 
 <!--行内样式-->
 <h1 style="color: red">我是标题1</h1>
+<h1 style="color: green">学前端</h1>
 
+<h1 class="classSelector">类选择器</h1>
+<h1 id="id_selector">id选择器</h1>
 </body>
 </html>
