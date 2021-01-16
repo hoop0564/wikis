@@ -12,6 +12,10 @@ Cascading Style Sheet 层叠级联样式表
 
 3. 盒子模型：
 
+   1. padding 内边距
+   2. border 边框
+   3. margin 外边距
+
    ![image-20210113082847390](./resources/image/box-model.png)
 
 4. 浮动：广告弹窗
