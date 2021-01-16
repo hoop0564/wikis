@@ -18,6 +18,18 @@
             margin-right: 5px; /*外边距 每个外边距往右偏5px*/
             font: bold 20px/50px Arial; /*20px/50px 字体大小/行高 */
         }
+
+        /*存在id属性的元素 a[]{}
+        a[id]
+        a[id=first] 绝对等于
+        a[class*=links] 包含匹配
+        a[href^=http] 以xx开头
+        a[href$=pdf] 以xx结尾
+        */
+        a[href$=pdf] {
+            background: yellow;
+        }
+
     </style>
 </head>
 <body>
@@ -30,7 +42,7 @@
     <a href="" class="links item">5</a>
     <a href="" class="links item">6</a>
     <a href="" class="links item">7</a>
-    <a href="" class="links item">8</a>
+    <a href="a.pdf" class="links item">8</a>
     <a href="" class="links item">9</a>
     <a href="" class="links item last">10</a>
 </p>

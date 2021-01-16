@@ -5,3 +5,14 @@
 - docker-compose运行ELK环境
 - 学习jenkins
 
+
+
+## service-manager
+
+- 设置th和caption：
+
+  ````html
+  <caption>Table 1.1 Customers</caption>
+  th {background-color:#ADD8E6;}
+  ````
+
