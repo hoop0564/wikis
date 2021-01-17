@@ -2,6 +2,92 @@
 
 
 
+ElasticStack = ELK + Beats
+
+
+
+## Beats
+
+采集一切数据的beats，包括以下：
+
+| types      | cn name     | 说明                                                         |
+| ---------- | ----------- | ------------------------------------------------------------ |
+| Filebeat   | 日志文件    | 用于监控、收集服务器日志文件，其已取代logstash forwarder     |
+| Metricbeat | 服务指标    | 可定期获取外部系统的监控指标信息，其可以监控、收集Apache、haproxy、MongoDB、MySQL、nginx、postgresql、redis、system、zookeeper等服务； |
+| Packetbeat | 网络流量    | 网络数据包分析器，收集网络流量信息，嗅探服务器之间的流量，解析应用层协议，并关联到消息的处理，其支持ICMP(v4 & v6)、DNS、HTTP、MySQL、postgresql、redis、mongodb、memcache等协议 |
+| Winlogbeat | Win事件日志 | 用于监控、收集windows系统的日志信息                          |
+| Heartbeat  | 健康检查    |                                                              |
+
+是elastic公司开源的一款采集系统监控数据的代理agent，是在被监控服务器上以客户端形式运行的数据收集器的统称。可以直接把数据发送给elasticsearch或者通过logstash发送给elasticsearch。
+
+
+
+## Elasticseartch
+
+基于java，是个开源分布式搜索引擎，特点有：
+
+1. 分布式
+2. 零配置
+3. 自动发现
+4. 索引自动分片
+5. 索引副本机制
+6. restful风格接口
+7. 多数据源
+8. 自动搜索负载等
+
+
+
+### 安装
+
+新建elsearch用户，elasticsearch不支持root用户运行：
+
+```bash
+useradd elsearch
+# 解压安装包
+tar -xvf elasticsearch-6.5.4.tar.gz -C /itcast/es/
+chown elsearch:elsearch itcast/ -R
+su - elsearch
+```
+
+修改配置文件，可以异地访问：
+
+```yml
+# vim elasticsearch.yml
+network.host: 0.0.0.0
+
+# 如果上面不是localhost或127.0.0.1，ES会认为是生产环境，进而会需要更高的资源需求
+# 修改下面两个参数可以配置：初始堆总内存、最大堆总内存
+-Xms128m
+-Xmx128m
+```
+
+启动：
+
+```bash
+# 前台启动
+./elasticsearch
+# 后台启动
+./elasticsearch -d
+```
+
+停止：
+
+```bash
+# 查看java进程
+jps
+3386 elasticsearch
+# 关闭ES
+kill 3286
+```
+
+
+
+
+
+中文分词：IK分词器
+
+
+
 Beats：轻量级的数据采集器，其中的filebeat和metricbeat最重要
 
 ```bash
@@ -16,7 +102,7 @@ x server：连接linux系统的windows的UI工具
 
 ## Kibana
 
-数据分析的可视化平台
+数据分析的可视化平台。基于nodejs，是一个开源和免费的工具，可以汇总、分析和搜索重要数据日志。
 
 ### 数据探索
 
@@ -31,4 +117,141 @@ x server：连接linux系统的windows的UI工具
 3. Time Filter field name 选择 @timestamp，确认创建 【Create index pattern】
 
 4. 导航栏中 Discover，可查看ES中的数据
+
+5. metric-beat的dashboard安装
+
+   1. 在 `metricbeat.yml` 中配置kibana地址：
+
+      ```yml
+      setup.kibana:
+        host: :"localhost:5601"
+      ```
+
+   2. 安装仪表盘到kibana：
+
+      ```bash
+      ./metricbeat setup --dashboards
+      ```
+
+   3. 在kibana的导航栏Dashboards中可以看到仪表盘数据：
+
+6. file-beat的dashboard安装
+
+   ```bash
+   # kibana仪表盘安装
+   
+   ./filebeat -c itcast-nginx.yml setup
+   # 启动filebet
+   ./filebeat -e -c itcast-nginx.yml
+   ```
+
+   
+
+## logstash
+
+基于java，是个开源的用于手机，分析和存储日志的工具。
+
+logstash的采集工作已经被beats代替掉了，因为前者是java的，需要一个JVM，速度太慢。现在基本通过beats采集。
+
+
+
+### 安装启动
+
+```bash
+# 检查jdk环境，需要1.8+
+java -version
+
+# 解压安装包
+tar -xvf logstash-6.5.4.tar.gz
+
+# 第一个logstash示例
+bin/logstash -e 'input {stdin {}} output {stdout {}}'
+```
+
+
+
+### 配置
+
+```yml
+input { # 输入
+	stdin {...} # 标准输入
+}
+
+filter { # 过滤，对数据进行分割、截取等处理
+	...
+}
+
+output { # 输出
+	stdout {...} # 标准输出
+}
+```
+
+实际中可以通过filebeat收集数据，发送给logstash，也可以用logstash直接采集过滤
+
+
+
+### 读取自定义日志
+
+日志结构示例：
+
+```log
+2021-01-17 20:21:52|ERROR|读取数据出错|参数: id=1002
+```
+
+自定义配置文件：
+
+```yml
+# vim itcast-pipeline.conf
+input {
+	file {
+		path => "/itcast/logstash/logs/app.log" # 读取一个日志文件
+		start_position => "beginning"
+	}
+}
+
+filter {
+	mutate {
+		split => {"message" => "|"}
+	}
+}
+
+output {
+	elasticsearch {
+		hosts => ["192.168.1.11:9200","192.168.1.12:9200","192.168.1.13:9200"]
+	}
+}
+```
+
+启动：
+
+```bash
+./bin/logstash -f itcast-pipeline.confg
+```
+
+logstash捕获到的日志：
+
+```json
+{
+  "host" => "node01",
+  "message" => [
+  	[0] "2021-01-17"
+		[1] "ERROR"
+		[2] "读取数据出错"
+		[3] "参数: id=1002"
+  ],
+	"@version" => "1",
+	"@timestamp" => 2021-01-17T20:30:22.294Z,
+	"path" => "/itcast/logstash/logs/app.log"
+}
+```
+
+此时在elasticsearch里可以看到新增了index：logstash-2021.01.17，其中会有数据
+
+
+
+## 参考资料
+
+- [Elastic Stack（ELK）从入门到实践](https://www.bilibili.com/video/BV1iJ411c7Az?t=82&p=60)
+
+
 
