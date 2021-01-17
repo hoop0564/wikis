@@ -136,4 +136,7 @@ css 3.0	圆角，阴影，动画。。。浏览器兼容性
 
 ![image-20210115211145931](resources/image/fake-class-selector.png)
 
-### 高级选择器
+### 
+
+- span标签约定作为要重点突出的字，使用span套起来
+
