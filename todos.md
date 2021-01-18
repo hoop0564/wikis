@@ -8,7 +8,9 @@
 - docker-compose + skywalking
 - docker-compose + prometheus + grafana
 - k8s learn and intergrated with upper
+- Jenkins部署
 - ELK intergrated
+- service-manager直接访问elasticsearch获取skywalking数据！
 
 
 

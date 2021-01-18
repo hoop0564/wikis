@@ -49,7 +49,9 @@ chown elsearch:elsearch itcast/ -R
 su - elsearch
 ```
 
-修改配置文件，可以异地访问：
+### 修改配置文件
+
+使之可以异地访问：
 
 ```yml
 # vim elasticsearch.yml
@@ -61,7 +63,7 @@ network.host: 0.0.0.0
 -Xmx128m
 ```
 
-启动：
+### 启动：
 
 ```bash
 # 前台启动
@@ -70,7 +72,7 @@ network.host: 0.0.0.0
 ./elasticsearch -d
 ```
 
-停止：
+### 停止：
 
 ```bash
 # 查看java进程
@@ -81,6 +83,61 @@ kill 3286
 ```
 
 
+
+### elasticsearch-head安装
+
+- chrome插件安装：搜索elasticsearch-head，安装后使用
+
+- docker安装
+
+```bash
+# 拉去镜像
+docker pull mobz/elasticsearch-head:5
+
+# 创建容器
+docker create --name elasticsearch-head -p 9100:9100 mobz/elasticsearch-head:5
+
+# 启动容器
+docker start elasticsearch-head
+```
+
+注意：
+
+由于前后端分离，所以会存在跨域的问题，需要在服务端做cors的配置：
+
+```yml
+# vim elasticsearch.yml 添加：
+http.cors.enabled: true
+http.cors.allow-orgin: "*"
+```
+
+
+
+### 概念
+
+> 索引
+
+- 索引（index）：是elasticsearch对逻辑数据的逻辑存储，所以它可以分为更小的部分
+- 可以把索引看成关系型数据库的表，索引的结构是为快速有效的全文索引准备的，特别是他不存储原始值。
+- elasticsearch可以把索引存放在一台机器或者分散到多台服务器上，每个索引由一或多个分片（shard），每个分片可以有多个副本（replica）
+
+> 文档
+
+- 存储在elasticsearch中的主要实体叫文档（document）。用关系型数据库来类比的话，一个文档相当于一个数据库表中的一行记录。
+- elasticsearch和MongoDB的文档类似，都可以有不同的结构。但elasticsearch的文档中，相同字段必须有相同类型。
+- 文档由多个字段组成，每个字段可能多次出现在一个文档里，这样的字段叫 **多值字段（multivalued）**
+
+- 每个字段的类型，可以是文本、数值、日期等。字段类型也可以是复杂类型，一个字段包含其他子文档或者数组。
+
+> 映射
+
+- 所有文档写进索引之前，都会先进行分析，如何将输入的文本分割为词条、哪些词条又会被过滤，这种行为叫做映射（mapping）。一般由用户自己定义规则。
+
+> 文档类型
+
+- 在elasticsearch中，一个索引对象可以存储很多不同用途的对象。例如，一个博客应用程序可以保存文章和评论。？
+- 每个文档可以有不同的结构。
+- 不同的文档类型不能为相同的属性设置不同的类型！例如，在同一个索引中的所有文档类型中，一个叫title的字段必须具有相同的类型。
 
 
 
