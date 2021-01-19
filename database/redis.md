@@ -1,5 +1,7 @@
 # Redis
 
+使用的内存分配器是：**jemalloc**
+
 
 
 ## 用作锁
@@ -27,6 +29,62 @@
 3. 故障恢复
 4. 负载均衡
 5. 高可用基石
+
+
+
+## 字符串
+
+它的结构是带有长度的字节数组：
+
+```c
+struct SDS <T> {	// Simple Dynamic String 
+  T capacity;			// 数组容量
+  T len;					// 数组长度
+  byte flags;			// don't care
+  byte[] content;	// 数组内容 NULL结尾
+}
+```
+
+其中T=int/byte/short 可以对内存做极致的优化，不同长度的字符串使用不同的结构体来表示。
+
+当T=byte时，代入取值，最小占用3字节空间！
+
+
+
+它有两种存储方式：
+
+1. embstr  <= 44 bytes
+2. raw > 44 bytes
+
+jemalloc/tcmalloc 每次分配64字节的空间，其中头16字节，SDS的前三个字段占3字节，1个字节的NULL
+
+> 64-16-3-1=44
+
+
+
+所有的Redis对象的头结构：
+
+```c
+struct RedisObject { 
+  int4 type;				// 4bits 对象的不同类型 string/hash/zset/..
+  int4 encoding;		// 4bits 存储形式
+  int24 lru;				// 24bits	LRU信息 least recently used 
+  int32 refcount;		// 4bytes 对象的应用计数 当引用计数为零时，对象就会被销毁，内存被回收
+  void *ptr;				// 8bytes, 64-bit system，指向对象内容（body）的具体存储位置
+} robj;			// 共占用16字节的存储空间
+```
+
+**扩容：**字符串长度小于1MB时，扩容空间采用加倍策略，保留100%的冗余空间。超过1MB后，每次扩容只扩1MB
+
+
+
+## 字典结构
+
+这个Redis数据库就是所有key和value组成的全局字典。
+
+字典内部包含两个hashtable。
+
+通常情况下只有一个hashtable是有值的。在扩容时，会产生一个新的hashtable，进行渐进式搬迁后，旧的hashtable删除，新的hashtable取而代之！
 
 
 
@@ -126,25 +184,27 @@ skiplist的forward指针上进行了优化，给每一个forward指针都增加�
 
 当布隆过滤器说某个值存在时，这个值可能不存在；当它说某个值不存在时，那就肯定不存在！
 
-**业务场景：**
+### 业务场景：
 
 热点新闻基于每个人的不重复推送推荐！
 
 布隆过滤器能准确过滤掉那些用户已经看过的内容，那些没看过的新内容，它可能会过滤掉极小一部分（误判）。
 
+
+
 ## HyperLogLog
 
 UV统计需求。
 
-**业务场景：**
+### 业务场景：
 
 大型网站的爆款网页，需要统计每个网页每天的UV数据（User View Count）
 
-**常规方案：**
+### 常规方案：
 
 set，{webPageID+UserID: count}，但会非常浪费空间。
 
-**hyperloglog：**
+### hyperloglog：
 
 提供了两个指令：pfadd + pfcount，一个是增加计数，一个是获取计数。大概需要12KB的存储空间。
 
@@ -161,11 +221,12 @@ bf.mexists
 ```
 
 布隆过滤器对于已经见过的元素肯定不会误判，它只会误判那些没有见过的元素。
-**原理：**
+
+### 原理：
 
 内部就是一个大型的位数组合几个不一样的无偏hash函数。无偏就是能够把元素的hash值算的比较均匀，让元素被hash映射到位数组中的位置比较随机。
 
-**配置参数：**
+### 配置参数：
 
 在add之前使用 bf.reserve 指令配置，准确率和存储空间会根据配置而不同：
 
