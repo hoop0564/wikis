@@ -40,7 +40,7 @@ chunk大小选择，需根据具体业务：
 
 
 
-### shard key
+## shard key
 
 MongoDB中的数据分片是以集合为基本单位的，集合中的数据通过片键（shard key）被分成多部分：
 
@@ -54,7 +54,33 @@ MongoDB中的数据分片是以集合为基本单位的，集合中的数据通�
 
   
 
-### 分片集群部署操作
+## 集群部署操作
+
+### 环境信息
+
+>os: centos
+>
+>mongodb: 4.x
+>
+>3台虚拟机：xx.201/202/203
+>
+>集群环境
+>
+>2个分片复制集:
+>
+>shard1（xx.201:27017 xx.202:27017 xx.203:27017 ）
+>
+>shard2（xx.201:27018 xx.202:27018 xx.203:27018 ）
+>
+>1个config复制集:
+>
+>（xx.201:28018 xx.202:28018 xx.203:28018 ）
+>
+>1个mongos节点
+
+
+
+### 分片复制集配置
 
 1. 与单独配置可复制集基本一样，多了个启动参数：
 
@@ -87,7 +113,7 @@ MongoDB中的数据分片是以集合为基本单位的，集合中的数据通�
    ./mongod -f mongo.conf
    ```
 
-5. 使用mongo客户端登录，添加初始化配置：
+5. 使用mongo客户端登录，添加初始化配置（201、202、203都需要分别配置和使用）：
 
    ```javascript
    // 配置复制集的var变量
@@ -96,15 +122,15 @@ MongoDB中的数据分片是以集合为基本单位的，集合中的数据通�
      members: [ // 复制集成员
      	{
      		_id: 1,
-     		host: "xx.xx.xx.201:27017"
+     		host: "192.168.1.201:27017"
    		},
      	{
      		_id: 2,
-     		host: "xx.xx.xx.202:27017"
+     		host: "192.168.1.202:27017"
    		},
      	{
      		_id: 3,
-     		host: "xx.xx.xx.203:27017"
+     		host: "192.168.1.203:27017"
    		},
    
      ]
@@ -114,4 +140,106 @@ MongoDB中的数据分片是以集合为基本单位的，集合中的数据通�
    rs.initiate(rsconf);
    ```
 
+
+
+### 搭建config-server节点复制集
+
+​	创建config配置文件：mongo-cfg.conf （201、202、203都需要分别配置和使用）
+
+```yml
+systemlog:
+	destination: file # 文件类型的日志
+	path: /opt/mongo/mongo-cfg/logs/mongodb.log
+	logAppend: true # 追加
+storage:
+	journal:
+		enabled: true
+  dbPath: /opt/mongo/mongo-cfg/data # 数据存储位置
+  directoryPerDB: true # 是否一个库一个文件夹
+  wiredTiger: # 引擎配置
+  	engineConfig:
+  		cacheSizeGB: 1 # 最大使用的cache
+  		directoryForIndexes: true
+    collectionConfig:
+    	blockCompression: zlib # 表压缩配置
+    indexConfig:
+    	prefixCompression: true
+net:
+	bindIp: 192.168.1.201
+	port: 28018
+replication:
+	oplogSizeMB: 2048
+	replSetName: configReplSet # 配置节点的复制集名称
+sharding:
+	clusterRole: configsvr # 告诉这是config server
+processManagement: # 后台进程是fork
+	fork: true
    
+```
+
+1. 启动配置复制集
+
+   ```bash
+   ./mongod -f /opt/mongo/mongo-cfg.confg
+   
+   ```
+
+2. 客户端登录复制集
+
+   ```bash
+   # 
+   ./mongo -host 192.168.1.201 -port 28018
+   ```
+
+3. 初始化命令：
+
+   ```javascript
+   // 在任意一台执行此命令
+   rs.initiate(
+     _id: "configReplSet",
+     configsvr: true,
+     members: [
+     	{_id: 0, host: "192.168.1.201:28018"},
+     	{_id: 1, host: "192.168.1.202:28018"},
+     	{_id: 2, host: "192.168.1.203:28018"}
+     ]
+   )
+   ```
+
+   在mongo客户端的命令行窗口，等待数秒，复制集会选举出primary：
+
+   >configReplSet:OTHER>
+   >configReplSet:SECONDARY>
+   >...
+   >configReplSet:PRIMARY>
+
+   
+
+### mongos节点配置
+
+- mongo配置文件
+
+  ```yml
+  systemlog:
+  	destination: file
+  	path: /opt/mongo/mongos/log/mongos.log
+  	logAppend: true
+  net:
+  	bindIp: 192.168.1.201
+  	port: 28017 # mongos的服务监听端口
+  sharding:
+  	configDB: configReplSet/test201:28018,test202:28018,test203:28018 # testxxx是主机名称
+  processManagement:
+  	fork: true
+  ```
+
+  
+
+
+
+
+
+
+
+
+
