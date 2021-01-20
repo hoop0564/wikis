@@ -217,7 +217,7 @@ processManagement: # 后台进程是fork
 
 ### mongos节点配置
 
-- mongo配置文件
+- mongo配置文件：mongos.conf
 
   ```yml
   systemlog:
@@ -228,12 +228,116 @@ processManagement: # 后台进程是fork
   	bindIp: 192.168.1.201
   	port: 28017 # mongos的服务监听端口
   sharding:
-  	configDB: configReplSet/test201:28018,test202:28018,test203:28018 # testxxx是主机名称
+  	configDB: configReplSet/test201:28018,test202:28018,test203:28018 # testXXX是主机名称
   processManagement:
   	fork: true
   ```
 
+  ```bash
+  cat /etc/hosts
+  ...
+  192.168.1.201 test201
+  192.168.1.202 test202
+  192.168.1.203 test203
+  ```
+
+- 启动服务
+
+  ```bash
+  ./monogs -config mongos.conf
+  ```
+
+- 登录mongos节点
+
+  ```bash
+  ./mongo 192.168.1.201:28017
+  ```
+
   
+
+- 登录后客户端中执行命令，添加集群中的分片节点
+  ```javascript
+  // 切换到admin数据库才能操作
+  use admin;
+  
+  // 添加shard1复制集
+  db.runCommand( {
+    addshard: "yidian_repl/192.168.1.201:27017,192.168.1.202:27017,192.168.1.203:27017",
+    name: "shard1"
+  })
+  
+  // 添加shard2复制集
+  db.runCommand( {
+    addshard: "yidian_repl2/192.168.1.201:27018,192.168.1.202:27018,192.168.1.203:27018",
+    name: "shard2"
+  })
+  
+  // 查询当前的分片信息
+  db.runCommand({listshards: 1})
+  
+  // 查看当前sharding status
+  sh.status()
+  ```
+
+
+
+## 测试
+
+- 开启数据库分片部署
+
+  ```javascript
+  // 测试数据库开启分片
+  db.runCommand({enablesharding: "testdb"})
+  ```
+
+- 创建分片的键（id）
+
+  ```javascript
+  // 测试时是空集合 并会自动在片键id上创建索引
+  db.runCommand({shardcollection: "testdb.users", key: {id: 1}})
+  
+  // 如果是已经存在的表 需要声明索引
+  use testdb
+  db.users.ensureIndex({id: 1})
+  ```
+
+- 添加测试数据
+
+  ```javascript
+  let arr = []
+  for (let i = 0; i < 5000000; i++) {
+    let uid = i;
+    let name = "nick-" + i;
+    arr.push({id, name})
+  }
+  db.users.insertMany(arr)
+  
+  // 查看分片数据的状态
+  sh.status()
+  ...
+  {id: 0} --> shard1 ..
+  {id: 250000} --> shard1 ..
+  {id: 375001} --> shard2 ..
+  {id: 500003} --> shard2 ..
+  ...
+  
+  ```
+
+- 删除分片
+
+  ```javascript
+  db.runCommand({removeShared: "shard2"})
+  ```
+
+  
+
+
+
+## 参考资料
+
+- [mongo集群搭建](https://www.bilibili.com/video/BV1p4411J7sq?t=364)
+
+
 
 
 
