@@ -63,7 +63,45 @@ template <class _Ty,
 - tips：VS中build之后，再点击代码中的 vector，转到定义，可以看到上面的代码。
 
 
+## template<> 模板特化的元编程
 
+阶乘的示例：
+```c++
+int factorial(int n) 
+{
+    if (n == 0)
+       return 1;
+    return n * factorial(n - 1);
+}
+ 
+void foo()
+{
+    int x = factorial(4); // == (4 * 3 * 2 * 1 * 1) == 24
+    int y = factorial(0); // == 0! == 1
+}
+```
+模板特化改造：
+```c++
+template <int N>
+struct Factorial 
+{
+    enum { value = N * Factorial<N - 1>::value };
+};
+ 
+template <>
+struct Factorial<0> 
+{
+    enum { value = 1 };
+};
+ 
+// Factorial<4>::value == 24
+// Factorial<0>::value == 1
+void foo()
+{
+    int x = Factorial<4>::value; // == 24
+    int y = Factorial<0>::value; // == 1
+}
+```
 
 ### 
 
