@@ -24,13 +24,13 @@ ElasticStack = ELK + Beats
 
 
 
-### filebeat
+## filebeat
 
 采集集群中的所有服务器的日志。免去逐个ssh查看的烦恼。
 
 
 
-#### 标准输入输出
+### 标准输入输出
 
 配置文件：itcast.yml
 
@@ -93,7 +93,7 @@ hello
 
 
 
-#### 读取文件
+### 读取文件
 
 配置文件：itcast-log.yml
 
@@ -158,7 +158,9 @@ echo "good luck" >> a.log
 
 
 
-#### 自定义字段
+
+
+### 自定义字段
 
 配置文件：itcast-log.yml
 
@@ -223,7 +225,7 @@ output.console:
 
 
 
-#### 输出到elasticsearch中
+### 输出到elasticsearch中
 
 配置文件：itcast-es.yml
 
@@ -246,7 +248,49 @@ output.elasticsearch: # 指定ES的配置
 
 
 
-#### filebeat工作原理
+### nginx日志收集
+
+配置文件：itcast-nginx.yml
+
+```yml
+filebeat.inputs:
+- type: log
+  enabled: true 
+  paths:
+  - ./itcast/beasts/logs/*.log
+  tags: ["nginx"] # 添加自定义tag，便于后续的处理
+  fields: # 添加自定义字段
+    from: itcast-im
+  fields_under_root: true # true为添加到根节点，false为添加到子节点中  
+setup.template.settings:
+  index.number_of_shareds: 1 # hosts有几个就填几个 though still can't work
+output.elasticsearch: # 指定ES的配置
+  hosts: ["localhost:9200"]
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false  
+```
+
+
+
+需要执行elasticsearch-plugin的安装：
+
+```bin
+sudu bin/elasticsearch-plugin install ingest-user-agent
+sudu bin/elasticsearch-plugin install ingest-geoip
+```
+
+however，启动报错，TODO：
+
+```bash
+2021-01-22T06:49:32.078+0800	ERROR	[publisher_pipeline_output]	pipeline/output.go:154	Failed to connect to backoff(elasticsearch(http://localhost:9200)): Connection marked as failed because the onConnect callback failed: Filebeat requires the default distribution of Elasticsearch. Please update to the default distribution of Elasticsearch for full access to all free features, or switch to the OSS distribution of Filebeat.
+```
+
+
+
+
+
+### filebeat工作原理
 
 filebeat有两个主要组件：prospector 和 harvester
 
@@ -264,6 +308,53 @@ filebeat有两个主要组件：prospector 和 harvester
   - 在filebeat运行时，每个prospector内存中也会保存文件状态信息，以减少IO，提高性能；
   - 当重新启动filebeat时，将使用注册文件的数据来重建文件状态，filebeat将每个harvester在从保存的最后偏移量继续读取！
   - 文件状态记录在data/registry文件中
+
+
+
+### Module
+
+前面要想实现日志数据的读取以及处理都是自己要手动配置的！其实，在filebeat中，有大量的module，可以简化我们的配置！直接用就可以了！
+
+```bash
+./filebeat modules list
+
+Enabled:
+..
+Disabled:
+.. many many modules !
+
+# 启用nginx module
+./filebeat modules enable nginx
+# 禁用nginx module
+./filebeat modules disable nginx
+
+# 查看module.d目录中的nginx.yml
+vi ./module.d/nginx.yml
+```
+
+譬如启用了nginx module，收集nginx的日志会对raw http数据进行格式化为形如：
+
+```json
+...
+response_code" :"304",
+method: "GET",
+http_version: "1.1",
+url: "/"
+...
+```
+
+
+
+## Metricbeat
+
+收集cpu、内存、io等os参数，采集给elasticsearch
+
+分为两部分：
+
+1. module：收集的对象，如mysql、redis、nginx、操作系统等
+2. metricset：收集指标的集合，如cpu、memory、network等
+
+比如收集redis，通过其info指令，收集数据到ES
 
 
 
@@ -339,7 +430,7 @@ network.host: 0.0.0.0
 ### 停止：
 
 ```bash
-# 查看java进程
+# 查看当前运行的java进程
 jps
 3386 elasticsearch
 # 关闭ES
