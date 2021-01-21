@@ -8,7 +8,7 @@ ElasticStack = ELK + Beats
 
 ## Beats
 
-采集一切数据的beats，包括以下：
+轻量级的数据采集器，采集一切数据的beats，包括以下：
 
 | types      | cn name     | 说明                                                         |
 | ---------- | ----------- | ------------------------------------------------------------ |
@@ -19,6 +19,251 @@ ElasticStack = ELK + Beats
 | Heartbeat  | 健康检查    |                                                              |
 
 是elastic公司开源的一款采集系统监控数据的代理agent，是在被监控服务器上以客户端形式运行的数据收集器的统称。可以直接把数据发送给elasticsearch或者通过logstash发送给elasticsearch。
+
+其中的filebeat和metricbeat最重要。
+
+
+
+### filebeat
+
+采集集群中的所有服务器的日志。免去逐个ssh查看的烦恼。
+
+
+
+#### 标准输入输出
+
+配置文件：itcast.yml
+
+```yml
+filebeat.inputs:
+- type: stdin
+  enabled: true # 启用标准输入
+setup.template.settings:
+  index.number_of_shareds: 3 # 数据发送到ES的shared数 此处无效果，因为是下面配置类发送到控制台
+output.console:
+  pretty: true
+  enable: true
+```
+
+启动：
+
+```bash
+./filebeat -e -c itcast.yml
+```
+
+输入和输出日志：
+
+```bash
+hello
+
+{
+  "@timestamp": "2021-01-21T10:33:27.926Z",
+  "@metadata": { # 元数据信息
+    "beat": "filebeat",
+    "type": "_doc",
+    "version": "7.10.2"
+  },
+  "log": {
+    "offset": 0,
+    "file": {
+      "path": ""
+    }
+  },
+  "message": "hello", # 输入的内容
+  "input": {
+    "type": "stdin"
+  },
+  "ecs": {
+    "version": "1.6.0"
+  },
+  "host": {
+    "name": "gzc-pro.local"
+  },
+  "agent": { # beat版本以及主机信息
+    "version": "7.10.2",
+    "hostname": "gzc-pro.local",
+    "ephemeral_id": "98ebb1b3-21f8-484e-962c-c53f91fe7305",
+    "id": "ed756a55-b0e2-4ffe-b245-d55f781c1221",
+    "name": "gzc-pro.local",
+    "type": "filebeat"
+  }
+}
+
+```
+
+
+
+#### 读取文件
+
+配置文件：itcast-log.yml
+
+```yml
+filebeat.inputs:
+- type: log
+  enabled: true 
+  paths:
+  - /Users/apple/devops/ELK/filebeat-7.10.2-darwin-x86_64/itcast/beasts/logs/*.log
+setup.template.settings:
+  index.number_of_shareds: 3
+output.console:
+  pretty: true
+  enable: true
+```
+
+启动：
+
+```bash
+./filebeat -e -c itcast-log.yml
+```
+
+输入和输出日志：
+
+```bash
+echo "good luck" >> a.log 
+
+{
+  "@timestamp": "2021-01-21T11:05:39.311Z",
+  "@metadata": {
+    "beat": "filebeat",
+    "type": "_doc",
+    "version": "7.10.2"
+  },
+  "ecs": {
+    "version": "1.6.0"
+  },
+  "log": {
+    "file": {
+      "path": "/Users/apple/devops/ELK/filebeat-7.10.2-darwin-x86_64/itcast/beasts/logs/a.log"
+    },
+    "offset": 12
+  },
+  "message": "good luck",
+  "input": {
+    "type": "log"
+  },
+  "host": {
+    "name": "gzc-pro.local"
+  },
+  "agent": {
+    "version": "7.10.2",
+    "hostname": "gzc-pro.local",
+    "ephemeral_id": "b28f06a9-9f8d-45b1-b81a-4b3a837e7534",
+    "id": "ed756a55-b0e2-4ffe-b245-d55f781c1221",
+    "name": "gzc-pro.local",
+    "type": "filebeat"
+  }
+}
+
+```
+
+
+
+#### 自定义字段
+
+配置文件：itcast-log.yml
+
+```yml
+filebeat.inputs:
+- type: log
+  enabled: true 
+  paths:
+  - . /itcast/beasts/logs/*.log
+  tags: ["web"] # 添加自定义tag，便于后续的处理
+  fields: # 添加自定义字段
+    from: itcast-im
+  fields_under_root: true # true为添加到根节点，false为添加到子节点中  
+setup.template.settings:
+  index.number_of_shareds: 3
+output.console:
+  pretty: true
+  enable: true
+
+```
+
+测试：
+
+```bash
+{
+  "@timestamp": "2021-01-21T11:16:07.847Z",
+  "@metadata": {
+    "beat": "filebeat",
+    "type": "_doc",
+    "version": "7.10.2"
+  },
+  "tags": [
+    "web"
+  ],
+  "input": {
+    "type": "log"
+  },
+  "from": "itcast-im",
+  "ecs": {
+    "version": "1.6.0"
+  },
+  "host": {
+    "name": "gzc-pro.local"
+  },
+  "agent": {
+    "type": "filebeat",
+    "version": "7.10.2",
+    "hostname": "gzc-pro.local",
+    "ephemeral_id": "b56de6ca-0d9f-4de2-8f8b-3bb150f84ca1",
+    "id": "ed756a55-b0e2-4ffe-b245-d55f781c1221",
+    "name": "gzc-pro.local"
+  },
+  "message": "123",
+  "log": {
+    "offset": 22,
+    "file": {
+      "path": "/Users/apple/devops/ELK/filebeat-7.10.2-darwin-x86_64/itcast/beasts/logs/a.log"
+    }
+  }
+}
+```
+
+
+
+#### 输出到elasticsearch中
+
+配置文件：itcast-es.yml
+
+```yml
+filebeat.inputs:
+- type: log
+  enabled: true 
+  paths:
+  - ./itcast/beasts/logs/*.log
+  tags: ["web"] # 添加自定义tag，便于后续的处理
+  fields: # 添加自定义字段
+    from: itcast-im
+  fields_under_root: true # true为添加到根节点，false为添加到子节点中  
+# setup.template.settings:
+#   index.number_of_shareds: 3
+setup.template.enabled: false
+output.elasticsearch: # 指定ES的配置
+  hosts: ["localhost:9200"]
+```
+
+
+
+#### filebeat工作原理
+
+filebeat有两个主要组件：prospector 和 harvester
+
+- harvester 收割器
+  - 负责读取单个文件的内容
+  - 如果文件在读取时被删除或重命名，filebeat将继续跟踪读取文件
+- prospector 探勘者
+  - prospector负责管理harvester并找到所有要读取的文件来源
+  - 如果输入类型为日志，则查找器将查找路径匹配的所有文件，并为每个文件启动一个harvester
+  - filebeat目前支持两种prospector类型：log和stdin
+- filebeat如果保持文件的状态
+  - filebeat保存每个文件的状态并经常将状态刷新到磁盘的注册文件中
+  - 该状态用于记住harvester正在读取的最后偏移量，并确保发送所有日志行
+  - 如果输出（es或logstash）无法访问，filebeat会跟踪最后发送的行，并在输出再次可用时继续读取文件！
+  - 在filebeat运行时，每个prospector内存中也会保存文件状态信息，以减少IO，提高性能；
+  - 当重新启动filebeat时，将使用注册文件的数据来重建文件状态，filebeat将每个harvester在从保存的最后偏移量继续读取！
+  - 文件状态记录在data/registry文件中
 
 
 
@@ -48,6 +293,25 @@ tar -xvf elasticsearch-6.5.4.tar.gz -C /itcast/es/
 chown elsearch:elsearch itcast/ -R
 su - elsearch
 ```
+
+Mac环境：
+
+```bash
+# 安装
+brew install elasticsearch
+# 运行ES
+brew services start elasticsearch
+
+# 相应目录
+Data:    /usr/local/var/lib/elasticsearch/
+Logs:    /usr/local/var/log/elasticsearch/elasticsearch_apple.log
+Plugins: /usr/local/var/elasticsearch/plugins/
+Config:  /usr/local/etc/elasticsearch/
+```
+
+**本地浏览器访问 [http://localhost:9200](http://localhost:9200/)**
+
+
 
 ### 修改配置文件
 
@@ -152,14 +416,6 @@ http.cors.allow-orgin: "*"
 
 
 中文分词：IK分词器
-
-
-
-Beats：轻量级的数据采集器，其中的filebeat和metricbeat最重要
-
-```bash
-./filebeat -e -c itcast.yml
-```
 
 
 
