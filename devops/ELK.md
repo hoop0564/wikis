@@ -246,6 +246,8 @@ output.elasticsearch: # 指定ES的配置
   hosts: ["localhost:9200"]
 ```
 
+随后通过elasticsearch-head中可以查看filebeat的统计信息，会新增了索引，数据浏览中也可以查看数据。
+
 
 
 ### nginx日志收集
@@ -355,6 +357,8 @@ url: "/"
 2. metricset：收集指标的集合，如cpu、memory、network等
 
 比如收集redis，通过其info指令，收集数据到ES
+
+
 
 
 
@@ -563,7 +567,7 @@ x server：连接linux系统的windows的UI工具
 
 ## logstash
 
-基于java，是个开源的用于手机，分析和存储日志的工具。
+基于java，是个开源的用于收集，分析和存储日志的工具。
 
 logstash的采集工作已经被beats代替掉了，因为前者是java的，需要一个JVM，速度太慢。现在基本通过beats采集。
 

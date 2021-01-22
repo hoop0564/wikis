@@ -159,7 +159,7 @@ kibana页面中有个🔧，是开发工具，类似postman的功能！
 
    打开kibana到console页面：http://localhost:5601/app/kibana#/dev_tools/console
 
-   ![image-20210110202002657](./pictures/kibana-ik.png)
+   ![image-20210110202002657](../database/pictures/kibana-ik.png)
 
 6. 更新配置分词库：`plugins/ik/config/IKAnalyzer.cfg.xml`，增加一个**xxx.dic**，并配置到xml中，重启es应用生效
 
@@ -167,7 +167,7 @@ kibana页面中有个🔧，是开发工具，类似postman的功能！
 
 ## Rest风格操作
 
-![image-20210110203142608](/Users/apple/wikis/database/pictures/rest-style.png)
+![image-20210110203142608](../database/pictures/rest-style.png)
 
 
 
