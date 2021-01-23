@@ -271,6 +271,8 @@ output.elasticsearch: # 指定ES的配置
 filebeat.config.modules:
   path: ${path.config}/modules.d/*.yml
   reload.enabled: false  
+setup.kibana:
+	host: "localhost:5601"
 ```
 
 
@@ -282,11 +284,21 @@ sudu bin/elasticsearch-plugin install ingest-user-agent
 sudu bin/elasticsearch-plugin install ingest-geoip
 ```
 
-however，启动报错，TODO：
+安装nginx日志仪表盘到kibana中：
 
 ```bash
-2021-01-22T06:49:32.078+0800	ERROR	[publisher_pipeline_output]	pipeline/output.go:154	Failed to connect to backoff(elasticsearch(http://localhost:9200)): Connection marked as failed because the onConnect callback failed: Filebeat requires the default distribution of Elasticsearch. Please update to the default distribution of Elasticsearch for full access to all free features, or switch to the OSS distribution of Filebeat.
+./filebeat -c itcast-nginx.yml setup
+# 安装完成后到kibana的dashboards中查找[Filebeat Nginx]..即可见
 ```
+
+报错：
+
+```log
+Exiting: error loading template: could not load template. Elasticsearch returned: couldn't load template: 400 Bad Request: {"error":{"root_cause":[{"type":"illegal_argument_exception","reason":"unknown setting [index.number_of_shareds] did you mean any of [index.number_of_shards, index.number_of_replicas]?"}],"type":"illegal_argument_exception","reason":"unknown setting [index.number_of_shareds] did you mean any of [index.number_of_shards, index.number_of_replicas]?"},"status":400}. Response body: {"error":{"root_cause":[{"type":"illegal_argument_exception","reason":"unknown setting [index.number_of_shareds] did you mean any of [index.number_of_shards, index.number_of_replicas]?"}],"type":"illegal_argument_exception","reason":"unknown setting [index.number_of_shareds] did you mean any of [index.number_of_shards, index.number_of_replicas]?"},"status":400}. Template is: {
+...
+```
+
+
 
 
 
