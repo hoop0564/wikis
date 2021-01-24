@@ -19,6 +19,30 @@ docker的标准是鲸鱼🐳，k8s的图标是船舵，表示方向盘领航的�
 
 
 
+**borg框架：**
+
+![borg-framework](./pictures/borg-framework.png)
+
+
+
+**k8s框架：**
+
+![k8s-framework](./pictures/k8s-framework.png)
+
+
+
+**ETCD版本选择：**
+
+![etcd-select-v3](./pictures/etcd-select-v3.png)
+
+ETCD的V2版本数据都在内存中，V3版本引入了本地的卷的持久化操作，保证了数据不会丢失，所以建议使用v3版本etcd。
+
+
+
+![etcd-framework](./pictures/etcd-framework.png)
+
+
+
 **IPVS：**
 
 IP虚拟服务器（IP Virtual Server），基本上是一种高效的layer-4交换机！是运行在LVS下的提供负载平衡功能的一种技术。（from 章文嵩博士）[reference](https://baike.baidu.com/item/ipvs/5041817?fr=aladdin)
