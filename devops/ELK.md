@@ -484,6 +484,15 @@ http.cors.allow-orgin: "*"
 
 
 
+### SQL客户端使用
+
+```
+./bin/elasticsearch-sql-cli
+sql> select * from indexName;
+```
+
+
+
 ### 概念
 
 > 索引
