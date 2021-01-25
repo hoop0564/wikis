@@ -31,6 +31,36 @@ docker的标准是鲸鱼🐳，k8s的图标是船舵，表示方向盘领航的�
 
 
 
+**高可用集群副本数据最好是大于等于3的奇数个！**
+
+### master组件
+
+- api server： 所有服务访问的统一入口
+- Replication controller：维持副本期望数目
+- Scheduler：负责接收任务，选择合适的节点进行分配任务
+- etcd：键值对数据库，储存k8s集群所有重要信息（持久化）
+
+
+
+### node组件
+
+- kubelet：直接跟容器引擎交互，实现容器的生命周期管理。
+
+- kube proxy：负责写入规则值IPtables、IPVS，实现服务映射访问的。
+
+
+
+### 其他插件
+
+- CoreDNS：可以为集群中的SVC创建一个域名映射IP的对应关系解析
+- Dashboard：给k8s集群提供的BS结构的访问web界面
+- Ingress Controller: 官方k8s实现了4层代理，Ingress可以实现七层代理（即主机名和域名的代理）
+- Federation: 提供一个可以跨集群中心、多k8s的统一管理的功能
+- Prometheus: tsdb，提供k8s集群的监控能力
+- ELK：提供k8s集群日志统一分析介入平台
+
+
+
 **ETCD版本选择：**
 
 ![etcd-select-v3](./pictures/etcd-select-v3.png)
