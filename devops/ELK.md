@@ -317,7 +317,7 @@ filebeat有两个主要组件：prospector 和 harvester
   - filebeat目前支持两种prospector类型：log和stdin
 - filebeat如果保持文件的状态
   - filebeat保存每个文件的状态并经常将状态刷新到磁盘的注册文件中
-  - 该状态用于记住harvester正在读取的最后偏移量，并确保发送所有日志行
+  - 该状态用于记住harvester正在读取的最后**偏移量**，并确保发送所有日志行
   - 如果输出（es或logstash）无法访问，filebeat会跟踪最后发送的行，并在输出再次可用时继续读取文件！
   - 在filebeat运行时，每个prospector内存中也会保存文件状态信息，以减少IO，提高性能；
   - 当重新启动filebeat时，将使用注册文件的数据来重建文件状态，filebeat将每个harvester在从保存的最后偏移量继续读取！
@@ -455,6 +455,15 @@ kill 3286
 
 
 
+### SQL客户端使用
+
+```
+./bin/elasticsearch-sql-cli
+sql> select * from indexName;
+```
+
+
+
 ### elasticsearch-head安装
 
 - chrome插件安装：搜索elasticsearch-head，安装后使用
@@ -480,15 +489,6 @@ docker start elasticsearch-head
 # vim elasticsearch.yml 添加：
 http.cors.enabled: true
 http.cors.allow-orgin: "*"
-```
-
-
-
-### SQL客户端使用
-
-```
-./bin/elasticsearch-sql-cli
-sql> select * from indexName;
 ```
 
 
@@ -685,6 +685,32 @@ logstash捕获到的日志：
 ```
 
 此时在elasticsearch里可以看到新增了index：logstash-2021.01.17，其中会有数据
+
+
+
+### logstash三个组件
+
+- input plugins: 输入插件使Logstash可以读取特定的事件源。[参考资料](https://www.elastic.co/guide/en/logstash/7.9/input-plugins.html)
+  - beats：从Elastic Beats框架接收事件
+  - elasticsearch：从Elasticsearch集群读取查询结果
+  - file：从文件流事件
+  - exec命令行中：将shell命令的输出捕获为事件
+  - github：从GitHub Webhook读取事件
+  - http: 通过HTTP或HTTPS接收事件
+  - kafka: 读取来自Kafka主题的事件
+  - log4j: 从Log4jSocketAppender对象通过TCP套接字读取事件
+  - rabbitmq: 从RabbitMQ交换中提取事件
+  - redis: 从Redis实例读取事件
+  - TCP/UDP
+  - ........
+
+- output plugins: 用于定义数据到哪里去，[参考资料]()
+
+  mongodb/file/exec/http/tcp/rabbitmq/kafka/redis/..
+
+- filter plugin: 过滤器（beats）
+
+
 
 
 
