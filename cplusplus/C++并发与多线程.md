@@ -72,13 +72,34 @@
 
   
 
-## 线程死锁
+## 线程
+
+c++11中的线程：
+
+```c++
+class Fctor {
+  public:
+  	void operator()(string& msg) {
+      cout << msg << endl;
+      msg = "world";
+    }
+}
+
+int main() {
+  string s = "hello";
+  std::thread t1((Fctor))
+}
+```
+
+
+
+### 线程死锁
 
 A线程持有了mutexA，在等待mutexB，B线程持有了mutexB，在等待mutextA，导致互相等待，导致线程死锁。
 
 
 
-## 线程的坑
+### 线程的坑
 
 - 传递临时对象作为线程参数
 
@@ -148,7 +169,43 @@ A线程持有了mutexA，在等待mutexB，B线程持有了mutexB，在等待mut
 
 
 
-## condition_variable wait notify_one notify_all
+### 线程池和线程数量建议
+
+建议先创建一定数量的线程池，而不是用的时候再创建，后面再销魂
+
+线程数量不要超过2000，否则容易崩溃。最好控制在200个以内。不同的电脑做不同的实际业务测试为准。
+
+
+
+## condition_variable 
+
+条件对象
+
+### wait notify_one notify_all
+
+类似信号量，消息队列的读线程和写线程的同步操作，每生产了一个消息，就notify_one()，消费线程的wait()就被激活，取得消息完成工作线程里的任务。
+
+
+
+### 虚假唤醒
+
+wait()执行后，并没有取到东西，原因可能是notify_one()被错误的触发了多次，或直接被notify_all()，总之wait()的工作线程取不到消息，这是，需要酱紫做：
+
+```c++
+std::condition_variable my_cond;
+std::mutex my_mutex1; //互斥量 一把锁头
+std::list<int> mgsRecvQueue;
+
+...
+std::unique_lock<mutex> sbguard1(my_mutex1); //临界区
+my_cond.wait(sbguargd1, [this] {
+  if (!mgsRecvQueue.empty())
+    return true;	// 该lambda返回true，则wait就返回，流程下去了，互斥锁被本线程拿到。
+  return false; 	//解锁并休眠，卡在wait，等待被再次唤醒
+})
+```
+
+
 
 
 
@@ -245,6 +302,9 @@ A线程持有了mutexA，在等待mutexB，B线程持有了mutexB，在等待mut
   count++;	// ok
   count += 1;	// ok
   count = count + 1; // fail
+  
+  auto count2= count; //不允许！拷贝构造函数应该被delete了
+  auto count3(count.load()); //ok
   ```
 
 - std::async 异步执行任务，它有不确定问题：是否创建新线程执行任务
