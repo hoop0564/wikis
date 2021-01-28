@@ -74,22 +74,9 @@
 
 ## 线程
 
-c++11中的线程：
+c++11中的线程：传参数需要用std::ref或右值引用
 
-```c++
-class Fctor {
-  public:
-  	void operator()(string& msg) {
-      cout << msg << endl;
-      msg = "world";
-    }
-}
-
-int main() {
-  string s = "hello";
-  std::thread t1((Fctor))
-}
-```
+[Mac上利用VScode配置c/c++开发环境](https://www.cnblogs.com/love-study-chase/p/11962064.html)
 
 
 
