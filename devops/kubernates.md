@@ -150,11 +150,15 @@ Pod控制器是k8s的灵魂！自主式Pod、控制器管理Pod，类型有：
 
 负责pod创建和销毁。用来确保容器应用的副本数十种保持在用户定义的副本数，即如果有容器异常退出，会自动创建新的Pod替代。如果多出来，也会自动回收。新版本中后者是取代前者的，后者也是大型项目中使用。
 
+
+
 #### Deployment
 
 自动管理ReplicaSet。Deployment比RC和RS多了支持rolling-update（滚动更新）。但Deployment不负责pod创建
 
 > 若要更新V2版本，Deployment会创建另一个RS2，RS2负责产生V2版本的容器，此时V1的RS1会逐步停止，但不会删除，为回滚准备。
+
+
 
 #### DaemonSet
 
@@ -170,7 +174,14 @@ Pod控制器是k8s的灵魂！自主式Pod、控制器管理Pod，类型有：
 
 #### StatefulSet
 
-为了解决有状态服务的问题。
+为了解决有状态服务的问题。（Deployment和ReplicaSet为无状态服务而设计），应用场景包括：
+
+- 稳定的持久化存储：即Pod重新调度后，还是能访问到相同的持久化数据，基于PVC实现
+- 稳定的网络标志：即Pod重新调度后期PodName和HostName不变，基于Headless Service（即没有Cluster IP的Service）来实现
+- 有序部署，有序扩展：即Pod是有顺序的，在部署或者扩展的时候，要依据定义的顺序依次进行（即从0到N-1，在下一个Pod运行之前所有之前的Pod必须都是Running 和Ready状态），基于init containers来实现。
+- 有序收缩，有序删除：即从N-1到0
+
+
 
 #### Horizontal Pod Autoscaling：HPA，
 
