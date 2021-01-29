@@ -70,7 +70,37 @@
   }
   ```
 
-  
+
+
+## 异常
+
+- 异常有类型（int/fload/classObject/..)，catch中可以捕获特定异常类型，catch(int n)..
+- catch(...) 捕获所有类型的异常
+- 如果调用堆栈都捕捉不到这个异常，主程序就会崩溃退出
+- catch块中再抛异常，需要外面的函数调用栈有人接，否则也会捕获不到
+- 0xc0000005是指针无效的错误
+
+```c++
+int main(int argc, char* argv[])
+{
+  try {
+    foo(1, argc-1);
+    throw std::exception("hello123");
+  }
+  catch(int n)
+  {
+    
+  }
+  catch (std::exception& e)
+  {
+    cout << e.what() << endl;
+  }
+}
+```
+
+
+
+
 
 ## 线程
 
