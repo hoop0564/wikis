@@ -162,13 +162,25 @@ Pod控制器是k8s的灵魂！自主式Pod、控制器管理Pod，类型有：
 
 #### DaemonSet
 
+DaemonSet确保全部Node上运行一个Pod的副本。当有Node加入集群时，也会为他们新增一个Pod。当有Node从集群移除时，这些Pod也会被回收。删除DaemonSet将会删除它创建的所有Pod。典型用法有：
+
+- 运行集群部署daemon，例如在每个Node上运行glusterd、ceph。？？？
+- 在每个Node上运行日志收集daemon，例如fluentd、logstash
+- 在每个Node上运行监控daemon，例如Prometheus Node Exporter
+
+当需要运行好几个不同daemon的时候，可以把他们放入一个pod来运行。
+
 
 
 #### Job
 
+负责执行批处理任务，仅执行一次。它保证批处理任务的一个或多个Pod成功结束。
+
 
 
 #### CronJob
+
+同linux的crob。
 
 
 
@@ -190,6 +202,51 @@ Pod控制器是k8s的灵魂！自主式Pod、控制器管理Pod，类型有：
 >  if CPU > 80 then Max=10, Min=2
 
 
+
+## 网络通讯模式
+
+k8s的网络模型假定了所有Pod都在一个苦役互相连通（通过IP）的扁平化网络空间中。这在GCE（Google Compute Engine）里面是线程的网络模型，k8s嘉定这个网络已经存在。
+
+在私有云里搭建k8s集群，我们需要自己实现网络互通，将不同节点上的docker容器之间的互相访问先打通，再运行k8s。
+
+- 同一个Pod内的多个容器之间：localhost
+- 各Pod之间的通讯：Overlay Network，覆盖网络
+- Pod与Service之间的通讯：各节点的IPtables规则，新版本用LVS了，效率更高
+
+
+
+Flannel 是CoreOS团队针对k8s使得网络规划服务，它是让集群中的不同节点主机创建的docker容器都具有全集群唯一的虚拟IP地址。而且它还能在这些IP地址之间建立一个覆盖网络（overlay network），通过这个覆盖网络，将数据包原封不动地传递到目标容器内。
+
+![k8s-flannel.png](./pictures/k8s-flannel.png)
+
+![](./pictures/k8s-flannel2.png)
+
+
+
+etcd之flannel提供说明：
+
+- 存储管理flannel可分配的IP地址段资源
+- 监控etcd中每个pod的实际地址，并在内存中建立维护pod节点路由表
+
+
+
+不同网络下通讯方式
+
+- 同一个pod内部通信：共享了同一个网络命名空间，共享同一个linux协议栈
+
+- pod1至pod2：
+  - 不再同一台主机：pod的地址是与docker0在同一个网段的，但docker0网段与宿主网卡是两个不同的IP网段，并且不同Node之间的通信只能通过宿主机的物理网卡进行。将pod的IP和所在Node的IP关联起来，通过这个关联让Pod可以互相访问。
+  - 在同一台主机：由docker0网桥直接转发请求至pod2，不需要结果flannel
+
+
+
+- pod到service的网络：目前基于性能考虑，全部为iptables维护和转发；最新版为lvs。
+
+- pod到外网：pod向外网发送请求，查找路由表，转发数据包到宿主机的网卡，宿主网卡完成路由选择后，iptables执行masquerade，把源IP更改为宿主网卡的IP，然后向外网服务器发送请求。
+
+- 外网访问Pod：Service
+
+![image-20210131105805441](./pictures/k8s-network.png)
 
 ## 存储
 
