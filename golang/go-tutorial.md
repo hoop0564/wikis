@@ -687,11 +687,154 @@ go-torch cpu.prof
 
 - [github项目: service_decorator](https://github.com/easierway/service_decorators/blob/master/README.md)
 
+
+
+## 左耳听风《Go语言编程模式实战》
+
+### 切片
+
+slice是一个结构体：
+
+```go
+type slice struct {
+    array unsafe.Pointer //指向存放数据的数组指针
+    len   int            //长度有多大
+    cap   int            //容量有多大
+}
+```
+
+这里数据会发生共享！
+
+```go
+func main() {
+	path := []byte("AAAA/BBBBBBBBB")
+	sepIndex := bytes.IndexByte(path, '/')
+
+	dir1 := path[:sepIndex]
+	dir2 := path[sepIndex+1:]
+
+	fmt.Println("dir1 =>", string(dir1)) //prints: dir1 => AAAA
+	fmt.Println("dir2 =>", string(dir2)) //prints: dir2 => BBBBBBBBB
+
+	dir1 = append(dir1, "suffix"...)
+
+	fmt.Println("dir1 =>", string(dir1)) //prints: dir1 => AAAAsuffix
+	fmt.Println("dir2 =>", string(dir2)) //prints: dir2 => uffixBBBB
+}
+```
+
+append()这个函数在 cap 不够用的时候，就会重新分配内存以扩大容量，如果够用，就不会重新分配内存了！
+
+```go
+dir1 := path[:sepIndex]	//旧代码
+// 修改为下面的：
+dir1 := path[:sepIndex:sepIndex]	//新代码
+```
+
+新的代码使用了 Full Slice Expression，最后一个参数叫“Limited Capacity”，于是，后续的 append() 操作会导致重新分配内存。
+
+
+
+### 深度比较
+
+使用到反射 reflect.DeepEqual() 来做深度比较做是否相等的判断：
+
+```go
+package main
+
+import (
+	"fmt"
+	"reflect"
+)
+
+type data struct {
+}
+
+func main() {
+
+	v1 := data{}
+	v2 := data{}
+	fmt.Println("v1 == v2:", reflect.DeepEqual(v1, v2))
+	//prints: v1 == v2: true
+
+	m1 := map[string]string{"one": "a", "two": "b"}
+	m2 := map[string]string{"two": "b", "one": "a"}
+	fmt.Println("m1 == m2:", reflect.DeepEqual(m1, m2))
+	//prints: m1 == m2: true
+
+	s1 := []int{1, 2, 3}
+	s2 := []int{1, 2, 3}
+	fmt.Println("s1 == s2:", reflect.DeepEqual(s1, s2))
+	//prints: s1 == s2: true
+}
+```
+
+
+
+### 接口编程
+
+面向对象编程方法的黄金法则——“Program to an interface not an implementation”。
+
+```go
+type Country struct {
+    Name string
+}
+
+type City struct {
+    Name string
+}
+
+type Stringable interface {
+    ToString() string
+}
+func (c Country) ToString() string {
+    return "Country = " + c.Name
+}
+func (c City) ToString() string{
+    return "City = " + c.Name
+}
+
+func PrintStr(p Stringable) {
+    fmt.Println(p.ToString())
+}
+
+d1 := Country {"USA"}
+d2 := City{"Los Angeles"}
+PrintStr(d1)
+PrintStr(d2)
+```
+
+
+
+### 接口完整性检查
+
+Go 语言的编译器并没有严格检查一个对象是否实现了某接口所有的接口方法：
+
+在 Go 语言编程圈里，有一个比较标准的做法：
+
+```go
+var _ Shape = (*Square)(nil)
+```
+
+声明一个 _ 变量（没人用）会把一个 nil 的空指针从 Square 转成 Shape，这样，如果没有实现完相关的接口方法，编译器就会报错：
+
+```bash
+cannot use (*Square)(nil) (type *Square) as type Shape in assignment: *Square does not implement Shape (missing Area method)
+```
+
+这样就做到了强验证的方法。
+
+
+
+最后，如果你要做全球化跨时区的应用，一定要把所有服务器和时间全部使用 UTC 时间。
+
+
+
 ## 参考资料
 
 - [教程课件](https://gitee.com/geektime-geekbang/go_learning)
 - [Go go.mod入门](https://blog.csdn.net/weixin_39003229/article/details/97638573)
 - [golang CSP并发模型](https://www.jianshu.com/p/36e246c6153d)
-
 - [Go语言在select语句中实现优先级-liwenzhou](https://www.liwenzhou.com/posts/Go/priority_in_go_select/)
 
+- [Go语言编程模式实战](https://time.geekbang.org/column/article/330178)

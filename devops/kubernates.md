@@ -248,6 +248,20 @@ etcd之flannel提供说明：
 
 ![image-20210131105805441](./pictures/k8s-network.png)
 
+
+
+## minikube
+
+```bash
+minikube start --vm-driver=virtualbox --image-mirror-country=cn --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers --iso-url=https://kubernetes.oss-cn-hangzhou.aliyuncs.com/minikube/iso/minikube-v1.7.3.iso --registry-mirror=https://reg-mirror.qiniu.com
+```
+
+
+
+
+
+
+
 ## 存储
 
 configMap: 专门用于存储配置文件
