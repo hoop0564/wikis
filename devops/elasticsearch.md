@@ -392,9 +392,12 @@ GET testdb/user/_search
 
 
 
+
+
 ## 参考资料
 
 - [【狂神说Java】ElasticSearch7.6.x最新完整教程](https://www.bilibili.com/video/BV17a4y1x7zq?t=852&p=1)
 - [狂神说笔记](https://gitee.com/kuangstudy/openclass)
 - [复杂ES查询](https://www.bilibili.com/video/BV17a4y1x7zq?p=11)
+- [elasticsearch备份和还原](https://www.cnblogs.com/personsiglewine/p/12510845.html)
 

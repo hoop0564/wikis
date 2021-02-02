@@ -529,6 +529,37 @@ A线程持有了mutexA，在等待mutexB，B线程持有了mutexB，在等待mut
 
   
 
+## C语言
+
+### errno是线程安全的
+
+将errno设置为线程局部变量，GCC中就是这么干的。他保证了线程之间的错误原因不会互相串改，当你在一个线程中串行执行一系列过程，那么得到的errno仍然是正确的。
+
+errno实际上，并不是我们通常认为的是个整型数值，而是通过整型指针来获取值的。这个整型就是线程安全的。
+
+**errno的实现**
+
+```c
+static pthread_key_t key;
+static pthread_once_t key_once = PTHREAD_ONCE_INIT;
+static void make_key()
+{
+  (void) pthread_key_create(&key, NULL);
+}
+
+int *_errno()
+{
+  int *ptr ;
+  (void) pthread_once(&key_once, make_key);
+  if ((ptr = pthread_getspecific(key)) == NULL) 
+  {
+    ptr = malloc(sizeof(int));    
+    (void) pthread_setspecific(key, ptr);
+  }
+  return ptr ;
+}
+```
+
 
 
 ## 参考资料

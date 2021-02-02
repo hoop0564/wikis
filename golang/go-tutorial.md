@@ -860,15 +860,94 @@ Go 语言是一个高性能的语言，但并不是说这样我们就不用关�
 
 
 
+### 错误处理
+
+C 语言，基本上来说，其通过函数的返回值标识是否有错，然后通过全局的 errno 变量加一个 errstr 的数组来告诉你为什么出错。
+
+Java 语言使用 try-catch-finally 通过使用异常的方式来处理错误，其实，这比起 C 语言的错误处理进了一大步，使用抛异常和抓异常的方式可以让我们的代码有这样一些好处。
+
+- 函数接口在 input（参数）和 output（返回值）以及错误处理的语义是比较清楚的。
+- 正常逻辑的代码可以跟错误处理和资源清理的代码分开，提高了代码的可读性。
+- 异常不能被忽略（如果要忽略也需要 catch 住，这是显式忽略）。
+- 在面向对象的语言中（如 Java），异常是个对象，所以，可以实现多态式的 catch。
+- 与状态返回码相比，异常捕捉有一个显著的好处，那就是函数可以嵌套调用，或是链式调用，比如：
+
+```java
+int x = add(a, div(b,c));
+Pizza p = PizzaBuilder().SetSize(sz).SetPrice(p)...;
+```
+
+
+
+Go 语言的函数支持多返回值，所以，可以在返回接口把业务语义（业务返回值）和控制语义（出错返回值）区分开。Go 语言的很多函数都会返回 result、err 两个值，于是就有这样几点：
+
+- 参数上基本上就是入参，而返回接口把结果和错误分离，这样使得函数的接口语义清晰；
+- 而且，Go 语言中的错误参数如果要忽略，需要显式地忽略，用 _ 这样的变量来忽略；
+- 另外，因为返回的 error 是个接口（其中只有一个方法 Error()，返回一个 string ），所以你可以扩展自定义的错误处理。
+
+另外，如果一个函数返回了多个不同类型的 error，你也可以使用下面这样的方式：
+
+```go
+if err != nil {
+  switch err.(type) {
+    case *json.SyntaxError:
+      ...
+    case *ZeroDivisionError:
+      ...
+    case *NullPointerError:
+      ...
+    default:
+      ...
+  }
+}
+```
+
+
+
+#### 资源清理
+
+出错后是需要做资源清理的，不同的编程语言有不同的资源清理的编程模式。
+
+- C 语言：使用的是 goto fail; 的方式到一个集中的地方进行清理。
+- C++ 语言：一般来说使用 RAII 模式，通过面向对象的代理模式，把需要清理的资源交给一个代理类，然后再析构函数来解决。
+- Java 语言：可以在 finally 语句块里进行清理。
+- Go 语言：使用 defer 关键词进行清理。
+
+
+
+#### 包装错误
+
+有一个第三方的错误库，对于这个库，我无论到哪儿都能看到它的存在，所以，这个基本上来说就是事实上的标准了。
+
+```go
+
+import "github.com/pkg/errors"
+
+//错误包装
+if err != nil {
+    return errors.Wrap(err, "read failed")
+}
+
+// Cause接口
+switch err := errors.Cause(err).(type) {
+case *MyError:
+    // handle specifically
+default:
+    // unknown error
+}
+```
+
 
 
 ## CGO编程
 
-<img src="./pictures/cgo-call.png" alt="image-20210201080757464" style="zoom:40%;" />
+<img src="./pictures/cgo-call.png" alt="image-20210201080757464" style="zoom: 50%;" />
 
 
 
-<img src="./pictures/cgo-go.png" alt="image-20210201081252180" style="zoom:40%;" />
+<img src="./pictures/cgo-go.png" alt="image-20210201081252180" style="zoom: 50%;" />
+
+<img src="./pictures/type-convert.png" alt="image-20210201222922436" style="zoom:50%;" />
 
 
 

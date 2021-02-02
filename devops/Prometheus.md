@@ -156,3 +156,4 @@ prometheus.exe --web.listen-address="0.0.0.0:29090"
 4. [Prometheus 监控Windows机器](https://www.cnblogs.com/guoxiangyue/p/11777227.html)
 5. [Windows监控：基于Prometheus+Grafana监控CPU、内存、磁盘、网络、GPU信息](https://blog.csdn.net/fly910905/article/details/108275219)
 6. [Nvidia SMI Exporter](https://github.com/phstudy/nvidia_smi_exporter)
+7. [Prometheus存储原理及数据备份还原](https://www.cnblogs.com/zqj-blog/p/12205063.html)
