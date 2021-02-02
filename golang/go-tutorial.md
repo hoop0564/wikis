@@ -939,6 +939,64 @@ default:
 
 
 
+### Functional Options
+
+定义一个函数类型：
+
+```go
+type Option func(*Server)
+```
+
+
+
+使用函数式的方式定义一组返回高阶函数的函数:
+
+```go
+func Protocol(p string) Option {
+    return func(s *Server) {
+        s.Protocol = p
+    }
+}
+func Timeout(timeout time.Duration) Option {
+    return func(s *Server) {
+        s.Timeout = timeout
+    }
+}
+func MaxConns(maxconns int) Option {
+    return func(s *Server) {
+        s.MaxConns = maxconns
+    }
+}
+func TLS(tls *tls.Config) Option {
+    return func(s *Server) {
+        s.TLS = tls
+    }
+}
+```
+
+NewServer()的函数，其中，有一个可变参数 options ，它可以传出多个上面的函数，然后使用一个 for-loop 来设置我们的 Server 对象。
+
+```go
+func NewServer(addr string, port int, options ...func(*Server)) (*Server, error) {
+
+  srv := Server{
+    Addr:     addr,
+    Port:     port,
+    Protocol: "tcp",
+    Timeout:  30 * time.Second,
+    MaxConns: 1000,
+    TLS:      nil,
+  }
+  for _, option := range options {
+    option(&srv)
+  }
+  //...
+  return &srv, nil
+}
+```
+
+
+
 ## CGO编程
 
 <img src="./pictures/cgo-call.png" alt="image-20210201080757464" style="zoom: 50%;" />
@@ -948,6 +1006,20 @@ default:
 <img src="./pictures/cgo-go.png" alt="image-20210201081252180" style="zoom: 50%;" />
 
 <img src="./pictures/type-convert.png" alt="image-20210201222922436" style="zoom:50%;" />
+
+
+
+## Go开源框架
+
+### Gin
+
+- 官网：https://gin-gonic.com/
+
+- 上传文件
+
+- <img src="/Users/apple/wikis/golang/pictures/gin-uploads-html.png" alt="image-20210203065524289" style="zoom:50%;" />
+
+  <img src="./pictures/gin-upload.png" alt="image-20210203065345277" style="zoom:50%;" />
 
 
 
