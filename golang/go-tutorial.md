@@ -997,6 +997,166 @@ func NewServer(addr string, port int, options ...func(*Server)) (*Server, error)
 
 
 
+### 委托和反转控制
+
+#### 嵌入和委托
+
+```go
+type Widget struct {
+    X, Y int
+}
+type Label struct {
+    Widget        // Embedding (delegation)
+    Text   string // Aggregation
+}
+
+type Button struct {
+    Label // Embedding (delegation)
+}
+
+type ListBox struct {
+    Widget          // Embedding (delegation)
+    Texts  []string // Aggregation
+    Index  int      // Aggregation
+}
+```
+
+
+
+#### 方法重写
+
+```go
+type Painter interface {
+    Paint()
+}
+ 
+type Clicker interface {
+    Click()
+}
+
+func (label Label) Paint() {
+  fmt.Printf("%p:Label.Paint(%q)\n", &label, label.Text)
+}
+
+//因为这个接口可以通过 Label 的嵌入带到新的结构体，
+//所以，可以在 Button 中重载这个接口方法
+func (button Button) Paint() { // Override
+    fmt.Printf("Button.Paint(%s)\n", button.Text)
+}
+func (button Button) Click() {
+    fmt.Printf("Button.Click(%s)\n", button.Text)
+}
+
+
+func (listBox ListBox) Paint() {
+    fmt.Printf("ListBox.Paint(%q)\n", listBox.Texts)
+}
+func (listBox ListBox) Click() {
+    fmt.Printf("ListBox.Click(%q)\n", listBox.Texts)
+}
+
+```
+
+Button.Paint() 接口可以通过 Label 的嵌入带到新的结构体，如果 Button.Paint() 不实现的话，会调用 Label.Paint() ，所以，在 Button 中声明 Paint() 方法，相当于 Override。
+
+#### 嵌入结构多态
+
+可以使用接口来多态，也可以使用泛型的 interface{} 来多态，但是需要有一个类型转换。
+
+```go
+button1 := Button{Label{Widget{10, 70}, "OK"}}
+button2 := NewButton(50, 70, "Cancel")
+listBox := ListBox{Widget{10, 40}, 
+    []string{"AL", "AK", "AZ", "AR"}, 0}
+
+for _, painter := range []Painter{label, listBox, button1, button2} {
+    painter.Paint()
+}
+ 
+for _, widget := range []interface{}{label, listBox, button1, button2} {
+  widget.(Painter).Paint()
+  if clicker, ok := widget.(Clicker); ok {
+    clicker.Click()
+  }
+  fmt.Println() // print a empty line 
+}
+```
+
+#### 反转依赖
+
+先声明一种函数接口，表示我们的 Undo 控制可以接受的函数签名是什么样的
+
+```go
+type Undo []func()
+```
+
+有了这个协议之后，我们的 Undo 控制逻辑就可以写成下面这样：
+
+```go
+
+func (undo *Undo) Add(function func()) {
+  *undo = append(*undo, function)
+}
+
+func (undo *Undo) Undo() error {
+  functions := *undo
+  if len(functions) == 0 {
+    return errors.New("No functions to undo")
+  }
+  index := len(functions) - 1
+  if function := functions[index]; function != nil {
+    function()
+    functions[index] = nil // For garbage collection
+  }
+  *undo = functions[:index]
+  return nil
+}
+```
+
+在 IntSet 里嵌入 Undo，接着在 Add() 和 Delete() 里使用刚刚的方法，就可以完成功能了。
+
+```go
+
+type IntSet struct {
+    data map[int]bool
+    undo Undo
+}
+ 
+func NewIntSet() IntSet {
+    return IntSet{data: make(map[int]bool)}
+}
+
+func (set *IntSet) Undo() error {
+    return set.undo.Undo()
+}
+ 
+func (set *IntSet) Contains(x int) bool {
+    return set.data[x]
+}
+
+func (set *IntSet) Add(x int) {
+    if !set.Contains(x) {
+        set.data[x] = true
+        set.undo.Add(func() { set.Delete(x) })
+    } else {
+        set.undo.Add(nil)
+    }
+}
+ 
+func (set *IntSet) Delete(x int) {
+    if set.Contains(x) {
+        delete(set.data, x)
+        set.undo.Add(func() { set.Add(x) })
+    } else {
+        set.undo.Add(nil)
+    }
+}
+```
+
+这个就是控制反转，不是由控制逻辑 Undo 来依赖业务逻辑 IntSet，而是由业务逻辑 IntSet 依赖 Undo 。这里依赖的是其实是一个协议，这个协议是一个没有参数的函数数组。可以看到，这样一来， Undo 的代码就可以复用了。
+
+
+
 ## CGO编程
 
 <img src="./pictures/cgo-call.png" alt="image-20210201080757464" style="zoom: 50%;" />
