@@ -13,3 +13,4 @@
 
 - stream到底是什么？
 
+<img src="./devops/big-data-sgg.png" alt="image-20210203221940091" style="zoom:50%;" />

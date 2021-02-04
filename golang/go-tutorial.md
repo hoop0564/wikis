@@ -1157,6 +1157,114 @@ func (set *IntSet) Delete(x int) {
 
 
 
+### 编程模式：Map-Reduce
+
+函数式编程中非常重要的 Map、Reduce、Filter 这三种操作。这三种操作可以轻松灵活地进行一些数据处理，毕竟，程序大多数情况下都在倒腾数据。尤其是对于一些需要统计的业务场景来说，Map、Reduce、Filter 是非常通用的玩法。
+
+#### Map 示例
+
+```go
+
+func MapStrToStr(arr []string, fn func(s string) string) []string {
+    var newArray = []string{}
+    for _, it := range arr {
+        newArray = append(newArray, fn(it))
+    }
+    return newArray
+}
+
+func MapStrToInt(arr []string, fn func(s string) int) []int {
+    var newArray = []int{}
+    for _, it := range arr {
+        newArray = append(newArray, fn(it))
+    }
+    return newArray
+}
+
+var list = []string{"Hao", "Chen", "MegaEase"}
+
+x := MapStrToStr(list, func(s string) string {
+    return strings.ToUpper(s)
+})
+fmt.Printf("%v\n", x)
+//["HAO", "CHEN", "MEGAEASE"]
+
+y := MapStrToInt(list, func(s string) int {
+    return len(s)
+})
+fmt.Printf("%v\n", y)
+//[3, 4, 8]
+```
+
+#### Reduce 示例
+
+```go
+
+func Reduce(arr []string, fn func(s string) int) int {
+    sum := 0
+    for _, it := range arr {
+        sum += fn(it)
+    }
+    return sum
+}
+
+var list = []string{"Hao", "Chen", "MegaEase"}
+
+x := Reduce(list, func(s string) int {
+    return len(s)
+})
+fmt.Printf("%v\n", x)
+// 15
+```
+
+#### Filter 示例
+
+```go
+
+func Filter(arr []int, fn func(n int) bool) []int {
+    var newArray = []int{}
+    for _, it := range arr {
+        if fn(it) {
+            newArray = append(newArray, it)
+        }
+    }
+    return newArray
+}
+
+var intset = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+out := Filter(intset, func(n int) bool {
+   return n%2 == 1
+})
+fmt.Printf("%v\n", out)
+
+out = Filter(intset, func(n int) bool {
+    return n > 5
+})
+fmt.Printf("%v\n", out)
+```
+
+Map-Reduce 的业务语义经典示例图：
+
+<img src="./pictures/map-reduce.png" alt="image-20210203220018776" style="zoom: 67%;" />
+
+Map、Reduce、Filter 只是一种控制逻辑，真正的业务逻辑是以传给它们的数据和函数来定义的。是的，这是一个很经典的“业务逻辑”和“控制逻辑”分离解耦的编程模式。
+
+
+
+#### 简单版 Generic Map
+
+Go 泛型将在 Go 1.18 版本落地，时间是 2022 年 2 月。目前的 Go 语言的泛型只能用 interface{} + reflect来完成。
+
+interface{} 可以理解为 C 中的 void*、Java 中的 Object ，reflect是 Go 的反射机制包，作用是在运行时检查类型。
+
+
+
+
+
+
+
+
+
 ## CGO编程
 
 <img src="./pictures/cgo-call.png" alt="image-20210201080757464" style="zoom: 50%;" />

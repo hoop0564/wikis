@@ -72,6 +72,10 @@ suod vim /usr/local/nginx/conf/nginx.conf
 
 ```
 
+安装包1M左右，C语言编写，5w并发。
+
+支持的负载均衡方式：轮询、权重、IP hash、动静分离（静态资源和非静态需要后台做业务处理的）
+
 
 
 ## DDos攻击
