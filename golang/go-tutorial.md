@@ -206,14 +206,32 @@ select {
 [参考资料](https://www.liwenzhou.com/posts/Go/priority_in_go_select/)
 
 ```go
-func worker(ch1, ch2<-chan int, stopCh chan struct{}) {
-  for {
-    select {
-      case <-
-    }
-  }
+func worker2(ch1, ch2 <-chan int, stopCh chan struct{}) {
+	for {
+		select {
+		case <-stopCh:
+			return
+		case job1 := <-ch1:
+			fmt.Println(job1)
+		case job2 := <-ch2:
+		priority:
+			for {
+				select {
+				case job1 := <-ch1:
+					fmt.Println(job1)
+				default:
+					break priority
+				}
+			}
+			fmt.Println(job2)
+		}
+	}
 }
 ```
+
+使用了嵌套的`select`，还组合使用了`for`循环和`LABEL`来实现题目的要求。上面的代码在外层`select`选中执行`job2 := <-ch2`时，进入到内层`select`循环继续尝试执行`job1 := <-ch1`,当`ch1`就绪时就会一直执行，否则跳出内层`select`。
+
+在`select`中实现优先级在实际生产中是有实际应用场景的，例如[K8s的controller](https://github.com/kubernetes/kubernetes/blob/7509c4eb478a3ab94ff26be2b4068da53212d538/pkg/controller/nodelifecycle/scheduler/taint_manager.go#L244)中就有关于上面这个技巧的实际使用示例。
 
 
 
@@ -282,7 +300,29 @@ ch1 := make(chan int) //无缓冲
 ch2 := make(chan int, 1) //有缓冲
 ```
 
-- 无缓冲：当向ch1中存值时，需要其他协程取值，否则一直阻塞在存值的那个step中！
+- 无缓冲：当向ch1中存值时，需要其他协程取值，否则一直阻塞在存值的那个step中！在默认不带缓冲的channel中，每一个发送者与接收者都会阻塞当前线程
+
+  ```go
+  package main
+  import (
+      "fmt"
+  )
+  func main() {
+      c := make(chan int)
+      c <- 1
+      fmt.Println(<-c)
+  }
+  /**
+  fatal error: all goroutines are asleep - deadlock!
+  
+  goroutine 1 [chan send]:
+  main.main()
+  	/Users/apple/Downloads/software-mac/chan-nobuffer.go:7 +0x59
+  exit status 2
+  */
+  ```
+
+  
 
 - 有缓冲：当向ch2中存值时，只有放到第二个值时，才阻塞！
 

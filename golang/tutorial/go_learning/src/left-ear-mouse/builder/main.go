@@ -2,7 +2,6 @@ package main
 
 import (
 	"crypto/tls"
-	"fmt"
 	"time"
 )
 
@@ -58,7 +57,7 @@ func (sb *ServerBuilder) Build() Server {
 func main() {
 
 	sb := ServerBuilder{}
-	server := sb.Create("127.0.0.1", 8080).
+	sb.Create("127.0.0.1", 8080).
 		WithProtocol("udp").
 		WithMaxConn(1024).
 		WithTimeOut(30 * time.Second).
