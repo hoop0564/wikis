@@ -1388,6 +1388,95 @@ func verifyFuncSignature(fn reflect.Value, types ...reflect.Type) bool {
 
 
 
+### 修饰器模式
+
+```go
+
+package main
+
+import "fmt"
+
+func decorator(f func(s string)) func(s string) {
+
+    return func(s string) {
+        fmt.Println("Started")
+        f(s)
+        fmt.Println("Done")
+    }
+}
+
+func Hello(s string) {
+    fmt.Println(s)
+}
+
+func main() {
+    decorator(Hello)("Hello, World!")
+
+  	hello := decorator(Hello)
+		hello("Hello")
+}
+```
+
+多个修饰器的 Pipeline
+
+```go
+func WithServerHeader(h http.HandlerFunc) http.HandlerFunc ...
+func WithBasicAuth(h http.HandlerFunc) http.HandlerFunc ...
+  
+type HttpHandlerDecorator func(http.HandlerFunc) http.HandlerFunc
+// 需要先写一个工具函数(代理函数)，用来遍历并调用各个修饰器：
+func Handler(h http.HandlerFunc, decors ...HttpHandlerDecorator) http.HandlerFunc {
+    for i := range decors {
+        d := decors[len(decors)-1-i] // iterate in reverse
+        h = d(h)
+    }
+    return h
+}
+```
+
+
+
+### pipeline模式
+
+```go
+func echo(nums []int) <-chan int...
+func sq(in <-chan int) <-chan int { 
+  out := make(chan int) 
+  go func() { 
+    for n := range in { 
+      out <- n * n 
+    } 
+    close(out) 
+  }() 
+  return out
+}
+
+//
+var nums = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+for n := range sum(sq(odd(echo(nums)))) {
+  fmt.Println(n)
+}
+
+type EchoFunc func ([]int) (<- chan int) 
+type PipeFunc func (<- chan int) (<- chan int) 
+// 代理函数
+func pipeline(nums []int, echo EchoFunc, pipeFns ... PipeFunc) <- chan int {
+  ch  := echo(nums)
+  for i := range pipeFns {
+    ch = pipeFns[i](ch)
+  }
+  return ch
+}
+
+
+var nums = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}    
+for n := range pipeline(nums, gen, odd, sq, sum) {
+    fmt.Println(n)
+  }
+```
+
+
+
 ## CGO编程
 
 <img src="./pictures/cgo-call.png" alt="image-20210201080757464" style="zoom: 50%;" />
