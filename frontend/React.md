@@ -58,12 +58,32 @@ React 使用 JSX 来替代常规的 JavaScript。
 JSX 是一个看起来很像 XML 的 JavaScript 语法扩展。
 
 - JSX 执行更快，因为它在编译为 JavaScript 代码后进行了优化。
-
 - 它是类型安全的，在编译过程中就能发现错误。
+- 中间如果需要插入变量用{}
+- 使用 JSX 编写模板更加简单快速。（slower than VUE)
 
-- 使用 JSX 编写模板更加简单快速。
+```jsx
+const element3 = (
+  <div>
+    <p><span>横着</span></p>
+    <p><span>竖着</span></p>
+  </div>
+)
+const man = '正常'
+const element2 = (
+  <div>
+    <h1>today it isolated?</h1>
+    <h2>{man === '发热' ? <button>隔离</button> : element3}</h2>
+  </div>
+)
 
-  
+ReactDOM.render(
+  element2,
+  document.getElementById('root'),
+)
+```
+
+
 
 ## React组件
 
@@ -126,6 +146,8 @@ ReactDOM.render(
 React 把组件看成是一个状态机（State Machines）。通过与用户的交互，实现不同状态，然后渲染 UI，让用户界面和数据保持一致。
 
 React 里，只需更新组件的 state，然后根据新的 state 重新渲染用户界面（不要操作 DOM）。
+
+相当于Vue的data
 
 
 
