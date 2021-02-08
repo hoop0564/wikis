@@ -8,7 +8,9 @@
 
 
 
-## 数组array
+## 数据类型
+
+### 数组array
 
 - 声明
 
@@ -32,7 +34,7 @@
 
   
 
-## 切片slice
+### 切片slice
 
 - 内部是个结构体
 
@@ -53,8 +55,6 @@
   
 
 
-
-## Map
 
 ### Map与工厂模式
 
@@ -77,7 +77,7 @@ go内置集合中没有Set的实现，可以用 **map[type]bool** 来构造
 
 
 
-## 字符串string
+### 字符串string
 
 在go语言中：
 
@@ -91,7 +91,7 @@ go内置集合中没有Set的实现，可以用 **map[type]bool** 来构造
 
    
 
-### Unicode UTF8
+**Unicode UTF8**
 
 1. Unicode 是一种**字符集**（In English：code point）
 2. UTF8是unicode的存储实现，转换为字节序列的规则
@@ -104,9 +104,9 @@ go内置集合中没有Set的实现，可以用 **map[type]bool** 来构造
 
 
 
-## struct结构体
+### struct结构体
 
-### 空结构体的使用场景
+**空结构体的使用场景**
 
 - 定义空channel
 - 定义只包含一堆接口的结构做方法适配
@@ -252,7 +252,7 @@ type Empty interface{}    // 空接口
 type semaphore chan Empty // 信号量
 ```
 
-- 实现信号量的P操作，就是不断的往channel中放入数据，当channel满时，其他协程就不能再往channel放数据了，而只能阻塞，知道有一个协程释放资源，也就是执行V操作
+- 实现信号量的P操作，就是不断的往channel中放入数据，当channel满时，其他协程就不能再往channel放数据了，而只能阻塞，直到有一个协程释放资源，也就是执行V操作
 - V操作就是从channel中取出资源
 - 当channel容量**只有一个**时，P和V的数量变为1，同时进行P操作的协程只能有一个，在该协程执行完P操作没有执行V操作时，其他协程只能等待，这就实现了访问临界区资源的mutex功能。
 
@@ -300,7 +300,9 @@ ch1 := make(chan int) //无缓冲
 ch2 := make(chan int, 1) //有缓冲
 ```
 
-- 无缓冲：当向ch1中存值时，需要其他协程取值，否则一直阻塞在存值的那个step中！在默认不带缓冲的channel中，每一个发送者与接收者都会阻塞当前线程
+- **无缓冲**：当向ch1中存值时，需要其他协程取值，否则一直阻塞在存值的那个step中！
+
+  > 在默认不带缓冲的channel中，每一个发送者与接收者都会阻塞当前协程！
 
   ```go
   package main
@@ -324,7 +326,7 @@ ch2 := make(chan int, 1) //有缓冲
 
   
 
-- 有缓冲：当向ch2中存值时，只有放到第二个值时，才阻塞！
+- **有缓冲**：当向ch2中存值时，只有放到第二个值时，才阻塞！
 
   
 
@@ -465,6 +467,8 @@ go test -bench=. -benchmem
   - 使用
 
     > easyjon -all <结构定义>.go
+
+
 
 ### 反射优缺点
 
