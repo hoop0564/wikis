@@ -548,13 +548,16 @@ go test -bench=. -benchmem
 
 ### 火焰图
 
-- graphviz 安装
+- **graphviz** 安装
 
   > brew install graphviz
 
-- go-torch ，安装
+- **go-torch** ，安装
+  
   - go get github.com/uber/go-torch
   - 下载并复制：flamegraph.pl (https://github.com/brendangregg/FlameGraph) 至 $GOPATH/bin路径下
+
+
 
 ### 通过文件方式输出profile
 
@@ -563,12 +566,16 @@ go test -bench=. -benchmem
 - API相关文档 https://studygolang.com/static/pkgdoc/pkg/runtime_pprof.htm
 - go tool pprof [binary] [binary.prof]
 
+
+
 ### 通过http方式输出profile
 
 - 简单，适合于持续性运行的应用
 - 在应用程序中导入 import _ "net/http/pprof"，并启动http server即可
 - go tool pprof http://<host>:<port>/debug/pprof/profile?seconds=10 （默认值为30秒）
 - go-torch -seconds 10 http://<host>:<port>/debug/pprof/profifile
+
+
 
 ### Go支持的多种Profile
 
@@ -580,6 +587,8 @@ go test -bench=. -benchmem
   - Block Time ??
   - Memory Allocation
   - GC times/time spent
+
+
 
 ### go test 输出profile文件
 
@@ -646,7 +655,7 @@ go-torch cpu.prof
   # 开启go mod
   go env -w GO111MODULE=on
   # 配置依赖包的下载代理为国内阿里云
-  go env -w GOPROXYhttp://mirrors.aliyun.com/goproxy/
+  go env -w GOPROXY=http://mirrors.aliyun.com/goproxy/
   ```
 
 - 常用指令：
@@ -660,7 +669,6 @@ go-torch cpu.prof
   go mod why
   # 下载依赖包
   go mod download
-  
   ```
 
 
@@ -671,13 +679,13 @@ go-torch cpu.prof
 
 - CSP中channel是第一类对象，它不关注发送消息的实体，而关注与发送消息时使用的channel。
 
-- Golang实现了CSP并发模型作为并发基础，底层使用goroutine作为并发实体
+- Golang实现了CSP并发模型作为并发基础，底层使用goroutine作为并发实体。
 
 - goroutine非常轻量级，可以创建几十万个实体。实体间通过channel继续匿名消息传递使之解耦！
 
 - go在语言层面实现了自动调度！屏蔽了很多内部细节，对外提供简单的语法关键字，大大简化了并发编程的思维转换和管理线程的复杂性。
 
-  ![img](file:///Users/apple/Documents/wikis/golang/pictures/MPG.jpg?lastModify=1609334830)
+  ![img](./pictures/MPG.jpg?lastModify=1609334830)
 
 - 其中
 
@@ -1547,11 +1555,88 @@ for n := range pipeline(nums, gen, odd, sq, sum) {
 
 
 
+
+
+## Go 面向包的设计和架构分层（cmd, internal, pkg)
+
+每个应用项目通常包含三个根目录，分别是 `cmd, internal, pkg`。在 internal 文件里也会包含 `pkg` 目录，但是它和 internal 里其他的包有着不同的设计约束。
+
+```
+paper-code/examples/groupevent
+├── cmd/
+│   └── eventtimer/
+│       └── update/
+│       └── main.go
+│   └── eventserver/
+│       └── router/
+│           └── handler/
+│           └── router.go
+│       └── tests/
+│       └── main.go
+├── internal/
+│   └── eventserver/
+│       └── biz/
+│           └── event/
+│           └── member/
+│       └── data/
+│           └── service/
+│   └── eventpopdserver/
+│       └── event/
+│       └── member/
+│   └── pkg/
+│       └── cfg/
+│       └── db/
+│       └── log/
+└── vendor/
+│   ├── github.com/
+│   │   ├── ardanlabs/
+│   │   ├── golang/
+│   │   ├── prometheus/
+│   └── golang.org/
+├── go.mod
+├── go.sum
+```
+
+
+
+#### cmd/
+
+项目中的所有你将要编译成可执行程序的入口代码都放在`cmd/` 文件夹里，这些代码和业务没有关系。每个程序对应一个文件夹，文件夹的名称应该以程序的名称命名。一般在名称后面加上`d` 代表该程序是一个守护进程运行。 每个文件夹必须有一个`main`包的源文件，该源文件的名称也最好命名成可执行程序的名称，当然也可以保留main文件名。在此会导入和调用`internal/`和`pkg/`等其他文件夹中相关的代码。
+
+
+
+#### internal/
+
+在go语言中，变量，函数，方法等的存取权限只有exported(全局)和unexported(包可见，局部)2种。
+
+在项目中不被复用，也不能被其他项目导入，仅被本项目内部使用的代码包即私有的代码包都应该放在`internal`文件夹下。该文件夹下的所有包及相应文件都有一个项目保护级别，即其他项目是不能导入这些包的，仅仅是该项目内部使用。
+
+如果你在其他项目中导入另一个项目的`internal`的代码包，保存或`go build` 编译时会报错`use of internal package ... not allowed`，该特性是在go 1.4版本开始支持的，编译时强行校验。
+
+
+
+#### internal/pkg/
+
+在同一个项目中不同程序需要访问，但又不能让其他项目访问的代码包，需要放在这里。这些包是比较基础但又提供了很特殊的功能，比如**数据库、日志、用户验证**等功能。
+
+
+
+#### pkg/
+
+如果你把代码包放在根目录的`pkg`下，其他项目是可以直接导入`pkg`下的代码包的，即这里的代码包是开放的，当然你的项目本身也可以直接访问的。但是如果你要把代码放在`pkg`下，还想需要三思而后行吧，有没必要这样做，毕竟`internal`目录是最好的方式保护你的代码并且被go编译器强制校验`internal`的代码包不可分享的。如果你的项目是一个开源的并且让其他人使用你封装的一些函数等，这样做是合适的，如果你自己或公司的某一个项目，个人的经验，基本上用不上`pkg`
+
+
+
+
+
+
+
 ## 参考资料
 
 - [教程课件](https://gitee.com/geektime-geekbang/go_learning)
 - [Go go.mod入门](https://blog.csdn.net/weixin_39003229/article/details/97638573)
 - [golang CSP并发模型](https://www.jianshu.com/p/36e246c6153d)
 - [Go语言在select语句中实现优先级-liwenzhou](https://www.liwenzhou.com/posts/Go/priority_in_go_select/)
-
 - [Go语言编程模式实战](https://time.geekbang.org/column/article/330178)
+
+- [Go 面向包的设计和架构分层（cmd, internal, pkg)](https://studygolang.com/articles/30164)
