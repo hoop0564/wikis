@@ -313,6 +313,32 @@ func worker2(ch1, ch2 <-chan int, stopCh chan struct{}) {
 - v, ok <- ch; ok=true/false表示通道正常接收/通道关闭
 - 所有的channel接收者都会在channel关闭时，立刻从阻塞等待中返回且ok=false。此广播机制常被利用，进行向多个订阅者同时发送信号。如：进程或协程的退出信号。
 
+```
+ 		1.对一个关闭的通道再发送值就会导致panic。
+    2.对一个关闭的通道进行接收会一直获取值直到通道为空。
+    3.对一个关闭的并且没有值的通道执行接收操作会得到对应类型的零值。
+    4.关闭一个已经关闭的通道会导致panic。
+```
+
+
+
+**如何优雅的从通道循环取值**
+
+```go
+// 方法1
+i, ok := <-ch1 // 通道关闭后再取值ok=false
+if !ok {
+  break
+}
+
+// 方法2
+for i := range ch2 { // 通道关闭后会退出for range循环
+  fmt.Println(i)
+}
+```
+
+通常使用的是for range的方式。
+
 
 
 ### channel实现信号量和互斥锁
