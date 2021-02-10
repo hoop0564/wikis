@@ -44,6 +44,49 @@
   }
   ```
 
+- 当在中间件或处理程序中启动新的Goroutines时，您不应该使用它内部的原始上下文，您必须使用只读副本。
+
+  ```go
+  func main() {
+  	r := gin.Default()
+  
+  	r.GET("/long_async", func(c *gin.Context) {
+  		// create copy to be used inside the goroutine
+  		cCp := c.Copy()
+  		go func() {
+  			// simulate a long task with time.Sleep(). 5 seconds
+  			time.Sleep(5 * time.Second)
+  
+  			// note that you are using the copied context "cCp", IMPORTANT
+  			log.Println("Done! in path " + cCp.Request.URL.Path)
+  		}()
+  	})
+  	r.Run(":8080")
+  }
+  ```
+
+- [graceful stop or restart](https://gin-gonic.com/docs/examples/graceful-restart-or-stop/)
+
+  - http.Server’s built-in [Shutdown()](https://golang.org/pkg/net/http/#Server.Shutdown) method for graceful shutdowns
+  - use [fvbock/endless](https://github.com/fvbock/endless) to replace the default `ListenAndServe`
+  - [grace](https://github.com/facebookgo/grace): Graceful restart & zero downtime deploy for Go servers.
+
+- HTTP2 server push
+
+  ```go
+  	r.GET("/", func(c *gin.Context) {
+  		if pusher := c.Writer.Pusher(); pusher != nil {
+  			// use pusher.Push() to do server push
+  			if err := pusher.Push("/assets/app.js", nil); err != nil {
+  				log.Printf("Failed to push: %v", err)
+  			}
+  		}
+  		c.HTML(200, "https", gin.H{
+  			"status": "success",
+  		})
+  	})
+  ```
+
   
 
 ## go-micro
