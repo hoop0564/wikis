@@ -1,5 +1,3 @@
-
-
 # nginx
 
 nginx是异步框架的web服务器，也可以用作反向代理、负载平衡以及作为缓存服务器。nginx是目前互联网公司web服务器的主流计数，用于处理高并发甚至海量并发的网站数据。分为开源的社区版和闭源的商业版，**Tengine**就是淘宝在nginx基础上进行二次开发，以获取更高的稳定性和并发能力，经历了双十一的技术洗礼，足以证明其稳定性和高性能。
@@ -63,7 +61,7 @@ brew install nginx
 # 查看nginx安装目录
 open /usr/local/etc/nginx
 # 查看nginx可执行文件目录
-open /usr/local/Cellar/nginx
+open  
 # 启动nginx，没有报错即为启动成功
 nginx
 ```
@@ -77,6 +75,60 @@ nginx默认网站根目录：/usr/local/var/www
 默认的索引文件为：index.html  index.htm
 
 
+
+## centos下安装
+
+```bash
+[root@c93a66f92342 /]# rpm -ql nginx
+/etc/logrotate.d/nginx
+/etc/nginx
+/etc/nginx/conf.d
+/etc/nginx/conf.d/default.conf
+/etc/nginx/fastcgi_params
+/etc/nginx/koi-utf
+/etc/nginx/koi-win
+/etc/nginx/mime.types
+/etc/nginx/modules
+/etc/nginx/nginx.conf
+/etc/nginx/scgi_params
+/etc/nginx/uwsgi_params
+/etc/nginx/win-utf
+/etc/sysconfig/nginx
+/etc/sysconfig/nginx-debug
+/usr/lib/systemd/system/nginx-debug.service
+/usr/lib/systemd/system/nginx.service
+/usr/lib64/nginx
+/usr/lib64/nginx/modules
+/usr/libexec/initscripts/legacy-actions/nginx
+/usr/libexec/initscripts/legacy-actions/nginx/check-reload
+/usr/libexec/initscripts/legacy-actions/nginx/upgrade
+/usr/sbin/nginx
+/usr/sbin/nginx-debug
+/usr/share/doc/nginx-1.18.0
+/usr/share/doc/nginx-1.18.0/COPYRIGHT
+/usr/share/man/man8/nginx.8.gz
+/usr/share/nginx
+/usr/share/nginx/html
+/usr/share/nginx/html/50x.html
+/usr/share/nginx/html/index.html
+/var/cache/nginx
+/var/log/nginx
+
+[root@c93a66f92342 ~]# netstat -nlpt
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      349/nginx: master p 
+
+[root@c93a66f92342 ~]# nginx -V
+nginx version: nginx/1.18.0
+built by gcc 4.8.5 20150623 (Red Hat 4.8.5-39) (GCC) 
+built with OpenSSL 1.0.2k-fips  26 Jan 2017
+TLS SNI support enabled
+configure arguments: --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib64/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-compat --with-file-aio --with-threads --with-http_addition_module --with-http_auth_request_module --with-http_dav_module --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-stream --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-cc-opt='-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -m64 -mtune=generic -fPIC' --with-ld-opt='-Wl,-z,relro -Wl,-z,now -pie'
+
+```
+
+ 
 
 ## nginx的源码安装和重新编译
 
@@ -120,6 +172,112 @@ suod vim /usr/local/nginx/conf/nginx.conf
 安装包1M左右，C语言编写，5w并发。
 
 支持的负载均衡方式：轮询、权重、IP hash、动静分离（静态资源和非静态需要后台做业务处理的）
+
+
+
+## 配置文件
+
+```bash
+# cat /etc/nginx/nginx.conf  
+
+user  nginx;
+worker_processes  auto;
+
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    keepalive_timeout  65;
+
+    #gzip  on;
+
+    include /etc/nginx/conf.d/*.conf;
+}
+```
+
+
+
+### main主配置
+
+#### 监听端口
+
+root用户可以监听所有端口，普通用户只能监听1024以上的端口，nginx的80端口是master进程监听的root用户启动的。worker进程是nginx用户启动的。
+
+```bash
+[root@c93a66f92342 ~]# ps -ef|grep nginx
+root       349     1  0 12:51 ?        00:00:00 nginx: master process nginx
+nginx      350   349  0 12:51 ?        00:00:00 nginx: worker process
+```
+
+
+
+#### worker进程数
+
+`worker_processes`配置为auto，即为CPU的核数。可通过指令 `lscpu`查看cpu信息。
+
+
+
+#### pid
+
+进程ID是为了运维此进程操作时使用的！
+
+例如执行 `nginx -s reload` 时，就会从 `/var/run/nginx.pid中`读取pid，然后做reload操作。
+
+`systemctl`也是读取文件的pid，来对进程做stop/restart操作的。
+
+如果pid文件访问失败，可能是pid文件不存在或权限不对
+
+
+
+#### events{...}
+
+用于定义事件驱动相关配置，该配置与连接的处理密切相关，其中：
+
+```bash
+use method; # 定义nginx使用哪种事件驱动类型，在linux中性能最好的是epoll模型
+accept_mutex on|off; # 处理新连接的方法，on是指各个worker进程轮流处理，off则会通知所有worker，但只有一个worker进程获得处理连接的权限（惊群现象）。在centos7中将使用 reuseport 会有更好性能。
+```
+
+
+
+### http配置
+
+http配置段中，可以设置多个server配置，该server就是用来配置虚拟主机的，可以基于IP地址，也可以基于port，生产中更多基于域名的方式来配置虚拟主机。在server配置段中还可以配置多个location字段，该字段用来配置虚拟主机不同uri的响应方式
+
+```bash
+# /etc/nginx/conf.d/ip.conf
+server {
+	listen	127.0.0.1;	# 监听端口
+	root	/data/nginx/ip; # web服务根目录
+	index	index.html;	
+}
+
+# nginx -s reload
+
+# curl http://localhost/
+```
+
+
+
+
 
 
 
