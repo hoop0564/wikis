@@ -118,6 +118,8 @@ nginx默认网站根目录：/usr/local/var/www
 Active Internet connections (only servers)
 Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
 tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      349/nginx: master p 
+# Recv-Q字段表示全连接队列中正在使用的队列大小
+# Send-Q表示backlog设置的大小
 
 [root@c93a66f92342 ~]# nginx -V
 nginx version: nginx/1.18.0
@@ -408,14 +410,22 @@ IO多路复用的特点是通过一种机制一个进程能同时等待多个文
 [root@c93a66f92342 conf.d]# sysctl -a | grep 'net.ipv4.tcp_synack_retries'
 sysctl: reading key "net.ipv6.conf.all.stable_secret"
 net.ipv4.tcp_synack_retries = 5
+[root@c93a66f92342 conf.d]#  cat /proc/sys/net/ipv4/tcp_synack_retries 
+5
+[root@c93a66f92342 conf.d]#  cat /proc/sys/net/ipv4/tcp_syn_retries 
+6
+# 修改上面的参数然后重启一个应用服务如sshd，那么此新的内核参数将生效！
 ```
 
 - **net.core.netdev_max_backlog**: 接收自网卡，但未被内核协议栈处理的报文队列长度
 - **net.ipv4.tcp_max_syn_backlog**: `SYN_RCVD` 状态（即半连接）队列长度，默认128
 
-- backlog: 全连接队列大小，该队列大小由系统参数和应用参数共同决定。在nginx中，backlog参数在listen参数后面指定。在centos中，默认值是511。取决于：`min(backlog, somaxconn)`，backlog由应用程序传入，somaxconn是一个os级别的系统参数，通过设置`net.core.somaxconn`来调整。
+- **backlog**: 全连接队列大小，该队列大小由系统参数和应用参数共同决定。在nginx中，backlog参数在listen参数后面指定。在centos中，默认值是511。取决于：`min(backlog, somaxconn)`，backlog由应用程序传入，somaxconn是一个os级别的系统参数，通过设置`net.core.somaxconn`来调整。
+- 全连接队列如果满了，会清空半连接队列，这是一个TCP/IP的设计策略，设计者目的是希望应用能够通过读取全连接队列中的数据而慢慢恢复，而不必再care半连接队列。
+- **net.ipv4.ip_local_port_port_range**: 表示主动连接端可以建立的随机端口号范围，默认值是32768~60999
+- **net.ipv4.tcp_abort_on_overflow**: 如果`accept`队列即全连接推理额满了之后，此参数将决定如果响应：0表示直接丢弃该ACK，1表示发送`RST`通知`Client`，`Server`端会返回 `connection reset by peer`
 
-
+> 另一个TCP标志RST：重置当前的连接，无论当前连接在何种状态下（握手、收发、挥手），以避免一些异常情况。
 
 ```bash
 # 同步时间
@@ -429,7 +439,60 @@ hwclock -w
 crontab -e
 # 分时日月周 每分钟同步下时间
 * * * * * ntpdate time1.aliyun.com > /dev/null 2>&1; hwclock -w > /dev/null 2>&1
+
+# centos安装ss工具
+yum install iproute                                                                           * 126982               
+
+# 查看TCP监听的统计数据
+gzc-pro:scripts apple$ netstat -s | grep 'listen'
+netstat: sysctl: net.inet.ip.input_perf_data: No such file or directory
+	0 listen queue overflow
+	0 SYNs to LISTEN sockets dropped
+		MLDv2 listener report: 4064
+		MLDv1 listener report: 8
+		MLDv1 listener done: 2
 ```
+
+![image-20210217165530581](./pictures/ss-log.png)
+
+
+
+### SYN洪水攻击
+
+攻击客户端在短时间内伪造大量不存在的IP地址，向服务器不断地发送SYN包，服务器回复确认包，并等待client的确认。由于源地址是不存在的，服务器需要不断的重发直至超时，这些伪造的SYN包将长时间占用半连接队列！导致正常的SYN请求被丢弃，目标系统会运行缓慢，严重者会引起网络堵塞甚至系统瘫痪。即用很少的带宽成功地拒绝了几乎所有TCP服务器的服务（DDos）
+
+可以设置 `net.ipv4.tcp_syncookies = 1`来达到减少这种攻击的影响。
+
+<img src="./pictures/syncookie.png" alt="image-20210217162540593" style="zoom:100%;" />
+
+
+
+当`net.ipv4.tcp_syncookies = 1`时，SYN队列满了，新的SYN不进入队列，由服务端计算出cookie后再以`SYN+ACK`的方式返回给客户端，正常客户端发送报文时，服务器根据报文中携带的cookie信息重新恢复连接。
+
+但此方法只能应对较小的SYN flood攻击。如果攻击数量报太多，可能需要使用专业的防火墙。
+
+> 如果启用了tcp_syncookies， TCP_FAST_OPEN 功能无法使用。
+
+
+
+### 模拟SYN flood攻击
+
+```bash
+# 1w个连接 80端口 1.1.1.1的假客户端IP -S表示发送SYN的标志位 --flood洪水 ASAP！
+sudo hping3 -c 10000 192.168.48.100 -p 80 -a 1.1.1.1 -S --flood
+```
+
+![image-20210217164413393](/Users/apple/wikis/devops/pictures/sync-flood-capture.png)
+
+
+
+**全连接队列满时：**
+
+- SYN队列的入站SYN数据包将被丢弃
+- SYN队列的入站ACK数据包将被丢弃
+- TcpExtListenOverflows & TcpExtListenDrops 计数增加
+
+
 
 
 
