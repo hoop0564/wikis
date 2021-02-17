@@ -275,6 +275,8 @@ server {
 # curl http://localhost/
 ```
 
+![image-20210217113712547](./pictures/nginx-framwork-black-white.png)
+
 
 
 **linux网络数据的收发过程**
@@ -330,6 +332,19 @@ IO多路复用的特点是通过一种机制一个进程能同时等待多个文
 - 等待数据准备就绪（waiting data to be ready）- - **阻塞**
 - 将数据从内核拷贝到进程中（copying data from kernal to the process）- - **阻塞**
 
+| 系统调用             | select                                           | poll                                           | epoll                                                        |
+| -------------------- | ------------------------------------------------ | ---------------------------------------------- | ------------------------------------------------------------ |
+| 操作方式             | 遍历                                             | 遍历                                           | 回调                                                         |
+| 底层实现             | 数组bitmap                                       | 链表                                           | 哈希表                                                       |
+| 查询就绪fd时间复杂度 | O(n)                                             | O(n)                                           | O(1)                                                         |
+| 最大支持文件描述符   | 一般由最大值限制                                 | 65535                                          | 65535                                                        |
+| 工作模式             | LT水平触发                                       | LT水平触发                                     | 支持ET高效模式                                               |
+| fd拷贝               | 每次调用select都需要把fd集合从用户态拷贝到内核态 | 每次调用poll都需要把fd集合从用户态拷贝到内核态 | 使用mmap()文件映射进内存来加速与内核空间的消息传递，减少复制开销 |
+
+> 水平触发LT：默认工作模式，即当epoll_wait检测到某描述符事件就绪并通知应用程序，应用程序可以不立即处理该事件；下次调用epoll_wait时，会在册通知此事件
+>
+> 边缘触发ET：当epoll_wait检测到某描述符事件就绪并通知应用程序时，应用程序必须立即处理该事件。如果不处理，下次调用epoll_wait时，不会再次通知此事件。即只在状态由未就绪变为就绪时只通知一次。
+
 
 
 ### 4. 信号IO
@@ -365,12 +380,58 @@ IO多路复用的特点是通过一种机制一个进程能同时等待多个文
 
 
 
+### I/O模型比较
+
+<img src="./pictures/io-compare.png" alt="image-20210217113320345"  />
+
+![](/Users/apple/wikis/devops/pictures/io-benchmark.png)
+
+> 其中kqueue是在FreeBSD平台上实现的I/O多路复用模型，和epoll非常类似。
 
 
-作者：果冻虾仁
-链接：https://www.zhihu.com/question/26943938/answer/74837197
-来源：知乎
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+## TCP/IP
+
+![image-20210217140201379](/Users/apple/wikis/devops/pictures/tcp-IP.png)
+
+
+
+![image-20210217145131029](./pictures/tcp-7-wireshark.png)
+
+
+
+![image-20210217145949113](/Users/apple/wikis/devops/pictures/tcp-half-whole-connection.png)
+
+其中，即服务端向客户端返回的`SYN/ACK`尝试测试，在centos上是默认5次（1s+2s+4s+8s+16s=31s）,大概31s时间，可以优化此net.ipv4.tcp_synack_retries参数，防止半连接的flood攻击！
+
+```bash
+[root@c93a66f92342 conf.d]# sysctl -a | grep 'net.ipv4.tcp_synack_retries'
+sysctl: reading key "net.ipv6.conf.all.stable_secret"
+net.ipv4.tcp_synack_retries = 5
+```
+
+- **net.core.netdev_max_backlog**: 接收自网卡，但未被内核协议栈处理的报文队列长度
+- **net.ipv4.tcp_max_syn_backlog**: `SYN_RCVD` 状态（即半连接）队列长度，默认128
+
+- backlog: 全连接队列大小，该队列大小由系统参数和应用参数共同决定。在nginx中，backlog参数在listen参数后面指定。在centos中，默认值是511。取决于：`min(backlog, somaxconn)`，backlog由应用程序传入，somaxconn是一个os级别的系统参数，通过设置`net.core.somaxconn`来调整。
+
+
+
+```bash
+# 同步时间
+ntpdate time1.aliyun.com
+# 同步时区
+timedatectl set-timezone Asia/Shanghai
+# 硬件时钟
+hwclock -w
+
+# 建立cron任务
+crontab -e
+# 分时日月周 每分钟同步下时间
+* * * * * ntpdate time1.aliyun.com > /dev/null 2>&1; hwclock -w > /dev/null 2>&1
+```
+
+
 
 ## DDos攻击
 
