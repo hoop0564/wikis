@@ -217,9 +217,7 @@ http {
 
 
 
-### main主配置
-
-#### 监听端口
+### 监听端口
 
 root用户可以监听所有端口，普通用户只能监听1024以上的端口，nginx的80端口是master进程监听的root用户启动的。worker进程是nginx用户启动的。
 
@@ -231,13 +229,13 @@ nginx      350   349  0 12:51 ?        00:00:00 nginx: worker process
 
 
 
-#### worker进程数
+### worker进程数
 
 `worker_processes`配置为auto，即为CPU的核数。可通过指令 `lscpu`查看cpu信息。
 
 
 
-#### pid
+### pid
 
 进程ID是为了运维此进程操作时使用的！
 
@@ -249,7 +247,7 @@ nginx      350   349  0 12:51 ?        00:00:00 nginx: worker process
 
 
 
-#### events{...}
+### even ts{...}
 
 用于定义事件驱动相关配置，该配置与连接的处理密切相关，其中：
 
@@ -346,6 +344,37 @@ IO多路复用的特点是通过一种机制一个进程能同时等待多个文
 > 水平触发LT：默认工作模式，即当epoll_wait检测到某描述符事件就绪并通知应用程序，应用程序可以不立即处理该事件；下次调用epoll_wait时，会在册通知此事件
 >
 > 边缘触发ET：当epoll_wait检测到某描述符事件就绪并通知应用程序时，应用程序必须立即处理该事件。如果不处理，下次调用epoll_wait时，不会再次通知此事件。即只在状态由未就绪变为就绪时只通知一次。
+
+
+
+**mmap代替read调用：**
+
+```c
+buf = mmap(diskfd, len);
+write(sockfd, buf, len);
+```
+
+应用程序调用`mmap()`，磁盘上的数据会通过DMA被拷贝到内核缓存区。接着OS会把这段内核缓存区与应用程序**共享**！应用程序再调用write时，OS直接将内核缓冲区的内容拷贝到socket缓冲区中，这一切都发生在kernal space，最后socket缓冲区再把数据发到网卡去。
+
+缺点：
+
+当map的这个文件被另一个进程截断（truncate）时，write系统调用会因为访问非法地址而被 `SIGBUG` 信号终止！SIGBUS信号默认会杀死你的进程并产生一个coredump。。可使用文件租借锁：
+
+```c
+// 在mmap文件之前加锁，并且在操作完文件后解锁：
+if(fcntl(diskfd, F_SETSIG, RT_SIGNAL_LEASE) == -1) {
+    perror("kernel lease set signal");
+    return -1;
+}
+/* l_type can be F_RDLCK F_WRLCK  加锁*/
+/* l_type can be  F_UNLCK 解锁*/
+if(fcntl(diskfd, F_SETLEASE, l_type)){
+    perror("kernel lease set type");
+    return -1;
+}
+```
+
+
 
 
 
@@ -496,7 +525,7 @@ sudo hping3 -c 10000 192.168.48.100 -p 80 -a 1.1.1.1 -S --flood
 
 
 
-## DDos攻击
+### DDos攻击
 
 分布式拒绝访问，Distributed deny of service
 
@@ -514,3 +543,270 @@ sudo hping3 -c 10000 192.168.48.100 -p 80 -a 1.1.1.1 -S --flood
      - web服务器软件，例如nginx
    - 如果没有特征，只能带宽扩容，较低ddos的攻击危害
    - 使用CDN，使得用户可以就近访问到CDN的资源，主站减少压力，所有请求先到CDN，如果CDN没有，从CDN上访问主站，但注意不要泄露主站的地址，但CDN只能放置静态资源。
+
+
+
+## nginx主配置文件优化
+
+
+
+### 设置进程静态优先级
+
+在Linux中调整`NICE`值，即静态优先级 `-20~19` 的大小来实现。NICE数值越小，CPU执行此进程的时间片优先级越高！
+
+```bash
+# /etc/nginx/nginx.conf
+worker_priority -20;
+```
+
+```bash
+
+[root@c93a66f92342 conf.d]# top -u nginx
+Tasks:   6 total,   1 running,   5 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  0.0 us,  0.5 sy,  0.0 ni, 99.5 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+KiB Mem :  2038340 total,   110024 free,   390076 used,  1538240 buff/cache
+KiB Swap:  1048572 total,  1027824 free,    20748 used.  1072372 avail Mem 
+
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND                                                                                                                                                  
+  407 nginx     20   0   46984   3612   2376 S   0.0  0.2   0:00.00 nginx                                                                                                                                                    
+  408 nginx     20   0   46984   3612   2376 S   0.0  0.2   0:00.00 nginx    
+```
+
+
+
+### 设置worker进程数
+
+```bash
+# /etc/nginx/nginx.conf
+worker_process auto;
+```
+
+
+
+### CPU绑定提供缓存命中率
+
+CPU的L1和L2缓存是单插槽上单核CPU独享，L3是单插槽上多核CPU共享：
+
+![image-20210217174114271](./pictures/cpu-cache.png)
+
+为了让worker能够更好的使用CPU的高速缓存，建议将worker与CPU核心进行一对一绑定：
+
+```bash
+# /etc/nginx/nginx.conf
+worker_process 4;
+worker_cpu_affinity	0001 0010 0100 1000; # 用掩码一对一绑定！
+```
+
+```bash
+# 查看CPU的三级缓存大小
+[root@c93a66f92342 conf.d]# cat /sys/devices/system/cpu/cpu0/cache/index1/size 
+32K
+[root@c93a66f92342 conf.d]# cat /sys/devices/system/cpu/cpu0/cache/index2/size 
+256K
+[root@c93a66f92342 conf.d]# cat /sys/devices/system/cpu/cpu0/cache/index3/size 
+12288K
+```
+
+
+
+### reuseport配置
+
+reuseport配置后，实现了worker进程的负载均衡调度，效果非常好：
+
+![image-20210217193624619](./pictures/reuseport.png)
+
+
+
+### 单个worker进程允许同时打开的连接数
+
+```bash
+# /etc/nginx/nginx.conf
+worker_connections 51200;
+```
+
+
+
+### 所有woker进程允许同时打开的文件数
+
+此值默认值未设置，将会受到系统级、用户级限制
+
+```bash
+# /etc/nginx/nginx.conf
+worker_rlimit_nofile number;
+```
+
+
+
+### 使用epoll事件模型
+
+linux系统中nginx编译后默认就是使用epoll模型：
+
+```bash
+# /etc/nginx/nginx.conf
+events {
+	use epoll;
+	...
+}
+
+```
+
+
+
+### 优化读取速度之sendfile
+
+当然升级高效的SSD效果最明显！sendfile语法：
+
+```bash
+Syntax: sendfile on | off ;
+Default: sendfile off;
+Context: http, server, location, if in location
+```
+
+```c
+#include<sys/sendfile.h>
+ssize_t sendfile(int out_fd, int in_fd, off_t *offset, size_t count);
+```
+
+系统调用`sendfile()`在代表输入文件的描述符`in_fd`和代表输出文件的描述符`out_fd`之间传送文件内容（字节）。描述符`out_fd`必须指向一个套接字，而`in_fd`指向的文件必须是可以`mmap`的。这些局限限制了`sendfile`的使用，使`sendfile`只能将数据从文件传递到套接字上，反之则不行。
+
+
+
+> DMA 直接内存存取（Direct Memory Access），是一种允许外围设备（硬件子系统）直接访问系统主内存的机制。也就是说，基于DMA访问方式，系统主内存于硬盘或网卡之间的数据传输可以绕开CPU的全程调度。目前大多数的硬件设备，包括硬盘控制器、网卡、显卡以及声卡等都支持DMA技术。
+>
+> 这个数据传输操作在一个DMA控制器的控制下进行的。CPU除了在数据传输开始和结束时做一点处理外（开始和结束时候要做中断处理），在传输过程中，CPU可以继续进行其他的工作！
+
+用户程序通过sendfile系统调用，数据可以直接在内核空间内部进行I/O传输，从而省去了数据在用户空间和内核空间之间的来回拷贝！
+
+![image-20210217200953727](/Users/apple/wikis/devops/pictures/sendfile-DMA.png)
+
+基于sendfile系统调用的零拷贝方式，整个过程会发生2次上下文切换，1次CPU拷贝和2次DMA拷贝。
+
+但是此模式下用户程序不能对数据进行修改，比如对文件进行压缩后发送，而只是完成了一次数据传输。也只对静态资源处理有效。
+
+
+
+**DMA gather方式**
+
+如果硬件支持 `DMA Gather`操作，sendfile 拷贝方式不再从内核缓冲区的数据拷贝到socket缓冲区，而仅仅是缓冲区文件描述符和数据长度的拷贝，DMA引擎直接利用gather操作将也缓存中数据打包发送到网络中即可！
+
+> DMA gather 将内核空间（kernal space）的读缓冲区（read buffer）中对应的数据描述信息（内存地址、地址偏移量）记录到相应的网络缓冲区（socket buffer）中，由DMA根据内存地址、地址偏移量将数据批量地从读缓冲区（read buffer）拷贝到网卡设备中，这样就省去了内核空间中仅剩的一次CPU拷贝操作
+
+![image-20210217202534429](./pictures/sendfile-DMA-gather.png)
+
+ 
+
+### 优化读写速度值direct I/O
+
+在nginx中也是支持 `direct I/O`模式，相关参数为 directio，应用常见于读取大文件场景：
+
+```bash
+Syntax: directio size | off;
+Default: directio off;
+Context: http, server, location
+```
+
+凡是通过直接I/O方式进行数据传输，数据均直接在用户地址空间的缓冲区和磁盘之间直接进行传输，完全不需要页缓存的支持。操作系统层提供的缓存往往会使应用程序在读写数据的时候获得更好的性能！
+
+![image-20210217204539367](./pictures/directio.png)
+
+
+
+###  优化读写速度之异步I/O
+
+```bash
+Syntax: aio on | off | threads[=pool];
+Default: aio off;
+Context: http, server, location
+```
+
+**小结：**
+
+- 在nginx中，我们会把directio与异步I/O即aio一起使用，以免造成数据读取阻塞。
+- 在nginx中我们同样会将sendfile与异步I/O一起使用，aio会为sendfile提前预加载数据。
+- 在nginx中在使用directio时会自动禁用sendfile
+
+使用示例：
+
+```bash
+location /video/ {
+	sendfile 	on;
+	aio				on;
+	directio	8m;
+}
+```
+
+表示当文件大小超过8M时，启动AIO与Direct I/O，此时的sendfile会自动禁用；当文件小于8M时，AIO与sendfile一起使用，此时Direct I/O不生效。
+
+
+
+#### 缓存的命中
+
+术语Cache Line。缓存基本上来说就是把后面的数据加载到离自己近的地方，对于CPU来说，它是不会一个字节一个字节的加载的，因为这非常没有效率，一般来说都是要一块一块的加载的，对于这样的一块一块的数据单位，术语叫“Cache Line”，一般来说，一个主流的CPU的Cache Line 是 64 Bytes（也有的CPU用32Bytes和128Bytes），64Bytes也就是16个32位的整型，这就是CPU从内存中捞数据上来的最小数据单位。
+
+比如：Cache Line是最小单位（64Bytes），所以先把Cache分布多个Cache Line，比如：L1有32KB，那么，32KB/64B = 512 个 Cache Line。
+
+
+
+**示例1**
+
+```c
+const int LEN = 64*1024*1024;
+int *arr = new int[LEN];
+
+for (int i = 0; i < LEN; i += 2) arr[i] *= i;
+
+for (int i = 0; i < LEN; i += 8) arr[i] *= i;
+```
+
+按我们的想法来看，第二个循环要比第一个循环少4倍的计算量，其应该也是要快4倍的。但实际跑下来并不是，**在我的机器上，第一个循环需要127毫秒，第二个循环则需要121毫秒，相差无几**。这里最主要的原因就是 Cache Line，因为CPU会以一个Cache Line 64Bytes最小时单位加载，也就是16个32bits的整型，所以，无论你步长是2还是8，都差不多。而后面的乘法其实是不耗CPU时间的。
+
+
+
+**示例2**
+
+```c
+const int row = 1024;
+const int col = 512
+int matrix[row][col];
+
+//逐行遍历
+int sum_row=0;
+for(int _r=0; _r<row; _r++) {
+    for(int _c=0; _c<col; _c++){
+        sum_row += matrix[_r][_c];
+    }
+}
+
+//逐列遍历
+int sum_col=0;
+for(int _c=0; _c<col; _c++) {
+    for(int _r=0; _r<row; _r++){
+        sum_col += matrix[_r][_c];
+    }
+}
+```
+
+- 逐行遍历：0.081ms
+- 逐列遍历：1.069ms
+
+执行时间有十几倍的差距。其中的原因，就是逐列遍历对于CPU Cache 的运作方式并不友好，所以，付出巨大的代价。
+
+
+
+#### 缓存的一致性
+
+对于主流的CPU来说，缓存的写操作基本上是两种策略（参看本站《[缓存更新的套路](https://coolshell.cn/articles/17416.html)》），
+
+- 一种是Write Back，写操作只要在cache上，然后再flush到内存上。
+- 一种是Write Through，写操作同时写到cache和内存上。
+
+为了提高写的性能，一般来说，主流的CPU（如：Intel Core i7/i9）采用的是Write Back的策略，因为直接写内存实在是太慢了。
+
+
+
+## 参考资料
+
+- [Linux 中的零拷贝技术](https://blog.csdn.net/hzrandd/article/details/51025341)
+- [Nginx 从入门到百万并发实战](https://www.bilibili.com/video/BV1uT4y137vq?p=11&spm_id_from=pageDriver)
+- [与程序员相关的CPU缓存知识](https://coolshell.cn/articles/20793.html)
+
