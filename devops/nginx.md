@@ -804,6 +804,50 @@ for(int _c=0; _c<col; _c++) {
 
 
 
+## 核心模块
+
+- daemon参数配置
+
+  配置daemon是否以后台运行。默认&通常是on状态。但docker中运行时，需要配置 daemon off，让nginx关闭后台运行！
+
+- error_log配置
+
+  ```bash
+  Syntax: error_log file [level];
+  Default: error_log logs/error.log error;
+  Context: main, http, mail, stream, server, location
+  ```
+
+  举例：
+
+  ```bash
+  # 输出到另一台主机上 支持udp模式 也是调优的一种手段
+  error_log	syslog:192.168.1.122 debug;
+  
+  # 输出到内存中 支持rotate 一般用于在线调试 共32M空间 需要源码编译 使用gdb导出来 麻烦的！
+  erro_log memory:32m info
+  ```
+
+- include
+
+  加载配置文件
+
+  ```conf
+  include /usr/share/nginx/modules/*.conf
+  ```
+
+  
+
+- load_module
+
+  一般nginx是通过加载*.conf文件，但其实 xx.conf中就是使用了load_module 来指定加载的具体的 so 模块
+
+  ```conf
+  load_module modules/ngx_stream.so
+  ```
+
+  
+
 ## 参考资料
 
 - [Linux 中的零拷贝技术](https://blog.csdn.net/hzrandd/article/details/51025341)
