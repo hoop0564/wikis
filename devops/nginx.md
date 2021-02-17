@@ -277,9 +277,100 @@ server {
 
 
 
+**linux网络数据的收发过程**
+
+![image-20210216222921965](./pictures/linux-net-data-steps.png)
+
+![image-20210216222136232](./pictures/linux-net-data.png)
 
 
 
+
+
+## Linux网络IO模型
+
+
+
+### 1. 阻塞I/O模型（Blocking I/O Model）
+
+<img src="./pictures/io-blocking.png" alt="image-20210217094249211" style="zoom:40%;" />
+
+- 等待数据准备就绪（waiting data to be ready）- - **阻塞**
+- 将数据从内核拷贝到进程中（copying data from kernal to the process）- - **阻塞**
+
+
+
+### 2. 非阻塞I/O（nonblocking IO）
+
+可以设置socket使其变为 non-blocking。就是告诉内核，当所有请求的IO操作无法完成是，不要将进程休眠，而是返回一个错误码 `EWOULDBLOCK`，这样请求就不会阻塞。
+
+<img src="./pictures/IO-nonblocking.png" alt="image-20210217094911087" style="zoom:80%;" />
+
+整个IO请求的过程中，虽然用户线程每次发起IO请求后可以立即返回，但是为了等到数据，仍需要不断地轮询、重复请求、消耗了大量的CPU资源。
+
+- 等待数据准备就绪（waiting data to be ready）- - **非阻塞**
+- 将数据从内核拷贝到进程中（copying data from kernal to the process）- - **阻塞**
+
+一般很少直接使用这种模型。而是在其他IO模型中使用非阻塞IO这一特性，例如给IO多路复用普通了道路！
+
+
+
+### 3. IO多路复用（IO multiplexing）
+
+此模型的代表是：select、poll、epoll，又称事件驱动模型（event driven IO）。
+
+select/poll/epoll的好处就在于单个系统process就可以同时处理多个网络连接的IO。它的基本原理就是这些个function会不断的轮询所负责的所有socket，当某个socket有数据到达了，就通知用户进程。
+
+<img src="./pictures/io-multiplexing.png" alt="image-20210217100316420" style="zoom:80%;" />
+
+IO多路复用的特点是通过一种机制一个进程能同时等待多个文件描述符，而这些文件描述符（套接字描述符）其中的任意一个进入读就绪状态，select()函数就可以返回。
+
+在处理的连接数不是很多的情况下，使用select/poll/epoll的web server并没有性能优势，可能延迟还更大（因为多了添加监视socket已经调用select函数的额外操作）。select/epoll的优势并不是对于单个连接能处理得更快，而是在于能处理更多的连接！
+
+- 等待数据准备就绪（waiting data to be ready）- - **阻塞**
+- 将数据从内核拷贝到进程中（copying data from kernal to the process）- - **阻塞**
+
+
+
+### 4. 信号IO
+
+略，生产和开发中使用都很少。
+
+
+
+### 5. 异步I/O （asynchronous IO）
+
+<img src="./pictures/io-syio.png" alt="image-20210217105959143" style="zoom:80%;" />
+
+用户进程发起 `aio_read` 调用之后，就可以忙别的事情了。另一方面，kernal会发现一个 `asynchronous read` 之后，首先它会立刻返回，所以不会对用户进程产生任何block。kernal会等待数据准备完成，然后将数据拷贝到用户内存，当这一切都完成之后，kernal会给用户发送一个signal，告诉他read操作完成了。
+
+异步IO模型使用了 `Proactor` 设计模式实现了这一机制。
+
+> Reactor vs Proactor
+>
+> Reactor：能收了你跟俺说一声。非阻塞同步IO网络模型
+> Proactor: 你给我收十个字节，收好了跟俺说一声。异步IO网络模型
+>
+> 它们都是IO复用下的事件驱动模型，然后就从同步异步这两个点来切入概念。注意关键区别在于何时IO，reactor是关心就绪事件，比如可读了，就通知你，就像epoll_wait 。proactor关心的是完成比如读完了，就通知你。
+>
+> Linux上没有好的proactor框架，就是因为内核没提供足够的异步支持。后面实现了aio。
+> libevent是reactor。boost的asio是proactor。
+>
+> Linux epoll是reactor。Windows IOCP是proactor。
+
+
+
+- 等待数据准备就绪（waiting data to be ready）- - **非阻塞**
+- 将数据从内核拷贝到进程中（copying data from kernal to the process）- - **非阻塞**
+
+
+
+
+
+作者：果冻虾仁
+链接：https://www.zhihu.com/question/26943938/answer/74837197
+来源：知乎
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 
 ## DDos攻击
 
