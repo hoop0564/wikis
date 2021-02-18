@@ -846,7 +846,57 @@ for(int _c=0; _c<col; _c++) {
   load_module modules/ngx_stream.so
   ```
 
-  
+
+
+## 全站http跳转https
+
+对 `http://www.a.com` 的访问全部跳转至：`https://www.a.com`，且请求URI和参数 `$query_string` 要保留下来
+
+### 
+
+
+
+```bash
+server {
+	listen			80;
+	server_name	www.a.com api.a.com;
+	rewrite			^ https://www.a.com$request_uri? permanent; # 做法1：因为有正则匹配的步骤 性能有损耗
+	return			301	https://$host$request_uri;		# 做法2：直接返回，性能好，官网推荐做法
+}
+
+server {
+	listen								443	ssl;
+	server_name						www.a.com;
+	ssl_certificate				"/data/nginx/ssl/nginx.crt";
+	ssl_certificate_key		"/data/nginx/ssl/nginx.key";
+	root									/data/nginx/a;
+	charset								utf-8;
+	location	/ {
+		index		index.html;
+	}
+}
+```
+
+但此方法性能最差。能不用if的地方都别用if。
+
+```bash
+gzc-pro:log apple$ curl -k -I https://www.baidu.com
+HTTP/1.1 200 OK
+Accept-Ranges: bytes
+Cache-Control: private, no-cache, no-store, proxy-revalidate, no-transform
+Connection: keep-alive
+Content-Length: 277
+Content-Type: text/html
+Date: Thu, 18 Feb 2021 10:13:44 GMT
+Etag: "575e1f7c-115"
+Last-Modified: Mon, 13 Jun 2016 02:50:36 GMT
+Pragma: no-cache
+Server: bfe/1.0.8.18
+```
+
+
+
+
 
 ## Web缓存基础
 
