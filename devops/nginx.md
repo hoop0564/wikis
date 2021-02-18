@@ -848,9 +848,32 @@ for(int _c=0; _c<col; _c++) {
 
   
 
+## Web缓存基础
+
+
+
+### 什么是Web缓存
+
+Web缓存指的是从发起请求的客户端，到执行功能的web服务器之间的，用来保存服务器输出结果的副本，并提供给发起请求的客户使用，这样的一些缓存的统称。
+
+
+
+### Web缓存的类型
+
+1：客户端浏览器缓存
+
+2：CDN(Content Delivery Networks)
+
+3：反向代理服务器缓存 - nginx
+
+4：Web服务器端的缓存，通常是应用程序来实现的动态页面缓存
+
+
+
 ## 参考资料
 
 - [Linux 中的零拷贝技术](https://blog.csdn.net/hzrandd/article/details/51025341)
 - [Nginx 从入门到百万并发实战](https://www.bilibili.com/video/BV1uT4y137vq?p=11&spm_id_from=pageDriver)
 - [与程序员相关的CPU缓存知识](https://coolshell.cn/articles/20793.html)
 
+- [Web缓存基础](https://www.cnblogs.com/kuexun/p/web_cache_1.html)
