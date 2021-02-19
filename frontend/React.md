@@ -27,7 +27,42 @@
 - **3.灵活** −React可以与已知的库或框架很好地配合。
 - **4.JSX** − JSX 是 JavaScript 语法的扩展。React 开发不一定使用 JSX ，但我们建议使用它。
 - **5.组件** − 通过 React 构建组件，使得代码更加容易得到复用，能够很好的应用在大项目的开发中。
-- **6.单向响应的数据流** − React 实现了单向响应的数据流，从而减少了重复代码，这也是它为什么比传统数据绑定更简单。
+- **6.单向响应的数据流** − React 实现了单向响应的数据流，这也是它为什么比传统数据绑定更简单。`数据 -> 视图 -> 事件 -> 数据`
+
+
+
+## 创建项目
+
+1. 通过 CDN 获得 React 和 ReactDOM 的 UMD 版本
+
+   ```js
+   <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+   <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+   ```
+
+   
+
+2. 通过react的脚手架创建进行开发和部署：
+
+   ```bash
+   cnpm install -g create-react-app
+   create-react-app hello_world
+   ```
+
+
+
+## 项目文件
+
+```files
+public						# 静态目录
+	manifest.json		# 图标，桌面快捷图标
+	robots.txt			# 防爬虫的过滤文件
+src								# react的jsx源码  
+```
+
+虚拟DOM树  存在于内存中的内存树
+
+React Diff算法即两棵tree的diff，实现了把O(N^3)复杂度变为了O(N)，N为树中的节点数。
 
 
 
@@ -39,7 +74,7 @@
 | react.development.js     | React 的核心库-开发版                                        |      |
 | react-dom.development.js | 提供与 DOM 相关的功能                                        |      |
 | prop-type.js             |                                                              |      |
-| react.min.js             | React 的核心库                                               |      |
+| react.min.js             | React 的核心库，react diff算法                               |      |
 
 **注意:** 在浏览器中使用 Babel 来编译 JSX 效率是非常低的。
 
@@ -58,7 +93,7 @@ React 使用 JSX 来替代常规的 JavaScript。
 JSX 是一个看起来很像 XML 的 JavaScript 语法扩展。
 
 - JSX 执行更快，因为它在编译为 JavaScript 代码后进行了优化。
-- 它是类型安全的，在编译过程中就能发现错误。
+- 它是**类型安全**的，在编译过程中就能发现错误。
 - 中间如果需要插入变量用{}
 - 使用 JSX 编写模板更加简单快速。（slower than VUE)
 
@@ -160,3 +195,11 @@ React 里，只需更新组件的 state，然后根据新的 state 重新渲染�
 - 在 JSX 中不能使用 **if else** 语句，但可以使用 **conditional (三元运算)** 表达式来替代。
 - JSX 允许在模板中插入数组，数组会自动展开所有成员
 -  React DOM 首先会比较元素内容先后的不同，而在渲染过程中只会更新改变了的部分。
+
+
+
+## 参考资料
+
+- [React中文文档翻译网](https://react.docschina.org/)
+- [React 菜鸟教程](https://www.runoob.com/react/react-tutorial.html)
+
