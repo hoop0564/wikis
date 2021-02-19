@@ -120,6 +120,43 @@ ReactDOM.render(
 
 
 
+## 自动编译
+
+```bash
+# 安装离线转换工具
+npm install -g react-tools
+# 在项目根目录下执行，将会把jsx文件自动转换为js文件，且为实时的
+jsx --watch src/ build/
+```
+
+once update src directory files, the build directory files will change simultanously.
+
+
+
+## 函数式编程要点
+
+1. 不可变性
+
+   对原生的数据不做任何修改，只修改其拷贝数据，并使用它取代原生的数据
+
+2. 纯函数
+
+   函数至少有一个参数，且只依赖输入参数，不对全局变量等参数做修改，且返回变量或函数。
+
+   在React中，UI是用纯函数表示的。
+
+3. 数据转换
+
+   ```js
+   Array.filter()		# 根据原数组创建新数组 条件筛选
+   Array.map()				# 数组元素遍历操作 附加操作
+   Array.reduce()		# 返回最大值
+   ```
+
+   
+
+
+
 ## React组件
 
 使用函数定义了一个组件：
