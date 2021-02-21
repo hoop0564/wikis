@@ -1,30 +1,16 @@
 # React
 
-构建用户界面的JavaScript库，主要用于构建UI界面。
+JSX即JavaScript下的XML格式。
+
+React库是用来创建视图的。ReactDOM库是用来在浏览器中渲染UI的。
 
 使用虚拟DOM，运用Diffing算法。
 
 
 
-#### 浏览器工作大流程
-
-![img](../devops/pictures/browser-workflow.jpg)
 
 
 
-
-
->逍遥游
->
->庄子
->
->北冥有鱼，其名为鲲。鲲之大，不知其几千里也。
->
->化而为鸟，其名为鹏。鹏之背，不知其几千里也。
->
->怒而飞，其翼若垂天之云。
->
->水击三千里，抟扶摇而上者九万里。
 
 
 
@@ -36,6 +22,51 @@
 - **4.JSX** − JSX 是 JavaScript 语法的扩展。React 开发不一定使用 JSX ，但我们建议使用它。
 - **5.组件** − 通过 React 构建组件，使得代码更加容易得到复用，能够很好的应用在大项目的开发中。
 - **6.单向响应的数据流** − React 实现了单向响应的数据流，这也是它为什么比传统数据绑定更简单。`数据 -> 视图 -> 事件 -> 数据`
+
+
+
+## React内部运行机制
+
+HTML只是浏览器构造文档对象模型（DOM）时执行的一组简单指令。
+
+**浏览器工作大流程**
+
+![img](../devops/pictures/browser-workflow.jpg)
+
+
+
+在HTML中，层级中元素之间的关系和家族树类似。React元素表示应该如何创建浏览器DOM的一组指令。
+
+使用`React.createElement`创建一个`React`元素来表示`h1`标题元素：
+
+```jsx
+React.createElement("h1",{id: "recipe-0", "data-type": "title"},"Baked Salmon")
+```
+
+等同于下面实际的DOM元素：
+
+```html
+<h1 data-reactroot id="recipe-0" data-type="title">Baked Salmon</h1>
+```
+
+其中`data-reactroot`用来标记React组件的根元素的，渲染时跟踪元素的方法是基于元素的层级的。
+
+createElement实际创建的内容：
+
+```javascript
+{
+  $$typeof: Symbol(React.element),
+  "type": "h1”,
+  "key": null,
+  "ref": null,
+  "props": {"children": "Baked Salmon"},	// 构建一个DOM元素所需的数据和子元素 
+    																			// children属性是用来将其他嵌套元素当做文本显示的
+  "_owner": null,
+  "_store": {}
+}
+```
+
+
 
 
 
