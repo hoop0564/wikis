@@ -6,6 +6,14 @@
 
 
 
+#### 浏览器工作大流程
+
+![img](../devops/pictures/browser-workflow.jpg)
+
+
+
+
+
 >逍遥游
 >
 >庄子
