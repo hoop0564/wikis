@@ -8,12 +8,6 @@ React库是用来创建视图的。ReactDOM库是用来在浏览器中渲染UI�
 
 
 
-
-
-
-
-
-
 ## 特点
 
 - **1.声明式设计** −React采用声明范式，可以轻松描述应用。
@@ -27,20 +21,22 @@ React库是用来创建视图的。ReactDOM库是用来在浏览器中渲染UI�
 
 ## React内部运行机制
 
-HTML只是浏览器构造文档对象模型（DOM）时执行的一组简单指令。
-
 **浏览器工作大流程**
 
 ![img](../devops/pictures/browser-workflow.jpg)
 
 
 
+### React元素
+
+HTML只是浏览器构造文档对象模型（DOM）时执行的一组简单指令。
+
 在HTML中，层级中元素之间的关系和家族树类似。React元素表示应该如何创建浏览器DOM的一组指令。
 
 使用`React.createElement`创建一个`React`元素来表示`h1`标题元素：
 
 ```jsx
-React.createElement("h1",{id: "recipe-0", "data-type": "title"},"Baked Salmon")
+React.createElement("h1", {id: "recipe-0", "data-type": "title"}, "Baked Salmon")
 ```
 
 等同于下面实际的DOM元素：
@@ -56,7 +52,7 @@ createElement实际创建的内容：
 ```javascript
 {
   $$typeof: Symbol(React.element),
-  "type": "h1”,
+  "type": "h1",														// 用来辅助React高效地更新DOM
   "key": null,
   "ref": null,
   "props": {"children": "Baked Salmon"},	// 构建一个DOM元素所需的数据和子元素 
@@ -67,6 +63,48 @@ createElement实际创建的内容：
 ```
 
 
+
+### ReactDOM
+
+```jsx
+var dish = React.createElement("h1", {id: "recipe-0", "data-type": "title"}, "Baked Salmon")
+// 第一个参数：渲染的元素
+// 第二个参数：目标DOM节点
+ReactDOM.render(dish, document.getElementById('react-container'))
+```
+
+React代码最终会在浏览器中运行。虚拟DOM是一个包含单个根元素的React元素树。React元素是一组操作指令，React将根据该指令在浏览器中构建UI界面。
+
+
+
+**React.createClass**
+
+组件即对象。他们可以像类一个封装代码。可以创建一个方法，用于渲染单个列表元素，继而构造所有列表元素：
+
+
+
+```jsx
+const IngredientsList = React.createClass({
+  displayName: "IngredientsList",
+  renderListItem(ingredient, i) {
+    return React.createElement("li", {key: i}, ingredient)
+  },
+  render() {
+    return React.createElement("ul", {className: "ingredients"},
+                              this.props.items.map(this.renderListItem))
+  }
+})
+```
+
+等同于html code:
+
+```html
+<ul data-react-root class="ingredients">
+  <li>1 1b Salmon</li>
+  <li> 2 cups Butter Lettuce</li>
+  <li> 1/2 cup Olive Oil</li>
+</ul>
+```
 
 
 
