@@ -281,6 +281,10 @@ public boolean judge(@RequestBody Request request) {
 
 
 
+### Hystrix 服务降级熔断器
+
+
+
 ### 什么是 Open Feign
 
 使用 `Eureka + RestTemplate + Ribbon` 还是不方便，服务调用每次都要这样：
@@ -342,6 +346,10 @@ ZUUL 是从设备和 web 站点到 Netflix 流应用后端的所有请求的前�
 
 > 网关是系统唯一对外的入口，介于客户端与服务器端之间，用于对请求进行**鉴权**、**限流**、 **路由**、**监控**等功能。
 
+
+
+**路由**
+
 ![img](./images/zuul.jpg)
 
 `Zuul` 需要向 `Eureka` 进行注册，就能拿到所有 `Consumer` 的元数据(名称，ip，端口)信息，然后做**路由映射**。
@@ -366,9 +374,45 @@ eureka:
 
 
 
+**过滤器**
+
+类型：Pre、Routing、Post。前置Pre就是在请求之前进行过滤，Routing路由过滤器就是我们上面所讲的路由策略，而Post后置过滤器就是在 `Response` 之前进行过滤的过滤器。可以实现 **权限校验**， **灰度发布** 等等
+
+<img src=".\images\zuul-filter.jpg" alt="img" style="zoom:80%;" />
+
+
+
+
+
+**令牌桶限流**
+
+有个桶，如果里面没有满那么就会以一定 **固定的速率** 会往里面放令牌，一个请求过来首先要从桶中获取令牌，如果没有获取到，那么这个请求就拒绝，如果获取到那么就放行。
+
+
+
+### 配置管理—Config
+
+**既能对配置文件统一地进行管理，又能在项目运行时动态修改配置文件**
+
+> 对于分布式系统而言就不应该去每个应用下去分别修改配置文件，再者对于重启应用来说，服务无法访问所以直接抛弃了可用性。
+
+`SpringCloud Config` 为分布式系统中的外部化配置提供服务器和客户端支持。使用 `Config` 服务器，可以在中心位置管理所有环境中应用程序的外部属性。
+
+
+
+### Spring **Cloud** Bus
+
+用于将服务和服务实例与分布式消息系统链接在一起的事件总线。在集群中传播状态更改很有用（例如配置更改事件）。
+
+可以简单理解为 `Spring Cloud Bus` 的作用就是**管理和广播分布式系统中的消息**，也就是消息引擎系统中的广播模式。当然作为 **消息总线** 的 `Spring Cloud Bus` 可以做很多事而不仅仅是客户端的配置刷新功能。
+
+而拥有了 `Sprin Cloud Bus` 之后，只需要创建一个简单的请求，并且加上 `@ResfreshScope` 注解就能进行配置的动态修改了：
+
+![img](D:\wiki\documents\wikis\java\images\spring-cloud-bus.jpg)
+
 ## 参考资料
 
 - [Java 微服务架构选型](https://www.cnblogs.com/zengyjun/p/10309391.html)
 
 - [Spring Cloud 入门总结](https://zhuanlan.zhihu.com/p/95696180?from_voters_page=true)
-- 
+- 《**Spring**微服务实战》
