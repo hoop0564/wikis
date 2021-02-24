@@ -37,19 +37,35 @@
 
 
 
-## 构成
+## Java学习的思维导图
 
-JavaSE
 
-数据库
 
-前端
+### 历史及特点
 
-SSM框架
+![历史及特点及开发环境](.\images\java-history.jpg)
 
-SpringBoot - 8天，微服务 ？？
 
-SpringCloud - 7天，真的微服务！
+
+### Object类
+
+![Object类](.\images\object.jpg)
+
+
+
+### Java程序设计基础
+
+![img](.\images\java-basics.png)
+
+### java程序设计进阶
+
+![img](.\images\java-pro.png)
+
+
+
+### Spring
+
+![img](.\images\spring-xmind.png)
 
 
 
@@ -165,6 +181,42 @@ Java 中其实没有虚函数的概念，它的普通函数就相当于 C++ 的�
 当子类对象调用重写的方法时，调用的是子类的方法，而不是父类中被重写的方法。
 
 要想调用父类中被重写的方法，则必须使用关键字 super。
+
+
+
+## Spring Boot框架
+
+通过Spring Boot，可以轻松地创建独立的，基于生产级别的基于Spring的应用程序，并且可以“直接运行”它们。大多数Spring Boot应用程序需要最少的Spring配置。
+
+<img src=".\images\spring-boot.png" alt="image-20210224152742150" style="zoom:50%;" />
+
+Spring Boot 是基于 Spring Framework 来构建的，Spring Framework 是一种 J2EE 的框架（[什么是 J2EE？](https://blog.csdn.net/qq_40147863/article/details/83011705)）
+
+Spring Boot 是一种快速构建 Spring 应用
+Spring Cloud 是构建 Spring Boot 分布式环境，也就是常说的云应用
+Spring Boot 中流砥柱，承上启下
+
+
+
+### Spring框架
+
+Spring框架是由于[软件开发](https://baike.baidu.com/item/软件开发/3448966)的复杂性而创建的。Spring使用的是基本的JavaBean来完成以前只可能由[EJB](https://baike.baidu.com/item/EJB/144195)完成的事情。然而，Spring的用途不仅仅限于服务器端的开发。从简单性、可测试性和松耦合性角度而言，**绝大部分Java应用都可以从Spring中受益**。
+
+◆目的：解决企业应用开发的复杂性
+
+◆功能：使用基本的JavaBean代替EJB，并提供了更多的企业应用功能
+
+◆范围：任何Java应用
+
+**Spring是一个轻量级控制反转(IoC)和面向切面(AOP)的容器框架。**
+
+
+
+### JavaBean
+
+JavaBean 是一种[JAVA语言](https://baike.baidu.com/item/JAVA语言/4148931)写成的**可重用组件**。为写成JavaBean，类必须是具体的和公共的，并且具有无参数的[构造器](https://baike.baidu.com/item/构造器/9844976)。JavaBean 通过提供符合一致性设计模式的公共方法将内部域暴露成员属性，set和get方法获取。众所周知，属性名称符合这种模式，其他Java 类可以通过自省机制(**反射机制**)发现和操作这些JavaBean 的属性。
+
+JavaBean是一种可重用的[Java组件](https://baike.baidu.com/item/Java组件/53178233)，它可以被Applet、Servlet、JSP等Java应用程序调用．也可以可视化地被Java开发工具使用。它包含属性(Properties)、方法(Methods)、事件(Events)等特性。
 
 
 
@@ -338,7 +390,7 @@ public class TestController {
 
 
 
-### zuul
+### 服务路由和过滤器--zuul
 
 ZUUL 是从设备和 web 站点到 Netflix 流应用后端的所有请求的前门。作为边界服务应用，ZUUL 是为了实现动态路由、监视、弹性和安全性而构建的。
 
@@ -410,9 +462,67 @@ eureka:
 
 ![img](D:\wiki\documents\wikis\java\images\spring-cloud-bus.jpg)
 
+
+
+### SpringData
+
+**SpringData**简化了基于Spring框架应用的数据库访问，包括对关系型、非关系型、Map-Reduce、云数据服务等都支持，它具备ORM框架的对象关系映射的功能，提供统一的Repository接口实现CRUD、分页、排序等相关操作，也提供了统一的模板类。
+
+**优点：**
+
+1. 基本的sql语句不需要写，只需要继承JpaRepository接口，按照规范编写接口方法名即可
+2. 对于不想按照规范对接口方法名进行规范的写，提供了@Query()接口
+3. 提供了快速分页并排序的接口
+
+ **缺点：**   
+
+           1. 即使提供了@Query，但是对于某些查询，还是无能无力，比如某个需求，多表联查，只取其中一列
+           2. 多表查询很是无力，远远比不上mybatis
+
+
+
+### Mybatis
+
+Mybatis是一种半自动的ORM框架，它简单易上手，没有第三方依赖，支持对象与数据库的ORM关系映射，将sql代码与业务代码分离，使得开发人员可以更自如的写出高效的sql，不过反过来说不像SpringData 这种全自动的ORM框架，它需要自己实现sql语句，对开发人员的sql编写能力要求高，虽然将sql代码写在xml文件里方便了修改和编写，可这同时也降低了可读性。
+
+**优点 ：**
+
+1. 可以处理比spring data 更加复杂的sql语句，可以指定查询某些列的信息，对分页处理做的也是很好的
+2. 上手难度低
+3. 对于dao层的接口命名没有spring data的严格
+4. 可以对需要的列名指定查询
+5. 可以将查询的结果直接映射到对象中
+6. 支持编写动态sql语句（这一点是spring data无法比拟的）
+
+**缺点：**
+
+1. SQL语句的编写工作量较大，尤其是字段多、关联表多时，更是如此，对开发人员编写SQL语句的功底有一定要求。
+2. SQL语句依赖于数据库，导致数据库移植性差，不能随意更换数据库。
+
+
+
+### S3 SDK
+
+Amazon Simple Storage Service 是**互联网存储解决方案**。该服务旨在降低开发人员进行网络规模级计算的难度。
+
+Amazon S3 提供了一个简单 Web 服务接口，可用于随时在 Web 上的任何位置存储和检索任何数量的数据。此服务让所有开发人员都能访问同一个具备高扩展性、可靠性、安全性和快速价廉的数据存储基础设施， Amazon 用它来运行其全球的网站网络。此服务旨在为开发人员带来最大化的规模效益。
+
+
+
+**如何才算掌握Java**
+Java本身是一种设计的非常简单，非常精巧的语言，所以Java背后的原理也很简单，归结起来就是两点：
+1、JVM的内存管理
+	理解了这一点，所有和对象相关的问题统统都能解决
+2、JVM Class Loader
+　理解了这一点，所有和Java相关的配置问题，包括各种App Server的配置，应用的发布问题统统都能解决
+
+
+
 ## 参考资料
 
-- [Java 微服务架构选型](https://www.cnblogs.com/zengyjun/p/10309391.html)
+- [java思维导图](https://blog.csdn.net/qq_42370505/article/details/109114725)
 
+- [Java 微服务架构选型](https://www.cnblogs.com/zengyjun/p/10309391.html)
 - [Spring Cloud 入门总结](https://zhuanlan.zhihu.com/p/95696180?from_voters_page=true)
 - 《**Spring**微服务实战》
+- [SpringData JPA和Mybatis的优缺点](https://blog.csdn.net/worshipme/article/details/107369640)
