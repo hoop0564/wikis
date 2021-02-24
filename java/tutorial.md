@@ -334,6 +334,38 @@ public class TestController {
 
 
 
+### zuul
+
+ZUUL 是从设备和 web 站点到 Netflix 流应用后端的所有请求的前门。作为边界服务应用，ZUUL 是为了实现动态路由、监视、弹性和安全性而构建的。
+
+网关有的功能，`Zuul` 基本都有。而 `Zuul` 中最关键的就是 **路由和过滤器** 了，在官方文档中 `Zuul` 的标题就是：**Router and Filter : Zuul**
+
+> 网关是系统唯一对外的入口，介于客户端与服务器端之间，用于对请求进行**鉴权**、**限流**、 **路由**、**监控**等功能。
+
+![img](./images/zuul.jpg)
+
+`Zuul` 需要向 `Eureka` 进行注册，就能拿到所有 `Consumer` 的元数据(名称，ip，端口)信息，然后做**路由映射**。
+
+> 例如：原来用户调用 `Consumer1` 的接口 `localhost:8001/studentInfo/update` 
+>
+> 现在可以这样调用：`localhost:9000/consumer1/studentInfo/update` 
+
+ `Zuul` 基本配置
+
+```config
+server:
+  port: 9000
+eureka:
+  client:
+    service-url:
+      # 这里只要注册 Eureka 就行了
+      defaultZone: http://localhost:9997/eureka
+```
+
+在启动类上加入 `@EnableZuulProxy` 注解就行了。
+
+
+
 ## 参考资料
 
 - [Java 微服务架构选型](https://www.cnblogs.com/zengyjun/p/10309391.html)
