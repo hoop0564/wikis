@@ -212,6 +212,16 @@ Spring框架是由于[软件开发](https://baike.baidu.com/item/软件开发/34
 
 
 
+**SpringBoot：**
+
+　　SpringBoot本身更倾向于快速开发,快速构建,快速集成的这样的功能，通过用MAVEN依赖的继承方式，帮助我们快速整合第三方常用框架，完全采用注解化（使用注解方式启动SpringMVC），简化XML配置，内置HTTP服务器（Tomcat，Jetty），最终以Java应用程序进行执行。
+
+**SpringCloud：** 
+
+　　SpringCloud是一整套的微服务解决方案,目前完整的微服务框架，它是是一系列框架的有序集合。它只是将目前各家公司开发的比较成熟、经得起实际考验的服务框架组合起来，通过SpringBoot风格进行再封装屏蔽掉了复杂的配置和实现原理，最终给开发者留出了一套简单易懂、易部署和易维护的分布式系统开发工具包。它利用Spring Boot的开发便利性巧妙地简化了分布式系统基础设施的开发，如服务发现注册、配置中心、消息总线、负载均衡、断路器、数据监控等，都可以用SpringBoot的开发风格做到一键启动和部署。
+
+
+
 ### JavaBean
 
 JavaBean 是一种[JAVA语言](https://baike.baidu.com/item/JAVA语言/4148931)写成的**可重用组件**。为写成JavaBean，类必须是具体的和公共的，并且具有无参数的[构造器](https://baike.baidu.com/item/构造器/9844976)。JavaBean 通过提供符合一致性设计模式的公共方法将内部域暴露成员属性，set和get方法获取。众所周知，属性名称符合这种模式，其他Java 类可以通过自省机制(**反射机制**)发现和操作这些JavaBean 的属性。
@@ -518,11 +528,26 @@ Java本身是一种设计的非常简单，非常精巧的语言，所以Java背
 
 
 
+## todo
+
+- 使用u+的commonlib建立工程
+- 做现有技术栈的Java翻译
+- 打包部署到新机上运行
+
+
+
 ## 参考资料
 
 - [java思维导图](https://blog.csdn.net/qq_42370505/article/details/109114725)
-
 - [Java 微服务架构选型](https://www.cnblogs.com/zengyjun/p/10309391.html)
 - [Spring Cloud 入门总结](https://zhuanlan.zhihu.com/p/95696180?from_voters_page=true)
 - 《**Spring**微服务实战》
 - [SpringData JPA和Mybatis的优缺点](https://blog.csdn.net/worshipme/article/details/107369640)
+- [Spring思维导图，让spring不再难懂](https://my.oschina.net/u/3080373/blog/891918)
+- [微服务、SpringBoot和SpringCloud的关系和区别](https://www.cnblogs.com/wwct/p/12942982.html)
+
+- [Spring Boot -01- 快速入门篇（图文教程）](https://blog.csdn.net/qq_40147863/article/details/84194493)
+- [IDEA如何在项目中快速添加Maven依赖](https://cloud.tencent.com/developer/article/1482956)
+- [一步一步学Spring Boot](https://blog.csdn.net/huangwenyi1010/article/details/76359275)
+- [Gradle和Maven性能对比](https://blog.csdn.net/u011054333/article/details/103221226)
+- [idea如何打包项目(java)](https://www.cnblogs.com/july7/p/11473751.html)
