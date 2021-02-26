@@ -184,23 +184,13 @@ Java 中其实没有虚函数的概念，它的普通函数就相当于 C++ 的�
 
 
 
-## Spring Boot框架
-
-通过Spring Boot，可以轻松地创建独立的，基于生产级别的基于Spring的应用程序，并且可以“直接运行”它们。大多数Spring Boot应用程序需要最少的Spring配置。
-
-<img src=".\images\spring-boot.png" alt="image-20210224152742150" style="zoom:50%;" />
-
-Spring Boot 是基于 Spring Framework 来构建的，Spring Framework 是一种 J2EE 的框架（[什么是 J2EE？](https://blog.csdn.net/qq_40147863/article/details/83011705)）
-
-Spring Boot 是一种快速构建 Spring 应用
-Spring Cloud 是构建 Spring Boot 分布式环境，也就是常说的云应用
-Spring Boot 中流砥柱，承上启下
-
-
-
 ### Spring框架
 
-Spring框架是由于[软件开发](https://baike.baidu.com/item/软件开发/3448966)的复杂性而创建的。Spring使用的是基本的JavaBean来完成以前只可能由[EJB](https://baike.baidu.com/item/EJB/144195)完成的事情。然而，Spring的用途不仅仅限于服务器端的开发。从简单性、可测试性和松耦合性角度而言，**绝大部分Java应用都可以从Spring中受益**。
+Spring是Java企业版（Java Enterprise Edition， JEE， 也称J2EE）的轻量级替代品，无需开发重量级的Enterprise JavaBean（EJB)，Spring为企业级Java开发提供了一种相对简单的方法，通过依赖注入和面向切面编程，用简单的Java对象（Plain Old Java Object，POJO）实现了EJB的功能。
+
+
+
+Spring框架是由于[软件开发](https://baike.baidu.com/item/软件开发/3448966)的复杂性而创建的。Spring使用的是基本的`JavaBean`来完成以前只可能由[EJB](https://baike.baidu.com/item/EJB/144195)完成的事情。然而，Spring的用途不仅仅限于服务器端的开发。从简单性、可测试性和松耦合性角度而言，**绝大部分Java应用都可以从Spring中受益**。
 
 ◆目的：解决企业应用开发的复杂性
 
@@ -211,6 +201,65 @@ Spring框架是由于[软件开发](https://baike.baidu.com/item/软件开发/34
 **Spring是一个轻量级控制反转(IoC)和面向切面(AOP)的容器框架。**
 
 
+
+## Spring Boot框架
+
+通过Spring Boot，可以轻松地创建独立的，基于生产级别的基于Spring的应用程序，并且可以“直接运行”它们。大多数Spring Boot应用程序需要最少的Spring配置。
+
+<img src=".\images\spring-boot.png" alt="image-20210224152742150" style="zoom:50%;" />
+
+SpringBoot不是对Spring的功能增强，而是提供快速使用Spring的方式
+
+SpringBoot还提供了大型项目中常用的例如嵌入服务器，安全、指标、健康监测、外部配置等非功能性的特性
+
+Spring Boot 是基于 Spring Framework 来构建的，Spring Framework 是一种 J2EE 的框架（[什么是 J2EE？](https://blog.csdn.net/qq_40147863/article/details/83011705)）
+
+Spring Boot 是一种快速构建 Spring 应用
+Spring Cloud 是构建 Spring Boot 分布式环境，也就是常说的云应用
+Spring Boot 中流砥柱，承上启下
+
+
+
+SpringBoot的核心功能
+
+- 起步依赖：starter，本质上是一个maven项目对象模型（POM），定义了对其他库的传递依赖
+
+  springboot项目要继承springboot的起步依赖：`spring-boot-starter-parent`
+
+- 自动配置：@AutoConfiguration
+
+
+
+快速开始：
+
+- [IDEA创建Spring Boot项目无法连接http://start.spring.io 解决方法](https://blog.csdn.net/lidai352710967/article/details/81089305)
+
+- 热部署：
+
+  ```xml
+  <artifactId>spring-boot-devtools</artifactId>
+  ```
+
+- 代码中已经使用了yml参数配置，在yml中配置时编译器可以自动补全：
+
+  ```xml
+  <artifactId>spring-boot-configuration-processor</artifactId>
+  ```
+
+- 查找自动配置的参数名称：
+
+  ```bash
+  # Maven: spring-boot-autoconfigure
+  /META-INF/spring-configuration-metadata.json
+  ```
+
+- todo: 基础MyBatis、Junit、SpringData
+
+
+
+
+
+![img](./images/mvc-annotation.png)
 
 **SpringBoot：**
 
@@ -226,7 +275,7 @@ Spring框架是由于[软件开发](https://baike.baidu.com/item/软件开发/34
 
 JavaBean 是一种[JAVA语言](https://baike.baidu.com/item/JAVA语言/4148931)写成的**可重用组件**。为写成JavaBean，类必须是具体的和公共的，并且具有无参数的[构造器](https://baike.baidu.com/item/构造器/9844976)。JavaBean 通过提供符合一致性设计模式的公共方法将内部域暴露成员属性，set和get方法获取。众所周知，属性名称符合这种模式，其他Java 类可以通过自省机制(**反射机制**)发现和操作这些JavaBean 的属性。
 
-JavaBean是一种可重用的[Java组件](https://baike.baidu.com/item/Java组件/53178233)，它可以被Applet、Servlet、JSP等Java应用程序调用．也可以可视化地被Java开发工具使用。它包含属性(Properties)、方法(Methods)、事件(Events)等特性。
+JavaBean是一种可重用的[Java组件](https://baike.baidu.com/item/Java组件/53178233)，它可以被Applet、Servlet、JSP等Java应用程序调用．也可以可视化地被Java开发工具使用。它包含**属性(Properties)、方法(Methods)、事件(Events)**等特性。
 
 
 
