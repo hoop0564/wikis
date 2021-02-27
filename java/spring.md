@@ -9,9 +9,37 @@ spring是如何简化java开发的？4种关键策略：
 
 
 
+![img](images/7-modules.png)
+
+
+
+现代化的Java（养活了这么多的程序员）：
+
+<img src="images/modern-java.png" alt="image-20210227082548984" style="zoom:40%;" />
+
+
+
+
+
+![image-20210227084933005](images/class-class.png)
+
+
+
+
+
+**bean作用域**
+
+- singleton：全局唯一
+
+- prototype：原型，每个对象它都有一个自己的
+
+  
+
 ## springboot
 
 核心是：自动装配！
+
+
 
 
 
@@ -31,3 +59,4 @@ spring是如何简化java开发的？4种关键策略：
 
 - [读数遍：微服务论文中文版](http://blog.cuicc.com/blog/2015/07/22/microservices/)
 
+- [Spring框架的七大模块](https://www.cnblogs.com/lanseyitai1224/p/7895767.html)
