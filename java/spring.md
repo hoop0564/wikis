@@ -21,19 +21,13 @@ spring是如何简化java开发的？4种关键策略：
 
 
 
-![image-20210227084933005](images/class-class.png)
+<img src="spring.assets/image-20210228114626335.png" alt="image-20210228114626335" style="zoom:67%;" />
 
 
 
 
 
-**bean作用域**
 
-- singleton：全局唯一
-
-- prototype：原型，每个对象它都有一个自己的
-
-  
 
 ## springboot
 
