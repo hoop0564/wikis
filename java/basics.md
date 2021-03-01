@@ -24,6 +24,36 @@
 
 
 
+### 接口
+
+在Java中，类的多继承是不合法，但接口允许多继承。
+
+```java
+public interface Hockey extends Sports, Event
+```
+
+在 JDK1.8，允许我们给接口添加两种非抽象的方法实现：
+
+1、默认方法，添加 **default** 修饰即可；
+
+2、静态方法，使用 static 修饰；示例如下：
+
+```
+interface Test{
+    //这个是默认方法
+    default String get(String aa){
+        System.out.println("我是jdk1.8默认实现方法...");
+        return "";
+    }   
+    //这个是静态方法    
+    static void staticmethod(){
+        System.out.println("我是静态方法");
+    }
+}
+```
+
+调用得话，静态方法只能通过接口名调用，不可以通过实现类的类名或者实现类的对象调用，default 方法只能通过接口实现类的对象来调用。
+
 **IOC依赖反转**
 
 ```java
@@ -148,3 +178,8 @@ clean compiler package -Pdev -Dmaven.test.skip-true
 ```
 
  
+
+## 参考资料
+
+- [jdk1.8谷歌版本中文文档](https://blog.csdn.net/minyunfei6/article/details/88848396)
+
