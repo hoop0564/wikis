@@ -22,6 +22,8 @@
 - prototype：原型，每个对象它都有一个自己的
 - ....
 
+
+
 **IOC依赖反转**
 
 ```java
@@ -63,3 +65,86 @@ DDD把模型分为四层：
 模型属于哪一层，有个粗略的判断方式：如果是一个实体（Entity）和针对实体的增删改查，就属于领域层；如果是一个场景，比如在UI菜单上的选项，就属于应用层。
 
 领域模型只管“合规”，但不管“合理”。譬如在黑名单的客户不允许购买，这个检查通常在应用层做。
+
+
+
+> 一个流可以理解为一个数据的序列。输入流表示从一个源读取数据，输出流表示向一个目标写数据。
+
+
+
+## maven
+
+IDE都是调用的maven做java项目的依赖管理和编译发布。
+
+对不同的打包环境，可配置pom.xml中的project参数值，指定dev/qa/pre/prod环境的编译选项，对应项目的pom.xml的同级根文件中，也建立系统名称的目录：
+
+
+
+### maven打包
+
+**1. 添加profile配置到pom.xml：**
+
+```xml
+<profiles>
+  <profile>
+    <id>dev</id>
+    <properties>
+      <env>dev</env>
+    </properties>
+    <!-- 未指定环境时，默认打包dev环境 -->
+    <activation>
+      <activeByDefatult>true</activeByDefatult>
+    </activation>
+  </profile>
+
+  <profile>
+    <id>product</id>
+    <properties>
+      <env>product</env>
+    </properties>
+  </profile>
+
+</profiles>
+```
+
+放入`pom.xml`的`dependencies`标签以外
+
+
+
+**2. 对应的resources目录建立环境目录：**
+
+![image-20210301080058011](basics.assets/image-20210301080058011.png)
+
+
+
+**3. resources的资源文件配置：**
+
+```xml
+<resources>
+  <resource>
+    <directory>src/main/resources/${env}</directory>
+  </resource>
+  <resource>
+    <directory>src/main/java</directory>
+    <includes>
+      <include>**/*.xml</include>
+      <include>**/*.properties</include>
+    </includes>
+    <filtering>false</filtering>
+  </resource>
+</resources>
+```
+
+放入`pom.xml`的`build`标签中
+
+
+
+**4. 执行打包操作**
+
+打开 `Run/Debug/Edit Configuration` 窗口，`Command line`中配置打包命令：
+
+```bash
+clean compiler package -Pdev -Dmaven.test.skip-true
+```
+
+ 
