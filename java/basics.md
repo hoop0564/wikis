@@ -54,7 +54,32 @@ interface Test{
 
 调用得话，静态方法只能通过接口名调用，不可以通过实现类的类名或者实现类的对象调用，default 方法只能通过接口实现类的对象来调用。
 
-**IOC依赖反转**
+
+
+### 线程
+
+- 自定义线程类继承 `Thread` 类
+- 重写 `run()` 方法，编写线程执行体
+- 创建线程对象，调用 start() 方法启动线程
+- 推荐使用 实现Runnable 接口 来创建线程
+
+
+
+### 数据结构
+
+- 枚举（Enumeration）
+
+  > 这种传统接口已被迭代器取代，虽然Enumeration 还未被遗弃，但在现代代码中已经被很少使用了。尽管如此，它还是使用在诸如Vector和Properties这些传统类所定义的方法中，除此之外，还用在一些API类，并且在应用程序中也广泛被使用。
+
+- Java Bitset类
+
+  > 一个Bitset类创建一种特殊类型的数组来保存位值。BitSet中数组大小会随需要增加。这和位向量（vector of bits）比较类似。
+
+- 
+
+
+
+### IOC依赖反转
 
 ```java
 private UserDao userDao;
