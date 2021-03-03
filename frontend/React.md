@@ -17,6 +17,8 @@ React库是用来创建视图的。ReactDOM库是用来在浏览器中渲染UI�
 - **5.组件** − 通过 React 构建组件，使得代码更加容易得到复用，能够很好的应用在大项目的开发中。
 - **6.单向响应的数据流** − React 实现了单向响应的数据流，这也是它为什么比传统数据绑定更简单。`数据 -> 视图 -> 事件 -> 数据`
 
+>声明式编程和命令式编程的区别：前者对执行结果的猫叔远胜于执行过程！
+
 
 
 ## React内部运行机制
@@ -222,6 +224,10 @@ once update src directory files, the build directory files will change simultano
 
    在React中，UI是用纯函数表示的。
 
+   1. 函数应该至少接收一个参数
+   2. 函数一个返回一个值或者其他函数
+   3. 函数不应该修改或者影响如何传给它的参数
+
 3. 数据转换
 
    ```js
@@ -230,7 +236,19 @@ once update src directory files, the build directory files will change simultano
    Array.reduce()		# 返回最大值
    ```
 
+4. 高阶函数
+
+   ```js
+   const userLogs = userName => message =>
+   	console.log(`${userName} -> ${message}`)
    
+   const log = userLogs("leo")
+   
+   log(" go to school")
+   // leo go to school
+   ```
+
+   > 柯里化（Currying）：是一种将某个操作中已经完成的结果保留，直到其余部分后续也完成后，可以一并提供的机制！
 
 
 
