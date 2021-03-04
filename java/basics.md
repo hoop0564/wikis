@@ -88,7 +88,7 @@ interface Test{
 
   > 一个Bitset类创建一种特殊类型的数组来保存位值。BitSet中数组大小会随需要增加。这和位向量（vector of bits）比较类似。
 
-- 
+- 线程安全的 `CopyOnWriteArrayList<T>`，都在JUC包下（`java.util.concurrent.xxx`）
 
 
 

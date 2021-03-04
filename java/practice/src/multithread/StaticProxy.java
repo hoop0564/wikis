@@ -1,3 +1,5 @@
+package multithread;
+
 public class StaticProxy {
     public static void main(String[] args) {
         // 线程就是静态代理模式

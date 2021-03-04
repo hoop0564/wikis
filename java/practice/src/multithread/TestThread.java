@@ -1,3 +1,5 @@
+package multithread;
+
 public class TestThread {
     public static void main(String[] args) {
         RunnableDemo r1 = new RunnableDemo("thread-1");

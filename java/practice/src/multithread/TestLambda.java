@@ -1,3 +1,5 @@
+package multithread;
+
 public class TestLambda {
     // 静态内部类
     static class Like2 implements ILike {
@@ -36,7 +38,8 @@ public class TestLambda {
         like.lambda();
 
         // 使用lambda实现函数式接口
-        like = ()-> {
+        // 避免内部定义类实现过多
+        like = () -> {
             System.out.println("lambda like5");
         };
         like.lambda();
@@ -45,7 +48,7 @@ public class TestLambda {
 
 // 函数式接口：只有一个方法的接口
 interface ILike {
-    public void lambda();
+    void lambda();
 }
 
 // 实现类
