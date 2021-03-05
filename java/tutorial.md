@@ -83,6 +83,15 @@ JAVA_HOME中有一个src.zip包，里面是java系统库的源代码！
 
 
 
+### Java标记接口
+
+标记接口是没有任何方法和属性的接口.它仅仅表明它的类属于一个特定的类型,供其他代码来测试允许做一些事情。目的有：
+
+1. 建立一个公共的父接口
+2. 向一个类添加数据类型
+
+
+
 ### Java修饰符
 
 Java可以使用修饰符来修饰类中方法和属性。主要有两类修饰符：
@@ -102,7 +111,7 @@ Java可以使用修饰符来修饰类中方法和属性。主要有两类修饰�
 
 **Java 源程序与编译型运行区别**
 
-![./images/java-compile.png](./images/java-compile.png)
+<img src="./images/java-compile.png" alt="./images/java-compile.png" style="zoom: 25%;" />
 
 ### 变量类型
 
@@ -519,7 +528,7 @@ eureka:
 
 而拥有了 `Sprin Cloud Bus` 之后，只需要创建一个简单的请求，并且加上 `@ResfreshScope` 注解就能进行配置的动态修改了：
 
-![img](D:\wiki\documents\wikis\java\images\spring-cloud-bus.jpg)
+![img](.\images\spring-cloud-bus.jpg)
 
 
 
@@ -590,7 +599,6 @@ Java本身是一种设计的非常简单，非常精巧的语言，所以Java背
 - [java思维导图](https://blog.csdn.net/qq_42370505/article/details/109114725)
 - [Java 微服务架构选型](https://www.cnblogs.com/zengyjun/p/10309391.html)
 - [Spring Cloud 入门总结](https://zhuanlan.zhihu.com/p/95696180?from_voters_page=true)
-- 《**Spring**微服务实战》
 - [SpringData JPA和Mybatis的优缺点](https://blog.csdn.net/worshipme/article/details/107369640)
 - [Spring思维导图，让spring不再难懂](https://my.oschina.net/u/3080373/blog/891918)
 - [微服务、SpringBoot和SpringCloud的关系和区别](https://www.cnblogs.com/wwct/p/12942982.html)
@@ -600,3 +608,4 @@ Java本身是一种设计的非常简单，非常精巧的语言，所以Java背
 - [一步一步学Spring Boot](https://blog.csdn.net/huangwenyi1010/article/details/76359275)
 - [Gradle和Maven性能对比](https://blog.csdn.net/u011054333/article/details/103221226)
 - [idea如何打包项目(java)](https://www.cnblogs.com/july7/p/11473751.html)
+
