@@ -88,8 +88,20 @@ JAVA_HOME中有一个src.zip包，里面是java系统库的源代码！
 标记接口是没有任何方法和属性的接口.它仅仅表明它的类属于一个特定的类型,供其他代码来测试允许做一些事情。目的有：
 
 1. 建立一个公共的父接口
-2. 向一个类添加数据类型
 
+2. 向一个类添加数据类型?
+
+  
+### Java 包
+
+一般使用公司域名倒置作为包名
+
+```java
+// www.baidu.com
+package com.baidu.www; // 定义包名
+
+import java.util.Date; // 导入包
+```
 
 
 ### Java修饰符
@@ -97,6 +109,16 @@ JAVA_HOME中有一个src.zip包，里面是java系统库的源代码！
 Java可以使用修饰符来修饰类中方法和属性。主要有两类修饰符：
 
 - 访问控制修饰符 : default, public , protected, private
+
+  **default** (即默认，什么也不写）: 在同一包内可见，不使用任何修饰符。使用对象：类、接口、变量、方法。
+
+  | 修饰符      | 当前类 | 同一包内 | 子孙类(同一包) | 子孙类(不同包)                                               | 其他包 |
+  | :---------- | :----- | :------- | :------------- | :----------------------------------------------------------- | :----- |
+  | `public`    | Y      | Y        | Y              | Y                                                            | Y      |
+  | `protected` | Y      | Y        | Y              | Y/N（[说明](https://www.runoob.com/java/java-modifier-types.html#protected-desc)） | N      |
+  | `default`   | Y      | Y        | Y              | N                                                            | N      |
+  | `private`   | Y      | N        | N              | N                                                            | N      |
+
 - 非访问控制修饰符 : final, abstract, static, synchronized
 
 
