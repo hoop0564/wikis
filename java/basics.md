@@ -92,6 +92,73 @@ interface Test{
 
 
 
+### 匿名代码块和static代码块
+
+```java
+public class Person {
+  {
+    // 匿名代码块 对象生成时执行，先于构造器前执行！
+  }
+  
+  static {
+    // 静态代码块 和类一起执行
+  }
+}
+```
+
+
+
+### 抽象类
+
+- 抽象类中可以写普通的方法，也可以写抽象的方法
+
+- 抽象的方法必须在抽象类中
+
+  ```java
+  public abstract class Test {
+    public abstract void doSth() {
+      
+    }
+    public void show() {
+      System.out.pringln("show");
+    }
+  }
+  ```
+
+- 用于通用面向对象的实现场景
+
+
+
+### final
+
+- 通过final修饰的类，就不能被继承了，没有子类了。例如 Math 类
+
+  ```java
+  public final class Math {
+    ...
+  }
+  ```
+
+  
+
+### 静态导入包
+
+```java
+// 静态导入包
+import static java.lang.Math.random;
+
+public class Test {
+  public static void main(String[] args) {
+    // 直接使用Math类下的random方法而不用加类名前缀
+    System.out.println(random());
+  }
+}
+```
+
+
+
+
+
 ### IOC依赖反转
 
 ```java
@@ -137,6 +204,12 @@ DDD把模型分为四层：
 
 
 > 一个流可以理解为一个数据的序列。输入流表示从一个源读取数据，输出流表示向一个目标写数据。
+
+
+
+## Idea IDE
+
+- 自动生成变量的setter和getter快捷键：Alt + Insert
 
 
 
