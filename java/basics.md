@@ -108,6 +108,12 @@ public class Person {
 
 
 
+### 类
+
+- 一个java文件中，只能有一个public的class，但可以有多个其他修饰符的class
+
+
+
 ### 抽象类
 
 - 抽象类中可以写普通的方法，也可以写抽象的方法
