@@ -279,6 +279,23 @@ jsp中嵌入了java代码
 
 
 
+下载好的Tomcat中的bin目录下脚本，需要加可执行权限：
+
+```bash
+chmod +x startup.sh
+chmod +x catalina.sh
+```
+
+否则无法启动Tomcat服务.
+
+
+
+使用idea的 maven-tomcat-webapp 的maven模板，做 tomcat服务器：
+
+![image-20210307184512523](basics.assets/image-20210307184512523.png)
+
+
+
 ## Idea IDE
 
 - 自动生成变量的setter和getter快捷键：Alt + Insert
@@ -289,7 +306,11 @@ jsp中嵌入了java代码
 
 IDE都是调用的maven做java项目的依赖管理和编译发布。
 
-对不同的打包环境，可配置pom.xml中的project参数值，指定dev/qa/pre/prod环境的编译选项，对应项目的pom.xml的同级根文件中，也建立系统名称的目录：
+![image-20210307165042213](basics.assets/image-20210307165042213.png)
+
+对不同的打包环境，可配置pom.xml中的project参数值，指定dev/qa/pre/prod环境的编译选项，对应项目的pom.xml的同级根文件中，也建立系统名称的目录
+
+
 
 
 
@@ -361,6 +382,37 @@ clean compiler package -Pdev -Dmaven.test.skip-true
 ```
 
  
+
+maven由于它的约定大于配置，可能会遇到写的配置文件，无法被导出或者生效的问题，解决方案
+
+在pom.xml的build标签中，加一个resources：
+
+```xml
+<!--在build中配置resources，来防止我们资源导出失败的问题-->
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+```
+
+后面mybatis可能会遇到。
+
+
 
 ## Questions
 
