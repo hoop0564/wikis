@@ -63,10 +63,6 @@
 
 
 
-### Spring
-
-![img](.\images\spring-xmind.png)
-
 
 
 ## 概念
@@ -222,6 +218,20 @@ Spring框架是由于[软件开发](https://baike.baidu.com/item/软件开发/34
 ◆范围：任何Java应用
 
 **Spring是一个轻量级控制反转(IoC)和面向切面(AOP)的容器框架。**
+
+
+
+
+
+![img](.\images\spring-xmind.png?lastModify=1615082095)
+
+主要的maven依赖模块：
+
+```xml
+spring-webmvc
+
+spring-jdbc
+```
 
 
 

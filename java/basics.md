@@ -2,21 +2,17 @@
 
 
 
-## Questions
+## Java的核心包
 
-- JVM的位置
-- JVM的体系结构
-
-- 类加载器
-- 双亲委派机制
-- 沙箱安全机制
-- Native
-- 三种JVM
-- 栈、堆、堆内存调优
+```bash
+jdk8/jdk/bin/rt.jar
+```
 
 
 
-**bean作用域**
+### bean
+
+bean作用域
 
 - singleton：全局唯一
 - prototype：原型，每个对象它都有一个自己的
@@ -207,7 +203,7 @@ public class Test {
 ```java
 private UserDao userDao;
 
-// 利用set进行动态实现值得注入！
+// 利用set进行动态实现值的注入！
 public void setUserDao(UserDao userDao) {
   this.userDao = userDao;
 }
@@ -247,6 +243,39 @@ DDD把模型分为四层：
 
 
 > 一个流可以理解为一个数据的序列。输入流表示从一个源读取数据，输出流表示向一个目标写数据。
+
+
+
+## Tomcat
+
+使用的engine是Catalina
+
+Tomcat目录结构
+
+```bash
+bin	# 启动脚本 startup.sh shutdown.sh catalina.sh
+conf # 配置目录 server.xml 8080端口配置
+webapps	# 默认网站存储目录 ROOT docs http://localhost:8080/docs
+```
+
+jsp中嵌入了java代码
+
+```java
+--webapps: Tomcat服务器目录
+  -Root
+  -yourWebsite: 网站的目录名
+    -WEB-INF
+    	-classes: java程序
+      -lib: web应用锁依赖的jar包 
+      -web.xml: 网站的配置文件
+    -index.html: 默认的首页    
+    -static
+      -css
+      	-style.css
+      -html
+      -js
+      -img
+```
 
 
 
@@ -332,6 +361,20 @@ clean compiler package -Pdev -Dmaven.test.skip-true
 ```
 
  
+
+## Questions
+
+- JVM的位置
+- JVM的体系结构
+
+- 类加载器
+- 双亲委派机制
+- 沙箱安全机制
+- Native
+- 三种JVM
+- 栈、堆、堆内存调优
+
+
 
 ## 参考资料
 
