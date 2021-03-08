@@ -296,6 +296,40 @@ chmod +x catalina.sh
 
 
 
+可以把项目中web.xml修改为和Tomcat中一样
+
+项目中：
+
+```bash
+/Users/apple/wikis/java/javaweb-01-maven/hello2/src/main/webapp/WEB-INF/web.xml
+```
+
+```xml
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+  <display-name>Archetype Created Web Application</display-name>
+</web-app>
+```
+
+Tomcat中：
+
+```bash
+/apache-tomcat-10.0.2/conf/web.xml
+```
+
+```xml
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+                      https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+  version="5.0">
+```
+
+
+
 ## Idea IDE
 
 - 自动生成变量的setter和getter快捷键：Alt + Insert

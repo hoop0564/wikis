@@ -28,6 +28,14 @@ git config --global --unset https.proxy
 git push origin master
 ```
 
+然并卵。
+
+
+
+可能还是github被墙调的原因
+
+
+
 ### 参考资料：
 
 [SSL_connect: SSL_ERROR_SYSCALL in connection to github.com:443](https://stackoverflow.com/questions/48987512/ssl-connect-ssl-error-syscall-in-connection-to-github-com443)
