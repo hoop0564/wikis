@@ -12,6 +12,8 @@ jdk8/jdk/bin/rt.jar
 
 ### bean
 
+JavaBean 表示咖啡豆，实体类，一般都是和数据库中的表结构一一对应的！
+
 bean作用域
 
 - singleton：全局唯一
@@ -221,7 +223,20 @@ public void setUserDao(UserDao userDao) {
 
 
 
-**DDD领域驱动模型**
+### JDBC
+
+Java Database Connect，java的数据库连接，类似USB接口的通用接口，各家数据库的驱动需要实现此接口才可以使用Java开发。
+
+```java
+// 加载驱动
+Class.forName("come.mysql.jdbc.Driver");
+```
+
+
+
+
+
+### DDD领域驱动模型
 
 DDD把模型分为四层：
 
