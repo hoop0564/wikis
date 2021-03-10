@@ -236,7 +236,9 @@ Java 中其实没有虚函数的概念，它的普通函数就相当于 C++ 的�
 
 Sun引入新的JPA ORM规范出于两个原因：其一，简化现有Java EE和Java SE应用开发工作；其二，Sun希望整合ORM技术，实现天下归一。
 
-![img](images/8435e5dde71190ef25b88a55c41b9d16fcfa60fc)
+
+
+![img](images/jpa.jpg)
 
 ### Hibernate
 
@@ -259,7 +261,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 我们只需要通过编写一个继承自`JpaRepository`的接口就能完成数据访问，下面以一个具体实例来体验Spring Data JPA给我们带来的强大功能。
 
-
+![img](images/hibenate-jpa.jpg)
 
 ### Lombok
 
@@ -293,9 +295,22 @@ Spring框架是由于[软件开发](https://baike.baidu.com/item/软件开发/34
 
 
 
-**技术栈脑图**
 
 ![img](.\images\spring-xmind.png)
+=======
+
+
+![img](.\images\spring-xmind.png?lastModify=1615082095)
+
+主要的maven依赖模块：
+
+```xml
+spring-webmvc
+
+spring-jdbc
+```
+
+
 
 ## Spring Boot框架
 

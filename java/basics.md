@@ -2,21 +2,19 @@
 
 
 
-## Questions
+## Java的核心包
 
-- JVM的位置
-- JVM的体系结构
-
-- 类加载器
-- 双亲委派机制
-- 沙箱安全机制
-- Native
-- 三种JVM
-- 栈、堆、堆内存调优
+```bash
+jdk8/jdk/bin/rt.jar
+```
 
 
 
-**bean作用域**
+### bean
+
+JavaBean 表示咖啡豆，实体类，一般都是和数据库中的表结构一一对应的！
+
+bean作用域
 
 - singleton：全局唯一
 - prototype：原型，每个对象它都有一个自己的
@@ -92,12 +90,122 @@ interface Test{
 
 
 
+### 匿名代码块和static代码块
+
+```java
+public class Person {
+  {
+    // 匿名代码块 对象生成时执行，先于构造器前执行！
+  }
+  
+  static {
+    // 静态代码块 和类一起执行
+  }
+}
+```
+
+
+
+### 类
+
+- 一个java文件中，只能有一个public的class，但可以有多个其他修饰符的class
+
+
+
+### 抽象类
+
+- 抽象类中可以写普通的方法，也可以写抽象的方法
+
+- 抽象的方法必须在抽象类中
+
+  ```java
+  public abstract class Test {
+    public abstract void doSth() {
+      
+    }
+    public void show() {
+      System.out.pringln("show");
+    }
+  }
+  ```
+
+- 声明抽象类的唯一目的是为了将来对该类进行扩充
+
+- 如果一个类包含抽象方法，那么该类一定要声明为抽象类，否则将出现编译错误。
+
+
+
+### 接口
+
+- 接口就是规范，是对现实世界的抽象，定义的是一组规则
+- OO的精髓，就是对对象的抽象；设计模式所研究的，实际上就是如何合理的去抽象；
+- 接口就是一直契约，面向接口编程~
+- 接口中所有方法都是默认的 `public abstract`，此可以不写
+
+
+
+### synchronized 修饰符
+
+**synchronized 关键字声明的方法同一时间只能被一个线程访问**。synchronized 修饰符可以应用于四个访问修饰符。
+
+
+
+### final
+
+- final 修饰的方法不能被继承类重新定义
+
+- final 修饰的变量为常量，是不可修改的
+
+- final 修饰的类不能够被继承，例如 Math 类：
+
+  ```java
+  public final class Math {
+    ...
+  }
+  ```
+
+- 接口里的变量都隐式声明为 **public static final**,而接口里的方法默认情况下访问权限为 **public**。
+
+- final 修饰符通常和 static 修饰符一起使用来创建**类常量**。
+
+
+
+### transient修饰符
+
+java 的transient关键字为我们提供了便利，你只需要实现Serilizable接口，将不需要序列化的属性前**添加关键字transient，序列化对象的时候，这个属性就不会序列化**到指定的目的地中。
+
+
+
+### volatile 修饰符
+
+volatile 修饰的成员变量在每次被线程访问时，都强制从共享内存中重新读取该成员变量的值。而且，当成员变量发生变化时，会强制线程将变化值回写到共享内存。这样在任何时刻，两个不同的线程总是看到某个成员变量的同一个值。
+
+
+
+### 静态导入包
+
+```java
+// 静态导入包
+import static java.lang.Math.random;
+
+public class Test {
+  public static void main(String[] args) {
+    // 直接使用Math类下的random方法而不用加类名前缀
+    System.out.println(random());
+  }
+}
+```
+
+
+
+
+
 ### IOC依赖反转
 
 ```java
 private UserDao userDao;
 
-// 利用set进行动态实现值得注入！
+// 利用set进行动态实现值的注入！
 public void setUserDao(UserDao userDao) {
   this.userDao = userDao;
 }
@@ -115,7 +223,74 @@ public void setUserDao(UserDao userDao) {
 
 
 
-**DDD领域驱动模型**
+### JDBC
+
+Java Database Connect，java的数据库连接，类似USB接口的通用接口，各家数据库的驱动需要实现此接口才可以使用Java开发。
+
+```java
+// 加载mysql数据库驱动
+Class.forName("come.mysql.jdbc.Driver");
+
+String url = "jdbc:mysql://localhost:3306/test";
+String username = "root";
+String password = "111111";
+Connection conn = null;
+			
+//2.获取与数据库的链接
+conn = DriverManager.getConnection(url, username, password);
+
+PreperedStatement st = null;
+String sql = "select * from users where name=? and password=?";
+ 
+//3.获取用于向数据库发送sql语句的Preperedstatement
+st = conn.preparedStatement(sql);//在此次传入，进行预编译
+st.setString(1, username);
+st.setString(2, password);
+//4.向数据库发sql
+st.executeQuery();//在这里不需要传入sql
+```
+
+
+
+### JUnit
+
+pom.xml 中导入包：
+
+```xml
+<!--单元测试-->
+<dependency>
+  <groupId>junit</groupId>
+  <artifactId>junit</artifactId>
+  <version>4.12</version>
+</dependency>
+```
+
+
+
+在随便一个类的方法上面加上 `@Test` 注解 ，即可单元测试此方法：
+
+```java
+public class TestJunit {
+  @Test
+  public void Show() {
+    System.out.println("hello");
+  }
+}
+```
+
+```java
+// /Users/apple/.m2/repository/junit/junit/4.12/junit-4.12.jar!/org/junit/Test.class
+@Retention(RetentionPolicy.RUNTIME) // 仅运行时有效
+@Target({ElementType.METHOD})  // 只能作用在方法上
+public @interface Test {
+...
+```
+
+
+
+
+
+### DDD领域驱动模型
 
 DDD把模型分为四层：
 
@@ -140,11 +315,105 @@ DDD把模型分为四层：
 
 
 
+## Tomcat
+
+使用的engine是Catalina
+
+Tomcat目录结构
+
+```bash
+bin	# 启动脚本 startup.sh shutdown.sh catalina.sh
+conf # 配置目录 server.xml 8080端口配置
+webapps	# 默认网站存储目录 ROOT docs http://localhost:8080/docs
+```
+
+jsp中嵌入了java代码
+
+```java
+--webapps: Tomcat服务器目录
+  -Root
+  -yourWebsite: 网站的目录名
+    -WEB-INF
+    	-classes: java程序
+      -lib: web应用锁依赖的jar包 
+      -web.xml: 网站的配置文件
+    -index.html: 默认的首页    
+    -static
+      -css
+      	-style.css
+      -html
+      -js
+      -img
+```
+
+
+
+下载好的Tomcat中的bin目录下脚本，需要加可执行权限：
+
+```bash
+chmod +x startup.sh
+chmod +x catalina.sh
+```
+
+否则无法启动Tomcat服务.
+
+
+
+使用idea的 maven-tomcat-webapp 的maven模板，做 tomcat服务器：
+
+![image-20210307184512523](basics.assets/image-20210307184512523.png)
+
+
+
+可以把项目中web.xml修改为和Tomcat中一样
+
+项目中：
+
+```bash
+/Users/apple/wikis/java/javaweb-01-maven/hello2/src/main/webapp/WEB-INF/web.xml
+```
+
+```xml
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+  <display-name>Archetype Created Web Application</display-name>
+</web-app>
+```
+
+Tomcat中：
+
+```bash
+/apache-tomcat-10.0.2/conf/web.xml
+```
+
+```xml
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+                      https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+  version="5.0">
+```
+
+
+
+## Idea IDE
+
+- 自动生成变量的setter和getter快捷键：Alt + Insert
+
+
+
 ## maven
 
 IDE都是调用的maven做java项目的依赖管理和编译发布。
 
-对不同的打包环境，可配置pom.xml中的project参数值，指定dev/qa/pre/prod环境的编译选项，对应项目的pom.xml的同级根文件中，也建立系统名称的目录：
+![image-20210307165042213](basics.assets/image-20210307165042213.png)
+
+对不同的打包环境，可配置pom.xml中的project参数值，指定dev/qa/pre/prod环境的编译选项，对应项目的pom.xml的同级根文件中，也建立系统名称的目录
+
+
 
 
 
@@ -216,6 +485,51 @@ clean compiler package -Pdev -Dmaven.test.skip-true
 ```
 
  
+
+maven由于它的约定大于配置，可能会遇到写的配置文件，无法被导出或者生效的问题，解决方案
+
+在pom.xml的build标签中，加一个resources：
+
+```xml
+<!--在build中配置resources，来防止我们资源导出失败的问题-->
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+```
+
+后面mybatis可能会遇到。
+
+
+
+## Questions
+
+- JVM的位置
+- JVM的体系结构
+
+- 类加载器
+- 双亲委派机制
+- 沙箱安全机制
+- Native
+- 三种JVM
+- 栈、堆、堆内存调优
+
+
 
 ## 参考资料
 
