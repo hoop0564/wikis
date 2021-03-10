@@ -228,8 +228,26 @@ public void setUserDao(UserDao userDao) {
 Java Database Connect，java的数据库连接，类似USB接口的通用接口，各家数据库的驱动需要实现此接口才可以使用Java开发。
 
 ```java
-// 加载驱动
+// 加载mysql数据库驱动
 Class.forName("come.mysql.jdbc.Driver");
+
+String url = "jdbc:mysql://localhost:3306/test";
+String username = "root";
+String password = "111111";
+Connection conn = null;
+			
+//2.获取与数据库的链接
+conn = DriverManager.getConnection(url, username, password);
+
+PreperedStatement st = null;
+String sql = "select * from users where name=? and password=?";
+ 
+//3.获取用于向数据库发送sql语句的Preperedstatement
+st = conn.preparedStatement(sql);//在此次传入，进行预编译
+st.setString(1, username);
+st.setString(2, password);
+//4.向数据库发sql
+st.executeQuery();//在这里不需要传入sql
 ```
 
 
