@@ -252,6 +252,42 @@ st.executeQuery();//在这里不需要传入sql
 
 
 
+### JUnit
+
+pom.xml 中导入包：
+
+```xml
+<!--单元测试-->
+<dependency>
+  <groupId>junit</groupId>
+  <artifactId>junit</artifactId>
+  <version>4.12</version>
+</dependency>
+```
+
+
+
+在随便一个类的方法上面加上 `@Test` 注解 ，即可单元测试此方法：
+
+```java
+public class TestJunit {
+  @Test
+  public void Show() {
+    System.out.println("hello");
+  }
+}
+```
+
+```java
+// /Users/apple/.m2/repository/junit/junit/4.12/junit-4.12.jar!/org/junit/Test.class
+@Retention(RetentionPolicy.RUNTIME) // 仅运行时有效
+@Target({ElementType.METHOD})  // 只能作用在方法上
+public @interface Test {
+...
+```
+
+
+
 
 
 ### DDD领域驱动模型
