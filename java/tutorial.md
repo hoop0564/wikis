@@ -1,4 +1,6 @@
-# Java Tutorial
+# Java技术栈学习
+
+
 
 ## 应用领域：
 
@@ -79,6 +81,15 @@ JAVA_HOME中有一个src.zip包，里面是java系统库的源代码！
 
 
 
+### Java标记接口
+
+标记接口是没有任何方法和属性的接口.它仅仅表明它的类属于一个特定的类型,供其他代码来测试允许做一些事情。目的有：
+
+1. 建立一个公共的父接口
+
+2. 向一个类添加数据类型?
+
+
 ### Java 包
 
 一般使用公司域名倒置作为包名
@@ -89,7 +100,6 @@ package com.baidu.www; // 定义包名
 
 import java.util.Date; // 导入包
 ```
-
 
 
 ### Java修饰符
@@ -121,7 +131,7 @@ Java可以使用修饰符来修饰类中方法和属性。主要有两类修饰�
 
 **Java 源程序与编译型运行区别**
 
-![./images/java-compile.png](./images/java-compile.png)
+<img src="./images/java-compile.png" alt="./images/java-compile.png" style="zoom: 25%;" />
 
 ### 变量类型
 
@@ -151,6 +161,13 @@ Java可以使用修饰符来修饰类中方法和属性。主要有两类修饰�
 
 
 
+### Java 注解（Annotation）
+
+Java 注解（Annotation）又称 Java 标注，是 JDK5.0 引入的一种注释机制。
+
+Java 语言中的类、方法、变量、参数和包等都可以被标注。和 Javadoc 不同，Java 标注可以通过**反射**获取标注内容。在编译器生成类文件时，标注可以被嵌入到字节码中。Java 虚拟机可以保留标注内容，在运行时可以获取到标注内容 。 当然它也支持自定义 Java 标注。
+
+
 ### Java StringBuffer 和 StringBuilder 类
 
 当对字符串进行修改的时候，需要使用 StringBuffer 和 StringBuilder 类。
@@ -164,6 +181,16 @@ Java可以使用修饰符来修饰类中方法和属性。主要有两类修饰�
 StringBuilder 类在 Java 5 中被提出，它和 StringBuffer 之间的最大不同在于 **StringBuilder 的方法不是线程安全的**（不能同步访问）。
 
 由于 **StringBuilder 相较于 StringBuffer 有速度优势**，所以多数情况下建议使用 StringBuilder 类。
+
+
+
+### JavaBean
+
+> Java是咖啡，bean是豆子，JavaBean即咖啡豆，也就是实体的意思。
+
+JavaBean 是一种[JAVA语言](https://baike.baidu.com/item/JAVA语言/4148931)写成的**可重用组件**。为写成JavaBean，类必须是具体的和公共的，并且具有无参数的[构造器](https://baike.baidu.com/item/构造器/9844976)。JavaBean 通过提供符合一致性设计模式的公共方法将内部域暴露成员属性，set和get方法获取。众所周知，属性名称符合这种模式，其他Java 类可以通过自省机制(**反射机制**)发现和操作这些JavaBean 的属性。
+
+JavaBean是一种可重用的[Java组件](https://baike.baidu.com/item/Java组件/53178233)，它可以被Applet、Servlet、JSP等Java应用程序调用．也可以可视化地被Java开发工具使用。它包含**属性(Properties)、方法(Methods)、事件(Events)**等特性。
 
 
 
@@ -203,7 +230,54 @@ Java 中其实没有虚函数的概念，它的普通函数就相当于 C++ 的�
 
 
 
-### Spring框架
+### JPA
+
+ JPA是Java Persistence API的简称，中文名Java持久层API，是JDK 5.0注解或XML描述对象－关系表的映射关系，并将运行期的实体[对象持久化](https://baike.baidu.com/item/对象持久化/7316192)到数据库中。
+
+Sun引入新的JPA ORM规范出于两个原因：其一，简化现有Java EE和Java SE应用开发工作；其二，Sun希望整合ORM技术，实现天下归一。
+
+
+
+![img](images/jpa.jpg)
+
+### Hibernate
+
+通过整合Hibernate，我们能够以操作Java实体的方式来完成对数据的操作，通过框架的帮助，对Java实体的变更最终将自动地映射到数据库表中。
+
+在Hibernate的帮助下，Java实体映射到数据库表数据完成之后，再进一步解决抽象各个Java实体基本的“增删改查”操作，我们通常会以泛型的方式封装一个模板Dao来进行抽象简化，但是这样依然不是很方便，我们需要针对每个实体编写一个继承自泛型模板Dao的接口，再编写该接口的实现。虽然一些基础的数据访问已经可以得到很好的复用，但是在代码结构上针对每个实体都会有一堆Dao的接口和实现。
+
+由于模板Dao的实现，使得这些具体实体的Dao层已经变的非常“薄”，有一些具体实体的Dao实现可能完全就是对模板Dao的简单代理，并且往往这样的实现类可能会出现在很多实体上。Spring Data JPA的出现正可以让这样一个已经很“薄”的数据访问层变成只是一层接口的编写方式。比如，下面的例子：
+
+```java
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    User findByName(String name);
+
+    @Query("from User u where u.name=:name")
+    User findUser(@Param("name") String name);
+
+}
+```
+
+我们只需要通过编写一个继承自`JpaRepository`的接口就能完成数据访问，下面以一个具体实例来体验Spring Data JPA给我们带来的强大功能。
+
+![img](images/hibenate-jpa.jpg)
+
+### Lombok
+
+Lombok是一款Java开发插件，使得Java开发者可以通过其定义的一些注解来消除业务工程中冗长和繁琐的代码，尤其对于简单的Java模型对象（POJO）。在开发环境中使用Lombok插件后，Java开发人员可以节省出重复构建，诸如hashCode和equals这样的方法以及各种业务对象模型的accessor和ToString等方法的大量时间。对于这些方法，它能够在编译源代码期间自动帮我们生成这些方法，并没有如反射那样降低程序的性能。
+
+![img](images/www.liuhaihua.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg)
+
+- 注解的执行原理图：
+
+![img](images/java-lombok-how-to-use-4.png)
+
+- lombok插件的执行流程：
+
+![img](images/java-lombok-how-to-use-5.png)
+
+## Spring框架
 
 Spring是Java企业版（Java Enterprise Edition， JEE， 也称J2EE）的轻量级替代品，无需开发重量级的Enterprise JavaBean（EJB)，Spring为企业级Java开发提供了一种相对简单的方法，通过依赖注入和面向切面编程，用简单的Java对象（Plain Old Java Object，POJO）实现了EJB的功能。
 
@@ -221,6 +295,9 @@ Spring框架是由于[软件开发](https://baike.baidu.com/item/软件开发/34
 
 
 
+
+![img](.\images\spring-xmind.png)
+=======
 
 
 ![img](.\images\spring-xmind.png?lastModify=1615082095)
@@ -253,7 +330,7 @@ Spring Boot 中流砥柱，承上启下
 
 
 
-SpringBoot的核心功能
+### SpringBoot的核心功能
 
 - 起步依赖：starter，本质上是一个maven项目对象模型（POM），定义了对其他库的传递依赖
 
@@ -263,7 +340,7 @@ SpringBoot的核心功能
 
 
 
-快速开始：
+### 快速开始
 
 - [IDEA创建Spring Boot项目无法连接http://start.spring.io 解决方法](https://blog.csdn.net/lidai352710967/article/details/81089305)
 
@@ -282,7 +359,7 @@ SpringBoot的核心功能
 - 查找自动配置的参数名称：
 
   ```bash
-  # Maven: spring-boot-autoconfigure
+  # Maven: spring-boot-
   /META-INF/spring-configuration-metadata.json
   ```
 
@@ -290,7 +367,7 @@ SpringBoot的核心功能
 
 
 
-
+### mvc注解
 
 ![img](./images/mvc-annotation.png)
 
@@ -303,12 +380,6 @@ SpringBoot的核心功能
 　　SpringCloud是一整套的微服务解决方案,目前完整的微服务框架，它是是一系列框架的有序集合。它只是将目前各家公司开发的比较成熟、经得起实际考验的服务框架组合起来，通过SpringBoot风格进行再封装屏蔽掉了复杂的配置和实现原理，最终给开发者留出了一套简单易懂、易部署和易维护的分布式系统开发工具包。它利用Spring Boot的开发便利性巧妙地简化了分布式系统基础设施的开发，如服务发现注册、配置中心、消息总线、负载均衡、断路器、数据监控等，都可以用SpringBoot的开发风格做到一键启动和部署。
 
 
-
-### JavaBean
-
-JavaBean 是一种[JAVA语言](https://baike.baidu.com/item/JAVA语言/4148931)写成的**可重用组件**。为写成JavaBean，类必须是具体的和公共的，并且具有无参数的[构造器](https://baike.baidu.com/item/构造器/9844976)。JavaBean 通过提供符合一致性设计模式的公共方法将内部域暴露成员属性，set和get方法获取。众所周知，属性名称符合这种模式，其他Java 类可以通过自省机制(**反射机制**)发现和操作这些JavaBean 的属性。
-
-JavaBean是一种可重用的[Java组件](https://baike.baidu.com/item/Java组件/53178233)，它可以被Applet、Servlet、JSP等Java应用程序调用．也可以可视化地被Java开发工具使用。它包含**属性(Properties)、方法(Methods)、事件(Events)**等特性。
 
 
 
@@ -552,13 +623,17 @@ eureka:
 
 而拥有了 `Sprin Cloud Bus` 之后，只需要创建一个简单的请求，并且加上 `@ResfreshScope` 注解就能进行配置的动态修改了：
 
+<<<<<<< HEAD
 ![img](\images\spring-cloud-bus.jpg)
+=======
+![img](.\images\spring-cloud-bus.jpg)
+>>>>>>> b503bac5315c069d8495cb876baa456611e39682
 
 
 
 ### SpringData
 
-**SpringData**简化了基于Spring框架应用的数据库访问，包括对关系型、非关系型、Map-Reduce、云数据服务等都支持，它具备ORM框架的对象关系映射的功能，提供统一的Repository接口实现CRUD、分页、排序等相关操作，也提供了统一的模板类。
+**SpringData**简化了基于Spring框架应用的数据库访问，包括对关系型、非关系型、Map-Reduce、云数据服务等都支持，它具备ORM框架的对象关系映射的功能，**提供统一的Repository接口实现CRUD**、分页、排序等相关操作，也提供了统一的模板类。
 
 ![image-20210310220103107](../spring-data.png)
 
@@ -573,6 +648,7 @@ eureka:
            1. 即使提供了@Query，但是对于某些查询，还是无能无力，比如某个需求，多表联查，只取其中一列
            2. 多表查询很是无力，远远比不上mybatis
 
+
 #### 统一的Repository接口：
 
 ```java
@@ -583,10 +659,13 @@ PagingAndSortingRepository<T, ID extends Serializable>; // 基本CRUD及分页
 ```
 
 
+> 不论你是要访问什么数据存储产品，它们的编码方式几乎都是一样的！这就是Spring Data这个项目充满魅力的地方！通过对数据访问操作的抽象来屏蔽细节，用不同子项目的方式去实现细节。让开发者只需要学会使用Spring Data，就能方便快捷的学会对各种数据存储的操作。所以，对于Spring Data，我是强烈推荐Java开发者们可以学、甚至读一下源码的重要框架。虽然，目前来说很多大型互联网公司并不会选择它（性能考量居多，能真正用好它的人不多）作为主要的开发框架，但是其背后的抽象思想是非常值得我们学习的。并且，在做一些非高并发项目的时候，这简直就是一个快捷开发神器，它可以帮助我们少写非常多的代码！
+
+
 
 ### Mybatis
 
-Mybatis是一种半自动的ORM框架，它简单易上手，没有第三方依赖，支持对象与数据库的ORM关系映射，将sql代码与业务代码分离，使得开发人员可以更自如的写出高效的sql，不过反过来说不像SpringData 这种全自动的ORM框架，它需要自己实现sql语句，对开发人员的sql编写能力要求高，虽然将sql代码写在xml文件里方便了修改和编写，可这同时也降低了可读性。
+Mybatis是一种**半自动的ORM框架**，它简单易上手，没有第三方依赖，支持对象与数据库的ORM关系映射，将sql代码与业务代码分离，使得开发人员可以更自如的写出高效的sql，不过反过来说不像SpringData 这种全自动的ORM框架，它需要自己实现sql语句，对开发人员的sql编写能力要求高，虽然将sql代码写在**xml**文件里方便了修改和编写，可这同时也降低了可读性。
 
 #### 优点 ：
 
@@ -612,7 +691,8 @@ Amazon S3 提供了一个简单 Web 服务接口，可用于随时在 Web 上的
 
 
 
-**如何才算掌握Java**
+### 如何才算掌握Java
+
 Java本身是一种设计的非常简单，非常精巧的语言，所以Java背后的原理也很简单，归结起来就是两点：
 1、JVM的内存管理
 	理解了这一点，所有和对象相关的问题统统都能解决
@@ -621,11 +701,41 @@ Java本身是一种设计的非常简单，非常精巧的语言，所以Java背
 
 
 
-## todo
+
+
+## Java VS C#
+
+| 比较项        | 现有技术栈      | Java技术栈                 |
+| ------------- | --------------- | -------------------------- |
+| web代理服务器 | IIS             | Tomcat                     |
+| web微服务框架 | ABP Framework   | spring-boot                |
+| 数据库ORM访问 | EntityFramework | spring-boot-jpa即Hibernate |
+|               |                 |                            |
+|               |                 |                            |
+|               |                 |                            |
+|               |                 |                            |
+
+
+
+### Todos
 
 - 使用u+的commonlib建立工程
 - 做现有技术栈的Java翻译
 - 打包部署到新机上运行
+
+### 数据库ORM调研：
+
+- 数据库表变动的migration
+- SQL控制语句
+- 数据库的初始化
+
+
+
+## GitHub示例代码推荐
+
+- [spring-boot-examples](https://github.com/ityouknow/spring-boot-examples.git)
+
+- [SpringBoot-Learning]( https://github.com/dyc87112/SpringBoot-Learning.git)
 
 
 
@@ -634,7 +744,6 @@ Java本身是一种设计的非常简单，非常精巧的语言，所以Java背
 - [java思维导图](https://blog.csdn.net/qq_42370505/article/details/109114725)
 - [Java 微服务架构选型](https://www.cnblogs.com/zengyjun/p/10309391.html)
 - [Spring Cloud 入门总结](https://zhuanlan.zhihu.com/p/95696180?from_voters_page=true)
-- 《**Spring**微服务实战》
 - [SpringData JPA和Mybatis的优缺点](https://blog.csdn.net/worshipme/article/details/107369640)
 - [Spring思维导图，让spring不再难懂](https://my.oschina.net/u/3080373/blog/891918)
 - [微服务、SpringBoot和SpringCloud的关系和区别](https://www.cnblogs.com/wwct/p/12942982.html)
@@ -644,3 +753,7 @@ Java本身是一种设计的非常简单，非常精巧的语言，所以Java背
 - [一步一步学Spring Boot](https://blog.csdn.net/huangwenyi1010/article/details/76359275)
 - [Gradle和Maven性能对比](https://blog.csdn.net/u011054333/article/details/103221226)
 - [idea如何打包项目(java)](https://www.cnblogs.com/july7/p/11473751.html)
+
+- [Spring Boot 2.x基础教程：使用Spring Data JPA访问MySQL](https://blog.didispace.com/spring-boot-learning-21-3-4/)
+
+- [Java开发神器Lombok的使用与原理](https://blog.didispace.com/java-lombok-how-to-use/)
