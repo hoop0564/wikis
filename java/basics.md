@@ -38,7 +38,7 @@ public interface Hockey extends Sports, Event
 
 2、静态方法，使用 static 修饰；示例如下：
 
-```
+```java
 interface Test{
     //这个是默认方法
     default String get(String aa){
