@@ -90,6 +90,7 @@ JAVA_HOME中有一个src.zip包，里面是java系统库的源代码！
 2. 向一个类添加数据类型?
 
 
+
 ### Java 包
 
 一般使用公司域名倒置作为包名
@@ -100,6 +101,7 @@ package com.baidu.www; // 定义包名
 
 import java.util.Date; // 导入包
 ```
+
 
 
 ### Java修饰符
@@ -166,6 +168,8 @@ Java可以使用修饰符来修饰类中方法和属性。主要有两类修饰�
 Java 注解（Annotation）又称 Java 标注，是 JDK5.0 引入的一种注释机制。
 
 Java 语言中的类、方法、变量、参数和包等都可以被标注。和 Javadoc 不同，Java 标注可以通过**反射**获取标注内容。在编译器生成类文件时，标注可以被嵌入到字节码中。Java 虚拟机可以保留标注内容，在运行时可以获取到标注内容 。 当然它也支持自定义 Java 标注。
+
+![img](images/java-annotation.jpeg)
 
 
 ### Java StringBuffer 和 StringBuilder 类
@@ -240,6 +244,8 @@ Sun引入新的JPA ORM规范出于两个原因：其一，简化现有Java EE和
 
 ![img](images/jpa.jpg)
 
+[Spring Data JPA 中常用注解](https://www.cnblogs.com/pascall/p/10280825.html)
+
 ### Hibernate
 
 通过整合Hibernate，我们能够以操作Java实体的方式来完成对数据的操作，通过框架的帮助，对Java实体的变更最终将自动地映射到数据库表中。
@@ -297,10 +303,6 @@ Spring框架是由于[软件开发](https://baike.baidu.com/item/软件开发/34
 
 
 ![img](.\images\spring-xmind.png)
-=======
-
-
-![img](.\images\spring-xmind.png?lastModify=1615082095)
 
 主要的maven依赖模块：
 
@@ -703,8 +705,22 @@ Java本身是一种设计的非常简单，非常精巧的语言，所以Java背
 ### Todos
 
 - 使用u+的commonlib建立工程
+
 - 做现有技术栈的Java翻译
+
 - 打包部署到新机上运行
+
+  |      |      |      |
+  | ---- | ---- | ---- |
+  | 日志 |      |      |
+  |      |      |      |
+  |      |      |      |
+  |      |      |      |
+  |      |      |      |
+
+  
+
+
 
 ### 数据库ORM调研：
 
