@@ -472,6 +472,25 @@ Tomcat中：
 
 
 
+## logging
+
+- log4j
+- log4j2
+- logback
+
+
+
+配置项目控制台日志输出级别：
+
+```properties
+# application.properties
+logging.level.root=debug
+```
+
+
+
+
+
 ## maven
 
 IDE都是调用的maven做java项目的依赖管理和编译发布。
