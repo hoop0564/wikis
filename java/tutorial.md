@@ -747,13 +747,14 @@ Java本身是一种设计的非常简单，非常精巧的语言，所以Java背
 - [SpringData JPA和Mybatis的优缺点](https://blog.csdn.net/worshipme/article/details/107369640)
 - [Spring思维导图，让spring不再难懂](https://my.oschina.net/u/3080373/blog/891918)
 - [微服务、SpringBoot和SpringCloud的关系和区别](https://www.cnblogs.com/wwct/p/12942982.html)
-
 - [Spring Boot -01- 快速入门篇（图文教程）](https://blog.csdn.net/qq_40147863/article/details/84194493)
 - [IDEA如何在项目中快速添加Maven依赖](https://cloud.tencent.com/developer/article/1482956)
 - [一步一步学Spring Boot](https://blog.csdn.net/huangwenyi1010/article/details/76359275)
 - [Gradle和Maven性能对比](https://blog.csdn.net/u011054333/article/details/103221226)
 - [idea如何打包项目(java)](https://www.cnblogs.com/july7/p/11473751.html)
-
 - [Spring Boot 2.x基础教程：使用Spring Data JPA访问MySQL](https://blog.didispace.com/spring-boot-learning-21-3-4/)
-
 - [Java开发神器Lombok的使用与原理](https://blog.didispace.com/java-lombok-how-to-use/)
+
+- [cnblogs-kuangshen-SpringBoot系列](https://www.cnblogs.com/hellokuangshen/tag/SpringBoot%E7%B3%BB%E5%88%97/)
+
+- [使用spring JPA访问MySQL数据](https://spring.io/guides/gs/accessing-data-mysql/)
