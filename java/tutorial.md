@@ -625,7 +625,11 @@ eureka:
 
 而拥有了 `Sprin Cloud Bus` 之后，只需要创建一个简单的请求，并且加上 `@ResfreshScope` 注解就能进行配置的动态修改了：
 
+<<<<<<< HEAD
+![img](\images\spring-cloud-bus.jpg)
+=======
 ![img](.\images\spring-cloud-bus.jpg)
+>>>>>>> b503bac5315c069d8495cb876baa456611e39682
 
 
 
@@ -633,16 +637,29 @@ eureka:
 
 **SpringData**简化了基于Spring框架应用的数据库访问，包括对关系型、非关系型、Map-Reduce、云数据服务等都支持，它具备ORM框架的对象关系映射的功能，**提供统一的Repository接口实现CRUD**、分页、排序等相关操作，也提供了统一的模板类。
 
-**优点：**
+![image-20210310220103107](../spring-data.png)
+
+#### 优点：
 
 1. 基本的sql语句不需要写，只需要继承JpaRepository接口，按照规范编写接口方法名即可
 2. 对于不想按照规范对接口方法名进行规范的写，提供了@Query()接口
 3. 提供了快速分页并排序的接口
 
- **缺点：**   
+####  **缺点：**   
 
            1. 即使提供了@Query，但是对于某些查询，还是无能无力，比如某个需求，多表联查，只取其中一列
            2. 多表查询很是无力，远远比不上mybatis
+
+
+#### 统一的Repository接口：
+
+```java
+Repository<T, ID extends Serializable>; // 统一接口
+RevisionRepository<T, ID extends Serializable, N extends Number & Comparable<N>>; // 基于乐观锁机制
+CrudRepository<T, ID extends Serializable>; // 基于CRUD操作
+PagingAndSortingRepository<T, ID extends Serializable>; // 基本CRUD及分页
+```
+
 
 > 不论你是要访问什么数据存储产品，它们的编码方式几乎都是一样的！这就是Spring Data这个项目充满魅力的地方！通过对数据访问操作的抽象来屏蔽细节，用不同子项目的方式去实现细节。让开发者只需要学会使用Spring Data，就能方便快捷的学会对各种数据存储的操作。所以，对于Spring Data，我是强烈推荐Java开发者们可以学、甚至读一下源码的重要框架。虽然，目前来说很多大型互联网公司并不会选择它（性能考量居多，能真正用好它的人不多）作为主要的开发框架，但是其背后的抽象思想是非常值得我们学习的。并且，在做一些非高并发项目的时候，这简直就是一个快捷开发神器，它可以帮助我们少写非常多的代码！
 
@@ -652,7 +669,7 @@ eureka:
 
 Mybatis是一种**半自动的ORM框架**，它简单易上手，没有第三方依赖，支持对象与数据库的ORM关系映射，将sql代码与业务代码分离，使得开发人员可以更自如的写出高效的sql，不过反过来说不像SpringData 这种全自动的ORM框架，它需要自己实现sql语句，对开发人员的sql编写能力要求高，虽然将sql代码写在**xml**文件里方便了修改和编写，可这同时也降低了可读性。
 
-**优点 ：**
+#### 优点 ：
 
 1. 可以处理比spring data 更加复杂的sql语句，可以指定查询某些列的信息，对分页处理做的也是很好的
 2. 上手难度低
@@ -661,7 +678,7 @@ Mybatis是一种**半自动的ORM框架**，它简单易上手，没有第三方
 5. 可以将查询的结果直接映射到对象中
 6. 支持编写动态sql语句（这一点是spring data无法比拟的）
 
-**缺点：**
+#### 缺点：
 
 1. SQL语句的编写工作量较大，尤其是字段多、关联表多时，更是如此，对开发人员编写SQL语句的功底有一定要求。
 2. SQL语句依赖于数据库，导致数据库移植性差，不能随意更换数据库。
@@ -746,13 +763,14 @@ Java本身是一种设计的非常简单，非常精巧的语言，所以Java背
 - [SpringData JPA和Mybatis的优缺点](https://blog.csdn.net/worshipme/article/details/107369640)
 - [Spring思维导图，让spring不再难懂](https://my.oschina.net/u/3080373/blog/891918)
 - [微服务、SpringBoot和SpringCloud的关系和区别](https://www.cnblogs.com/wwct/p/12942982.html)
-
 - [Spring Boot -01- 快速入门篇（图文教程）](https://blog.csdn.net/qq_40147863/article/details/84194493)
 - [IDEA如何在项目中快速添加Maven依赖](https://cloud.tencent.com/developer/article/1482956)
 - [一步一步学Spring Boot](https://blog.csdn.net/huangwenyi1010/article/details/76359275)
 - [Gradle和Maven性能对比](https://blog.csdn.net/u011054333/article/details/103221226)
 - [idea如何打包项目(java)](https://www.cnblogs.com/july7/p/11473751.html)
-
 - [Spring Boot 2.x基础教程：使用Spring Data JPA访问MySQL](https://blog.didispace.com/spring-boot-learning-21-3-4/)
-
 - [Java开发神器Lombok的使用与原理](https://blog.didispace.com/java-lombok-how-to-use/)
+
+- [cnblogs-kuangshen-SpringBoot系列](https://www.cnblogs.com/hellokuangshen/tag/SpringBoot%E7%B3%BB%E5%88%97/)
+
+- [使用spring JPA访问MySQL数据](https://spring.io/guides/gs/accessing-data-mysql/)

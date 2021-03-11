@@ -20,6 +20,73 @@ bean作用域
 - prototype：原型，每个对象它都有一个自己的
 - ....
 
+spring框架中，托管了bean，对象都由spring自动创建和管理了，程序员只需要负责创建bean的class，使用resources/beans.xml，把class的路径信息填入beans.xml中，利用反射，通过setter方法，即实现了IOC的控制反转。
+
+`pom.xml`
+
+```xml
+<dependency>
+  <groupId>org.springframework</groupId>
+  <artifactId>spring-webmvc</artifactId>
+  <version>5.1.10.RELEASE</version>
+</dependency>
+```
+
+`Hello.java`
+
+```java
+public class Hello {
+  private String name;
+  public String getName() {
+    return name;
+  }
+  public void setName() {
+    this.name = name;
+  }
+  public void show () {
+    System.out.println("Hello" + name);
+  }
+}
+```
+
+`beans.xml`
+
+```xml
+<beans xmlns="...">
+  <bean id="hello" class="com.example.model.Hello">
+    <property name="str" value="Spring"/>
+  </bean>
+</beans>
+```
+
+`MyTest.java`
+
+```java
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+  
+public class MyTest {
+  public static void main(String[] args) {
+    ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+    Hello hello = (Hello)(context.getBean("hello"));
+    System.out.println(hello.toString());
+  }
+}
+```
+
+- Hello对象是Spring创建的
+- Hello对象的属性是有Spring容器设置的
+
+即对象由Spring来创建、管理，装配！
+
+这个过程就叫控制反转。
+
+- 控制：谁来控制对象的创建，传统应用程序的对象有程序本身控制创建的，使用Spring后，对象是Spring来创建的。
+- 反转：程序本身不创建对象，而变成被动的接受对象。
+- 依赖注入：就是利用set方法来进行注入的。
+
+IOC是一种编程思想，由主动的编程变成被动的接收。
+
 
 
 ### 接口
