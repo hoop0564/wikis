@@ -474,6 +474,8 @@ Tomcat中：
 
 ## logging
 
+比较以下的技术标准对比：
+
 - log4j
 - log4j2
 - logback
