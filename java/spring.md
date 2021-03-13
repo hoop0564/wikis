@@ -19,11 +19,7 @@ spring是如何简化java开发的？4种关键策略：
 
 
 
-
-
-<img src="spring.assets/image-20210228114626335.png" alt="image-20210228114626335" style="zoom:67%;" />
-
-
+- 自构建bean教程：https://docs.spring.io/spring-framework/docs/5.2.0.RELEASE/spring-framework-reference/core.html#beans-factory-metadata
 
 
 
