@@ -482,14 +482,51 @@ Tomcat中：
 
 
 
-配置项目控制台日志输出级别：
+`application.properties` 中配置项目控制台日志输出级别：
 
 ```properties
 # application.properties
 logging.level.root=debug
+
+# 指定到文件或者目录的日志输出级别
+logging.level.com.example.springboot.controller.UserController=trace
+
+# 输出到控制台中的格式
+logging.pattern.console= %d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg%n
+
+logging.file.name=/Users/apple/codes/java/logger/example.log
+logging.logback.rollingpolicy.max-file-size=10MB
+# 输出到文件中的格式
+logging.pattern.file= file: %d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg%n
 ```
 
 
+
+`UserController.java:`
+
+```java
+package com.example.springboot.controller;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Date;
+
+@RestController
+public class UserController {
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
+
+    @GetMapping("/user/{id}")
+    public String getUser(@PathVariable("id") Integer id) {
+        log.info("this is a info msg: {}", new Date());
+
+        return "jack";
+    }
+}
+```
 
 
 
