@@ -707,15 +707,15 @@ Java本身是一种设计的非常简单，非常精巧的语言，所以Java背
 
 ## Java VS C#
 
-| 比较项        | 现有技术栈      | Java技术栈                 |
-| ------------- | --------------- | -------------------------- |
-| web代理服务器 | IIS             | Tomcat                     |
-| web微服务框架 | ABP Framework   | spring-boot                |
-| 数据库ORM访问 | EntityFramework | spring-boot-jpa即Hibernate |
-|               |                 |                            |
-|               |                 |                            |
-|               |                 |                            |
-|               |                 |                            |
+| 比较项         | 现有技术栈      | Java技术栈                       |
+| -------------- | --------------- | -------------------------------- |
+| web代理服务器  | IIS             | Tomcat                           |
+| web微服务框架  | ABP Framework   | spring-boot                      |
+| 数据库ORM访问  | EntityFramework | spring-boot-jpa（基于Hibernate） |
+| 依赖项配置工具 | nuget           | maven                            |
+| 依赖项配置文件 | ？              | pom.xml                          |
+|                |                 |                                  |
+|                |                 |                                  |
 
 
 
@@ -770,7 +770,6 @@ Java本身是一种设计的非常简单，非常精巧的语言，所以Java背
 - [idea如何打包项目(java)](https://www.cnblogs.com/july7/p/11473751.html)
 - [Spring Boot 2.x基础教程：使用Spring Data JPA访问MySQL](https://blog.didispace.com/spring-boot-learning-21-3-4/)
 - [Java开发神器Lombok的使用与原理](https://blog.didispace.com/java-lombok-how-to-use/)
-
 - [cnblogs-kuangshen-SpringBoot系列](https://www.cnblogs.com/hellokuangshen/tag/SpringBoot%E7%B3%BB%E5%88%97/)
-
 - [使用spring JPA访问MySQL数据](https://spring.io/guides/gs/accessing-data-mysql/)
+- [运行原理探究](https://www.cnblogs.com/hellokuangshen/p/12450327.html)
