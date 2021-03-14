@@ -702,9 +702,13 @@ Java本身是一种设计的非常简单，非常精巧的语言，所以Java背
 1、JVM的内存管理
 	理解了这一点，所有和对象相关的问题统统都能解决
 2、JVM Class Loader
+
+- classloader 机制避免了多线程的同步问题
+- classloader 机制来保证例如单例初始化 instance 时只有一个线程
+
 　理解了这一点，所有和Java相关的配置问题，包括各种App Server的配置，应用的发布问题统统都能解决
 
-
+![img](../images/java/classloader.jpg)
 
 
 
