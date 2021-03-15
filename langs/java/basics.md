@@ -30,7 +30,9 @@ bean作用域scope分类：
   <beam id="user" class="come.example.pojo.User" scope="prototype"/>
   ```
 
-  
+- request/session/application，只能在web开发中使用到
+
+
 
 spring框架中，托管了bean，对象都由spring自动创建和管理了，程序员只需要负责创建bean的class，使用resources/beans.xml，把class的路径信息填入beans.xml中，利用反射，通过setter方法，即实现了IOC的控制反转。
 
@@ -670,13 +672,14 @@ maven由于它的约定大于配置，可能会遇到写的配置文件，无法
 
 ## Questions
 
-- JVM的位置
-- JVM的体系结构
-
-- 类加载器
+- JVM的常用调优参数有哪些？
+- 内存快照如何抓取，怎么分析dump文件？
+- JVM的位置？
+- JVM的体系结构？
+- 类加载器？
 - 双亲委派机制
 - 沙箱安全机制
-- Native
+- Native本地方法接口？
 - 三种JVM
 - 栈、堆、堆内存调优
 
