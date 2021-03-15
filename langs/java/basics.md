@@ -14,11 +14,23 @@ jdk8/jdk/bin/rt.jar
 
 JavaBean 表示咖啡豆，实体类，一般都是和数据库中的表结构一一对应的！
 
-bean作用域
+bean作用域scope分类：
 
-- singleton：全局唯一
+- singleton：全局唯一，spring默认机制
+
+  ```xml
+  <beam id="user" class="come.example.pojo.User" c:age="18" c:name="leo" scope="singleton"/>
+  ```
+
+  
+
 - prototype：原型，每个对象它都有一个自己的
-- ....
+
+  ```xml
+  <beam id="user" class="come.example.pojo.User" scope="prototype"/>
+  ```
+
+  
 
 spring框架中，托管了bean，对象都由spring自动创建和管理了，程序员只需要负责创建bean的class，使用resources/beans.xml，把class的路径信息填入beans.xml中，利用反射，通过setter方法，即实现了IOC的控制反转。
 
@@ -189,7 +201,7 @@ public class Person {
 
 **3、实例对象.getClass()** 
 
-说明：对类进行静态初始化、非静态初始化；返回引用o运行时真正所指的对象(因为:子对象的引用可能会赋给父对象的引用变量中)所属的类的Class的对象
+说明：对类进行静态初始化、非静态初始化；返回引用运行时真正所指的对象(因为:子对象的引用可能会赋给父对象的引用变量中)所属的类的Class的对象
 
 
 
