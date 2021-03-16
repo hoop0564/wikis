@@ -7,10 +7,13 @@
     <!-- more bean definitions go here -->
     <bean id="cat" class="com.example.pojo.Cat"/>
     <bean id="dog" class="com.example.pojo.Dog"/>
-    <bean id="people" class="com.example.pojo.People">
+
+<!--
+byName: 会自动在容器上下文中查找，和自己对象set方法后面的值对应的bean id！
+byType: 会自动在容器上下文中查找，和自己对象属性类型相同的bean class！
+-->
+    <bean id="people" class="com.example.pojo.People" autowire="byType">
         <property name="name" value="leo"/>
-        <property name="dog" ref="dog"/>
-        <property name="cat" ref="cat"/>
     </bean>
 
 </beans>
