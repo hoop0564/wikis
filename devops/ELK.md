@@ -716,6 +716,11 @@ logstash捕获到的日志：
 
 - [gitee的github镜像仓库：olivere/elastic](https://gitee.com/mirrors_olivere/elastic)
 
+goland 报红的话: 
+
+1. go mod tidy 
+2. goland Preference->Go->Go Modules(vgo) -> Enable Go Modules(vgo)intergration
+
 
 
 ## 参考资料

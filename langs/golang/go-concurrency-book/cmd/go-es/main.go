@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	elastic "github.com/olivere/elastic/v7"
+	"github.com/olivere/elastic/v7"
 )
 
 var client *elastic.Client
