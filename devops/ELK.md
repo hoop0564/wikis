@@ -315,7 +315,7 @@ filebeat有两个主要组件：prospector 和 harvester
   - prospector负责管理harvester并找到所有要读取的文件来源
   - 如果输入类型为日志，则查找器将查找路径匹配的所有文件，并为每个文件启动一个harvester
   - filebeat目前支持两种prospector类型：log和stdin
-- filebeat如果保持文件的状态
+- filebeat如何保持文件的状态
   - filebeat保存每个文件的状态并经常将状态刷新到磁盘的注册文件中
   - 该状态用于记住harvester正在读取的最后**偏移量**，并确保发送所有日志行
   - 如果输出（es或logstash）无法访问，filebeat会跟踪最后发送的行，并在输出再次可用时继续读取文件！
@@ -711,6 +711,10 @@ logstash捕获到的日志：
 - filter plugin: 过滤器（beats）
 
 
+
+## go访问elasticsearch
+
+- [gitee的github镜像仓库：olivere/elastic](https://gitee.com/mirrors_olivere/elastic)
 
 
 

@@ -693,4 +693,4 @@ maven由于它的约定大于配置，可能会遇到写的配置文件，无法
 
 - [jdk1.8谷歌版本中文文档](https://blog.csdn.net/minyunfei6/article/details/88848396)
 
-- [IDEA 将 SpringBoot 项目打包成jar的方法](IDEA 将 SpringBoot 项目打包成jar的方法)
+- [IDEA 将 SpringBoot 项目打包成jar的方法](https://blog.csdn.net/sinat_27672523/article/details/81985805)
