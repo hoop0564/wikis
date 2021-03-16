@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- more bean definitions go here -->
+    <bean id="cat" class="com.example.pojo.Cat"/>
+    <bean id="dog" class="com.example.pojo.Dog"/>
+    <bean id="people" class="com.example.pojo.People">
+        <property name="name" value="leo"/>
+        <property name="dog" ref="dog"/>
+        <property name="cat" ref="cat"/>
+    </bean>
+
+</beans>
