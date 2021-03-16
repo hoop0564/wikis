@@ -23,7 +23,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("info::", info)
+	fmt.Printf("info::%+v\n", info)
 	fmt.Println("code::", code)
 
 	version, err := client.ElasticsearchVersion(host)
@@ -31,4 +31,24 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("version::", version)
+
+	rsp, err := client.Index().Index("info").Id("1").BodyString("hello world").Do(context.Background())
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(rsp.Id, rsp.Index, rsp.Type)
+
+	get, err := client.Get().Index("info").Id("1").Do(context.Background())
+	if err != nil {
+		panic(err)
+	}
+	if get.Found {
+		fmt.Println(get.Id, get.Version)
+	}
+
+	del, err := client.Delete().Index("info").Id("1").Do(context.Background())
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(del.Version)
 }
