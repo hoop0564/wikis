@@ -46,9 +46,20 @@ func main() {
 		fmt.Println(get.Id, get.Version)
 	}
 
+	q := elastic.NewQueryStringQuery("firstName:json")
+
+	boolQ := elastic.NewBoolQuery()
+	boolQ.Filter(elastic.NewMatchQuery("lastname", "smith"))
+	boolQ.Filter(elastic.NewRangeQuery("age").Gt("20"))
+
+	client.Search("info").Query(q).Do(context.Background())
+
 	del, err := client.Delete().Index("info").Id("1").Do(context.Background())
 	if err != nil {
 		fmt.Println(err)
 	}
 	fmt.Println(del.Version)
+}
+
+func printResult(res *elastic.SearchRequest)  {
 }

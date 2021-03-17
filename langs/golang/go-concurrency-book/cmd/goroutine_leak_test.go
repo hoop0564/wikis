@@ -6,8 +6,15 @@ import (
 	"time"
 )
 
-
 func TestPreventGoroutineLeak(t *testing.T) {
+	type User struct {
+		Name string
+		Age  int
+	}
+
+	u := User{Name:"leo", Age:7}
+	fmt.Printf("%#v\n", u)
+
 	doWork := func(
 		done <-chan interface{},
 		strings <-chan string,
@@ -33,7 +40,7 @@ func TestPreventGoroutineLeak(t *testing.T) {
 	}
 
 	done := make(chan interface{})
-	s := make(chan string,1)
+	s := make(chan string, 1)
 	s <- "nil"
 	terminated := doWork(done, nil)
 

@@ -723,6 +723,20 @@ goland 报红的话:
 
 
 
+### 日志代理logagent
+
+```go
+import "github.com/hpcloud/tail" 
+```
+
+- [go与tail（github.com/hpcloud/tail）](https://blog.csdn.net/sinat_26682309/article/details/93858475)
+
+
+
+filebeat -> rabbitmq -> logagent -> solar
+
+
+
 ## 参考资料
 
 - [Elastic Stack（ELK）从入门到实践](https://www.bilibili.com/video/BV1iJ411c7Az?t=82&p=60)
