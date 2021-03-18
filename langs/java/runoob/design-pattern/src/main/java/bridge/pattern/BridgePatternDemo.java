@@ -9,6 +9,7 @@ public class BridgePatternDemo {
     }
 }
 /*
+ 2、墙上的开关，可以看到的开关是抽象的，不用管里面具体怎么实现的。
 Drawing Circle[ color: red, radius: 10, x: 100, 100]
 Drawing Circle[ color: green, radius: 10, x: 100, 100]
  */

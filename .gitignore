@@ -2,3 +2,5 @@ java/practice/
 java/javaweb-01-maven/
 java/jpa/.idea/
 java/jpa/jpa.iml
+langs/golang/go-concurrency-book/cmd/forward-proxy/forward-proxy
+langs/golang/go-concurrency-book/cmd/reverse-proxy/reverse-proxy
