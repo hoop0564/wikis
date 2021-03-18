@@ -737,6 +737,8 @@ filebeat -> rabbitmq -> logagent -> solar
 
 
 
+
+
 ## 参考资料
 
 - [Elastic Stack（ELK）从入门到实践](https://www.bilibili.com/video/BV1iJ411c7Az?t=82&p=60)
