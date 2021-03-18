@@ -56,6 +56,6 @@ func (s* Server) ServeHTTP(w http.ResponseWriter, r *http.Request)  {
 
 func main()  {
 	http.Handle("/", &Pxy{})
-	http.Handle("/hello", &Server{})
+	http.Handle("/api/hello", &Server{})
 	http.ListenAndServe(":8080", nil)
 }
