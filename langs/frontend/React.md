@@ -335,3 +335,5 @@ React 里，只需更新组件的 state，然后根据新的 state 重新渲染�
 - [React中文文档翻译网](https://react.docschina.org/)
 - [React 菜鸟教程](https://www.runoob.com/react/react-tutorial.html)
 
+- [XMLHTTPRequest属性、方法、事件大全&详解。](https://segmentfault.com/a/1190000019891237)
+- [XMLHttpRequest 接口参考 - mozilla.org](https://developer.mozilla.org/zh-CN/docs/Web/API/XMLHttpRequest)
