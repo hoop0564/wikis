@@ -674,6 +674,16 @@ maven由于它的约定大于配置，可能会遇到写的配置文件，无法
 
 
 
+## 注解开发
+
+- 要使用注解开发，必须要保证AOP的包导入
+
+- 使用注解需要导入context约束，增加注解的支持！
+
+<img src="../../images/java/spring-annotation-aop.png" alt="image-20210322075919116" style="zoom:50%;" />
+
+
+
 ## Questions
 
 - JVM的常用调优参数有哪些？
