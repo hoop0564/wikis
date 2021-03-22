@@ -1,5 +1,15 @@
 # spring
 
+- 基于 [interface21.io](https://www.interface21.io/)
+
+- 2004年诞生，春天
+- Spring Framework创始人Rod Johnson，音乐学博士
+- [Spring Design Philosophy](https://docs.spring.io/spring-framework/docs/5.2.0.RELEASE/spring-framework-reference/overview.html#overview)
+- 解决企业应用开发的复杂性
+- 
+
+
+
 spring是如何简化java开发的？4种关键策略：
 
 1. 基于POJO的轻量级和最小侵入性编程
@@ -63,6 +73,18 @@ spring是如何简化java开发的？4种关键策略：
 ## jvm
 
 
+
+## 注解开发
+
+- 要使用注解开发，必须要保证AOP的包导入
+
+- 使用注解需要导入context约束，增加注解的支持！
+
+<img src="../../images/java/spring-annotation-aop.png" alt="image-20210322075919116" style="zoom:50%;" />
+
+
+
+## 
 
 ## 参考资料
 

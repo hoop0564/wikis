@@ -62,6 +62,36 @@ capaticy(b) = bandwidth(b/s)xround-triptime(s)
 
 
 
+## Little-End小端 和 Big-End大端
+
+描述的是两种不同的字节在内存中的存储顺序
+
+```c
+short int a = 0xABCD;
+// 小端存储：0xCD, 0xAB
+// 大端存储：0xAB, 0xCD
+```
+
+即：大端和书写顺序一致！
+
+- 操作系统（主机）采用小端
+- 网络通信都是大端
+- socket 编程中的 htons()和htonl()
+
+```c
+inet->inet_sport = htons(inet->inet_num); // 绑定端口
+```
+
+htons = host to network short
+
+htonl = host to network long
+
+反之：ntohl(), ntohs()
+
+<img src="../images/bigEnd-littleEnd.png" alt="image-20210322213828135" style="zoom: 67%;" />
+
+
+
 ## 参考资料
 
 - [TCP中RTT的测量和RTO的计算](https://blog.csdn.net/zhangskd/article/details/7196707)
