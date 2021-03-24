@@ -203,6 +203,18 @@ htonl = host to network long
 
 
 
+### 生存时间
+
+**占8位**，生存时间字段常用的的英文缩写是**TTL(Time To Live)**，表明是数据报在网络中的寿命。由发出数据报的源点设置这个字段。其目的是防止无法交付的数据报无限制地在[因特网](https://baike.baidu.com/item/因特网)中兜圈子，因而白白消耗网络资源。最初的设计是以秒作为TTL的单位。每经过一个[路由器](https://baike.baidu.com/item/路由器)时，就把TTL减去数据报在路由器消耗掉的一段时间。若数据报在路由器消耗的时间小于1秒，就把TTL值减1。当TTL值为0时，就丢弃这个数据报。后来把TTL字段的功能改为“跳数限制”（但名称不变）。路由器在转发数据报之前就把TTL值减1.**若TTL值减少到零，就丢弃这个数据报，不再转发**。因此，**TTL的单位不再是秒，而是跳数**。TTL的意义是指明数据报在网络中至多可经过多少个路由器。显然，**数据报在网络上经过的路由器的最大数值是255**.**若把TTL的初始值设为1，就表示这个数据报只能在本局域网中传送。**
+
+
+
+### IP地址
+
+**IP地址是一个32位的二进制数**，通常被分割为4个“8位[二进制](https://baike.baidu.com/item/二进制)数”（也就是4个字节）。IP地址通常用“[点分十进制](https://baike.baidu.com/item/点分十进制)”表示成（a.b.c.d）的形式，其中，a,b,c,d都是0~255之间的十进制整数。例：点分十进IP地址（100.4.5.6），实际上是32位二进制数（01100100.00000100.00000101.00000110）。
+
+
+
 ## 参考资料
 
 - [TCP中RTT的测量和RTO的计算](https://blog.csdn.net/zhangskd/article/details/7196707)
@@ -210,3 +222,6 @@ htonl = host to network long
 - [长肥管道](https://baike.baidu.com/item/%E9%95%BF%E8%82%A5%E7%AE%A1%E9%81%93/10679040?fr=aladdin)
 
 - [TCP百科](https://baike.baidu.com/item/TCP/33012?fr=aladdin)
+
+- [IP数据报百科](https://baike.baidu.com/item/IP%E6%95%B0%E6%8D%AE%E6%8A%A5/1581132?fr=aladdin)
+
