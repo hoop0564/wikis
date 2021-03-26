@@ -38,6 +38,41 @@ LXC是Linux原生的容器工具，利用LXC容器能有效地将单个操作系
 
 
 
+### docker进程模型
+
+![img](pictures/docker-workflow.jpg)
+
+```mermaid
+graph LR;
+dockerd-->|fork|docker-containerd-->|fork|docker-contatinerd-shim-->|run|镜像
+```
+
+- docker服务启动的第一个进程是 `/usr/bin/dockerd`，是这个docker服务端启动的入口，即Docker Daemon、Docker Engine
+
+- dockerd的子进程docker-container的，是docker服务端的核心进程，负责与docker客户端、docker容器进行通信交互，例如执行 `docker run`命令，fork出docker容器进程
+
+  ```bash
+  # 启动参数：listen，打开一个sock描述符，实现所有docker容器和docker客户端之间的通信
+  /../docker-containerd -l unix:///var/run/Docker/libcontainerd/Docker-containerd.sock
+  ```
+
+  
+
+### unix domain socket
+
+一种更高效的IPC机制，使用Socket API，将应用层数据从一个进程复制到另一个进程，不需要结果网络协议栈！
+
+| 比较项         | Unix Domain socker                                           | 网络通信                                                   |
+| -------------- | ------------------------------------------------------------ | ---------------------------------------------------------- |
+| 可靠性         | IPC机制本质上是可靠的通信                                    | 网络协议是为不可靠的通信设计的                             |
+| 原理           | 将应用层数据从一个进程复制到另一个进程                       | 通过网络协议栈，打包拆包、计算校验、维护序号、应答等做通信 |
+| 地址           | 是一个socker类型的文件在文件系统中的路径。<br/>这个文件由bind()方法创建，若已存在，则返回错误 | 是IP地址加端口号                                           |
+| address family | AF_UNIX                                                      | AF_INET                                                    |
+
+
+
+
+
 ## docker与微服务
 
 | 微服务                    | docker                                                       |
