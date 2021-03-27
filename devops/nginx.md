@@ -179,6 +179,37 @@ suod vim /usr/local/nginx/conf/nginx.conf
 
 ## 配置文件
 
+### 常用配置
+
+1. `location` 指定不同的请求后缀名，可以实现动态和静态请求的分离转发，譬如/public/*.html/css/js/image/icon...请求代理到静态，其他代理到动态
+
+2. `expires`设置缓存过期时间，譬如为 `3d`为三天，会比对服务器该文件最后更新时间，若未过期，则返回状态码304；若修改了，则重新下载，返回状态码200
+
+3. 动静态分离中，比如service-manager，go代码中就不管静态网页了，只做动态的API，静态网页用nginx驱起来
+
+4. `root` 为重定向 的静态文件所在的根目录，访问路由在nginx服务器上的目录前缀
+
+   ```nginx
+   server {
+   	listen 			80;
+   	server_name	192.168.17.129;
+   	...
+   	location /www/ {
+   		root	/data/; # http://192.168.17.129:80/www/ 会访问到静态磁盘文件：/data/www/index.html
+   		index	index.html index.htm;
+   	}
+   	
+   	location /image/ {
+   		root	/data/;	# http://192.168.17.129:80/image/01.jpg 会访问到静态磁盘文件：/data/image/01.jpg
+   		autuindex	on;	# 列出访问目录 http://192.168.17.129:80/image 可查看到文件列表
+   	}
+   }
+   ```
+
+   
+
+
+
 ```bash
 # cat /etc/nginx/nginx.conf  
 

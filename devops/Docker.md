@@ -35,6 +35,7 @@ LXC是Linux原生的容器工具，利用LXC容器能有效地将单个操作系
 - Docker通过**CGroup**将属于每个容器的进程分为一组进行资源（内存、CPU、网络、硬盘）控制，通过**Namespace**将属于同一个容器的进程划分为一组，使分属于同一个容器的进程拥有独立的进程名字和独立的进程号！
 
 - 在Docker出现之前。很多技术方案就是**直接令应用调用CGroup隔离**来运行资源的，但是这种隔离是粗粒度、硬编码的，想同时隔离资源和进程组，Docker方案做的最好。
+- 所有docker容器内启动的进程全部都是宿主机上的独立进程
 
 
 
@@ -85,8 +86,15 @@ dockerd-->|fork|docker-containerd-->|fork|docker-contatinerd-shim-->|run|镜像
 
 1. 用边缘节点Endpoint来做公网入口
 2. 配合防火墙和三层交换机进行内外网隔离和网络安全区的划分
-3. 边缘节点胡通过nginx/haproxy或者lvs进行四层或七层上的分发和路由
-4. 边缘几点的高可用性可以通过keepalived进行主备，通过冗余节点保证CAP定理中的AP（可用性和分区容错性）
+3. 边缘节点会通过nginx/haproxy或者lvs进行四层或七层上的分发和路由
+4. 边缘节点的高可用性可以通过keepalived进行主备，通过冗余节点保证CAP定理中的AP（可用性和分区容错性）
+
+```mermaid
+graph TD;
+公网入口-->边缘节点Endpoint-->|网络安全|防火墙-->|内外网隔离|三层交换机-->|分发路由|Nginx/HAproxy/lvs-->|高可用主备冗余|keepalived
+```
+
+
 
 
 
