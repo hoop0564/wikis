@@ -189,6 +189,21 @@ suod vim /usr/local/nginx/conf/nginx.conf
 
 4. `root` 为重定向 的静态文件所在的根目录，访问路由在nginx服务器上的目录前缀
 
+5. [nginx](http://nginx.org/en/download.html) 下周后，编译安装
+
+   ```bash
+   cd /Users/apple/devops/nginx-1.18.0
+   ./configure
+   make
+   sudo make install
+   # 启动服务
+   nginx
+   # 查看nginx帮助
+   nginx -h
+   ```
+
+6. 配置文件示例（静态网页）
+
    ```nginx
    server {
    	listen 			80;
@@ -201,9 +216,15 @@ suod vim /usr/local/nginx/conf/nginx.conf
    	
    	location /image/ {
    		root	/data/;	# http://192.168.17.129:80/image/01.jpg 会访问到静态磁盘文件：/data/image/01.jpg
-   		autuindex	on;	# 列出访问目录 http://192.168.17.129:80/image 可查看到文件列表
+   		autoindex	on;	# 列出访问目录 http://192.168.17.129:80/image 可查看到文件列表
    	}
    }
+   ```
+
+7. 启动脚本：
+
+   ```bash
+   nginx -c /Users/apple/devops/nginx-1.18.0/conf/nginx.conf
    ```
 
    
