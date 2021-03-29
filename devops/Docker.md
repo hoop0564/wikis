@@ -35,9 +35,8 @@ LXC是Linux原生的容器工具，利用LXC容器能有效地将单个操作系
 - Docker通过**CGroup**将属于每个容器的进程分为一组进行资源（内存、CPU、网络、硬盘）控制，通过**Namespace**将属于同一个容器的进程划分为一组，使分属于同一个容器的进程拥有独立的进程名字和独立的进程号！
 
 - 在Docker出现之前。很多技术方案就是**直接令应用调用CGroup隔离**来运行资源的，但是这种隔离是粗粒度、硬编码的，想同时隔离资源和进程组，Docker方案做的最好。
-- 所有docker容器内启动的进程全部都是宿主机上的独立进程
 
-
+  
 
 ### docker进程模型
 
@@ -71,6 +70,24 @@ dockerd-->|fork|docker-containerd-->|fork|docker-contatinerd-shim-->|run|镜像
 | address family | AF_UNIX                                                      | AF_INET                                                    |
 
 
+
+### 容器中进程启动的两种模式
+
+所有docker容器内启动的进程全部都是宿主机上的独立进程。该进程号是不是docker容器进程本身，要依据dockerfile的写法：
+
+| 比较项    | shell方式执行进程                                            | exec方式执行进程                                          |
+| --------- | ------------------------------------------------------------ | --------------------------------------------------------- |
+| 命令格式  | /bin/sh -c "executable param1 param2"                        | CMD ["executable", "param1", "param2"]                    |
+| redis示例 | ...<br />CMD "/usr/bin/redis-server"                         | ...<br />CMD ["/usr/bin/redis-server"]                    |
+| ps -ef    | PID CMD<br />1 /bin/sh -c "/usr/bin/redis-server"<br />5 /usr/bin/redis-server *:6379<br />8 ps -ef | PID CMD<br />1 /usr/bin/redis-server *:6379<br />7 ps -ef |
+| 释义      | 1号进程为shell                                               | 1号进程为redis-server                                     |
+| 容器退出  | 需要对容器进程增加SIGTERM的处理逻辑，否则docker stop不能做到优雅退出，docker daemon默认10秒超时后退出 | docker stop能自动优雅退出                                 |
+
+结论：
+
+如果容器中包含多个进程，需要1号进程能够正确地传播SIGTERM信号来结束素有的子进程，之后再推出。
+
+**令每个容器中只包含一个进程，同时都采用exec模式启动进程。**也是docker官方文档推荐做法。
 
 
 
