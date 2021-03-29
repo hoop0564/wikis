@@ -637,7 +637,7 @@ eureka:
 
 **SpringData**简化了基于Spring框架应用的数据库访问，包括对关系型、非关系型、Map-Reduce、云数据服务等都支持，它具备ORM框架的对象关系映射的功能，**提供统一的Repository接口实现CRUD**、分页、排序等相关操作，也提供了统一的模板类。
 
-![image-20210310220103107](../spring-data.png)
+![image-20210310220103107](./images/spring-data.png)
 
 #### 优点：
 
