@@ -35,8 +35,7 @@ LXC是Linux原生的容器工具，利用LXC容器能有效地将单个操作系
 - Docker通过**CGroup**将属于每个容器的进程分为一组进行资源（内存、CPU、网络、硬盘）控制，通过**Namespace**将属于同一个容器的进程划分为一组，使分属于同一个容器的进程拥有独立的进程名字和独立的进程号！
 
 - 在Docker出现之前。很多技术方案就是**直接令应用调用CGroup隔离**来运行资源的，但是这种隔离是粗粒度、硬编码的，想同时隔离资源和进程组，Docker方案做的最好。
-
-  
+- docker的启动需要相当大的用户权限，所以实际上docker服务用户组的权限相当于root，并且该权限会通过fork传递下去，这个是安全隐患。
 
 ### docker进程模型
 
@@ -91,6 +90,8 @@ dockerd-->|fork|docker-containerd-->|fork|docker-contatinerd-shim-->|run|镜像
 
 
 
+
+
 ## docker与微服务
 
 | 微服务                    | docker                                                       |
@@ -120,6 +121,32 @@ graph TD;
 - 镜像
 - 容器（运行时）
 - 仓库
+
+
+
+## 容器的本质
+
+容器 = CGroups + Namespace + Rootfs
+
+### Namespace
+
+Namespac是Linux提供的内核级别的环境隔离方法。
+
+基于实现了内部资源无法访问外部资源的简单隔离的chroot技术。
+
+Namespace的实现基于三个系统方法：
+
+1. clone()：实现线程的系统调用，用来创建一个新的进程
+2. unshare()：把某个进程脱离某个Namespace
+3. setns()：把某个进程加入某个Namespace
+
+
+
+### Rootfs
+
+Rootfs是docker容器在**启动时**其内部进程的文件系统，即docker容器的根目录。
+
+该目录下有docker容器锁需要的：系统文件、工具、容器文件等。和Linux系统内核启动时挂载的Rootfs目录的思想。
 
 
 
