@@ -229,6 +229,91 @@ Docker-containerd-->|fork命令|子进程-->|exec方式|启动
 
 
 
+## Docker逻辑架构
+
+分为：Client + Docker_Host + Registry
+
+所有Docker Client的命令，docker build、docker pull、docker run都可以使用HTTPS、HTTP的restful api来通信：
+
+```bash
+vi /etc/sysconfig/docker
+# 添加
+DOCKER_OPTS="-H tcp://0.0.0.0:2375"
+server docker restart
+# test
+curl -v -X GET localhost:2375/_ping
+```
+
+基于这些RESTful API，可以在自己的平台上实现从编译到发布的全流程自动化。
+
+### Docker Registry选型
+
+使用Habor。
+
+Habor以Docker公司开源的Registry为基础，提供了管理UI、基于角色的访问控制、AD/LDAP基础、日志审核等功能，还支持中文。是VMVare公司开源的企业级Docker Registry项目。
+
+Habor支持Docker Compose一键式安装。
+
+Habor支持镜像复制，可以在开发环境、测试环境、生产环境做镜像的复制
+
+
+
+## Docker单机网络模型
+
+这个Docker体系中最复杂、对生产上线最具影响力的就是网络模式。
+
+### Bridge模式
+
+默认的。使用etho0虚拟网桥进行通信。
+
+执行 docker run -p 命令时，Docker实际是在 iptables 上遵循 DNAT 规则，实现了端口转发的功能。
+
+Docker安装好后，Docker守护进程就会调用Linux内核，生成一个虚拟网桥。所有容器的地址段都是：
+
+```ip
+172.17.0.1/16
+```
+
+Linux网桥的本质是用一组代码模拟网络协议栈，类似软件交换机。
+
+
+
+### Host模式
+
+此模式容器将不会获得一个独立的Network Namespace，而是会和宿主机共用一个Network Namespace，直接使用宿主机的端口和IP地址。
+
+```bash
+docker run -d --net=host --privileged=true tomcat
+
+docker exec -it 84ee1dce1de806e50bcf19a5042c81713c1a841eab72c8c14d66ab93d5d73c84 ip addr show
+```
+
+`--privileged=true` 命令使容器会被允许直接配置主机的网络堆栈。
+
+
+
+### Container模式
+
+将新建容器的进程让道一个已存在的容器的网络栈中，两者的进程直接通过lo回环接口进行通信：
+
+```bash
+docker run --net=container:$container_id -d tomcat
+```
+
+
+
+### None模式
+
+令Docker新容器放到隔离的网络栈中，但是不进行网络配置。
+
+```bash
+docker run  --net=none -it tomcat ip addr show
+```
+
+
+
+
+
 ## Docker底层原理
 
 - docker是面向软件开发者的，没有虚拟机的完整的os概念和硬件资源的预划分
