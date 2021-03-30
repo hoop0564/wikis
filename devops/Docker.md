@@ -146,7 +146,42 @@ Namespace的实现基于三个系统方法：
 
 Rootfs是docker容器在**启动时**其内部进程的文件系统，即docker容器的根目录。
 
-该目录下有docker容器锁需要的：系统文件、工具、容器文件等。和Linux系统内核启动时挂载的Rootfs目录的思想。
+该目录下有docker容器所需要的：系统文件、工具、容器文件等。和Linux系统内核启动时挂载的Rootfs目录的思想。
+
+docker源码中通过下面的方法在进程中切换Rootfs：
+
+```go
+syscall.PivotRoot(rootfs, pivotDir)
+```
+
+
+
+### CGroups
+
+Control Groups，CGroups 就是把进程放到一个组里面统一加以控制。具体提供了：
+
+1. 资源限制：Resource LImitation，超过上限就发出OOM信息
+2. 优先级分配：Prioritization，对不同进程分配CPU时间片数量及硬盘IO带宽，相当于控制了进程运行的优先级
+3. 资源统计：Accounting，如CPU使用时长、内存用来，适用于计费
+4. 进程控制：Control，对进程组执行挂起、恢复等操作
+
+CGroups本质是内核附加在程序上的一系列的钩子（hook）。
+
+```bash
+# 给docker容器设置内存限制为128M
+docker run -m 128m redis
+
+# docker会在系统的hierarchy中为每个容器创建CGroups
+cd /sys/fs/CGroup/memory/Docker/$container_id
+
+# 查看CGroups的内存限制
+cat memory.limit_in_bytes
+134217728
+
+# 查看CGroups中进程所使用的内存大小
+cat memory.usage_in_bytes
+430080
+```
 
 
 
