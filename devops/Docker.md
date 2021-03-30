@@ -185,6 +185,50 @@ cat memory.usage_in_bytes
 
 
 
+## Docker容器的运行时模型
+
+### Linux中的特殊进程
+
+- ID为0的是调度进程，该进程是内核的一部分，不执行如何磁盘上的程序。
+- ID为1的是init进程，init通常读取与系统有关的初始化文件例如：/etc/rc*文件、/etc/inittab文件、/etc/init.d中的文件
+- ID为2的页守护进程，负责支持虚拟存储器系统的分页操作
+
+
+
+### Linux进程模型
+
+Linux中的父进程用fork命令创建子进程，然后调用exec执行子进程函数，进程ID可以复用，但要使用延迟算法，防止将新进程误认为使用同一ID的某个已经终止的先前进程。
+
+Linux在进行fork操作的时候，会首先调用 copy_process 函数，然后根据父进程传入的flag判断是否要新建Namespace，随后复制父进程的进程描述符 task_struct。
+
+task_struct中包括当前进程的各种系统配置信息，包括：
+
+- 网络描述
+- PID描述
+- UID描述
+- MNT描述等
+
+
+
+### Docker进程模型
+
+Docker启动的时候，也是：
+
+```mermaid
+graph LR;
+Docker-containerd-->|fork命令|子进程-->|exec方式|启动
+```
+
+容器进程被fork之后，便创建了Namespace，下面就执行一系列的初始化操作了，分三个阶段：
+
+1. dockerinit负责初始化网络栈
+2. ENTRYPOINT负责完成用户态配置
+3. CMD负责启动入口
+
+启动后的docker容器和docker daemon就是通过sock文件描述符进行通信的。
+
+
+
 ## Docker底层原理
 
 - docker是面向软件开发者的，没有虚拟机的完整的os概念和硬件资源的预划分
