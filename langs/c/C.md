@@ -76,6 +76,25 @@ void swap(void* x, void* y, size_t size)
 
 
 
+### C语言版search
+
+```c
+int search(void* a, size_t size, void* target, 
+  size_t elem_size, int(*cmpFn)(void*, void*) )
+{
+  for(int i=0; i<size; i++) {
+    if ( cmpFn (a + elem_size * i, target) == 0 ) {
+      return i;
+    }
+  }
+  return -1;
+}
+```
+
+
+
+## C语言特点
+
 C 语言的伟大之处在于——使用 C 语言的程序员在高级语言的特性之上还能简单地做任何底层上的微观控制。
 
 C 语言是高级语言中的汇编语言。
