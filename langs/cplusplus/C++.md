@@ -114,16 +114,64 @@ template<class InputIterator, class T>
 
 ## Reduce
 
-```c++
+把整个迭代器值给你一个 operation：
 
+```c++
 template<class Iter, class T, class Op>
-T reduce (Iter start, Iter end, T init, Op op) {
+T reduce(Iter start, Iter end, T init, Op op) {
   T result = init;
-  while ( start != end ) {
-    result = op( result, *start );
-    start++;
+  while (start != end) {
+    result = op(result, *start);
+    start ++;
   }
   return result;
+}  
+```
+
+在 C++ STL 中，与我的这个 reduce 函数对应的函数名叫 accumulate()，其实际代码有两个版本。
+
+```c++
+template<class InputIt, class T>
+T accumulate(InputIt first, InputIt last, T init)
+{
+  for (; first != last; ++first) {
+    init = init + *first;
+  }
+  return init;
 }
+```
+
+第二个版本，更为抽象，因为需要传入一个“二元操作函数”——BinaryOperation op来做 accumulate。
+
+```c++
+template<class InputIt, class T, class BinaryOperation>
+T accumulate(InputIt first, InputIt last, T init, BinaryOperation op)
+{
+  for (; first != last; ++ first) {
+    init = op(init, *first);
+  }
+  return init;
+}
+```
+
+实际使用：
+
+```c++
+struct Employee {
+  string name;
+  string id;
+  int vacation;
+  double salary；
+};
+
+double sum_salaries = 
+  reduce(staff.begin(), staff.end(), 0,0, 
+        [](double s, Employee e)
+         {return s + e.salary;});
+
+double max_salary = 
+  redule(staff.begin(), staff.end(), 0,0,
+        [](double s, Employee e)
+         {return s > e.salary ? s : e.salary;})
 ```
 
