@@ -603,7 +603,7 @@ if(fcntl(diskfd, F_SETLEASE, l_type)){
 
 ## TCP/IP
 
-![image-20210217140201379](/Users/apple/wikis/devops/pictures/tcp-IP.png)
+![image-20210217140201379](./pictures/tcp-IP.png)
 
 
 
@@ -611,7 +611,7 @@ if(fcntl(diskfd, F_SETLEASE, l_type)){
 
 
 
-![image-20210217145949113](/Users/apple/wikis/devops/pictures/tcp-half-whole-connection.png)
+![image-20210217145949113](./pictures/tcp-half-whole-connection.png)
 
 其中，即服务端向客户端返回的`SYN/ACK`尝试测试，在centos上是默认5次（1s+2s+4s+8s+16s=31s）,大概31s时间，可以优化此net.ipv4.tcp_synack_retries参数，防止半连接的flood攻击！
 
@@ -691,7 +691,7 @@ netstat: sysctl: net.inet.ip.input_perf_data: No such file or directory
 sudo hping3 -c 10000 192.168.48.100 -p 80 -a 1.1.1.1 -S --flood
 ```
 
-![image-20210217164413393](/Users/apple/wikis/devops/pictures/sync-flood-capture.png)
+![image-20210217164413393](./pictures/sync-flood-capture.png)
 
 
 
@@ -857,7 +857,7 @@ ssize_t sendfile(int out_fd, int in_fd, off_t *offset, size_t count);
 
 用户程序通过sendfile系统调用，数据可以直接在内核空间内部进行I/O传输，从而省去了数据在用户空间和内核空间之间的来回拷贝！
 
-![image-20210217200953727](/Users/apple/wikis/devops/pictures/sendfile-DMA.png)
+![image-20210217200953727](./pictures/sendfile-DMA.png)
 
 基于sendfile系统调用的零拷贝方式，整个过程会发生2次上下文切换，1次CPU拷贝和2次DMA拷贝。
 
