@@ -210,6 +210,8 @@ double max_salary =
 
 ## 函数式编程
 
+核心思想是将**运算过程**尽量写成一系列嵌套的函数调用，关注的是**做什么**而不是怎么做，因而被称为**声明式编程**。
+
 函数式编程，它的理念就来自于数学中的代数。
 
 ```mathematica
@@ -295,6 +297,63 @@ add(1)(2)(3)(4)(5)          // 15
 add(2, 6)(1)                // 9
 
 ```
+
+把一个字符串数组中的字符串都转成小写:
+
+python版：
+
+```python
+# 函数式
+def toUpper(item):
+  return item.upper()
+ 
+upper_name = map(toUpper, ["Can", "You", "Hear", "Me"])
+
+print upper_name
+# 输出 ['CAN', 'YOU', 'HEAR', 'ME']
+```
+
+C++版：
+
+```c++
+string s = "hello";
+transform(s.begin(), s.end(), back_inserter(out), ::toupper);
+```
+
+**map 和 reduce 不关心源输入数据，它们只是控制，并不是业务。控制是描述怎么干，而业务是描述要干什么。**
+
+
+
+### 函数式的 pipeline 模式
+
+```python
+
+def even_filter(nums):
+    for num in nums:
+        if num % 2 == 0:
+            yield num
+def multiply_by_three(nums):
+    for num in nums:
+        yield num * 3
+def convert_to_string(nums):
+    for num in nums:
+        yield 'The Number: %s' % num
+
+nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+pipeline = convert_to_string(multiply_by_three(even_filter(nums)))
+for num in pipeline:
+    print num
+# 输出：
+# The Number: 6
+# The Number: 12
+# The Number: 18
+# The Number: 24
+# The Number: 30        
+```
+
+
+
+Python 的关键字 yield，它是一个类似 return 的关键字，只是这个函数返回的是 Generator（生成器）。所谓生成器，指的是 yield 返回的是一个可迭代的对象，并没有真正的执行函数。也就是说，只有其返回的迭代对象被迭代时，yield 函数才会真正运行，运行到 yield 语句时就会停住，然后等下一次的迭代。（ yield 是个比较诡异的关键字）这就是 lazy evaluation（懒惰加载）。
 
 
 
