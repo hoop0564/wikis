@@ -238,3 +238,68 @@ f(x)=f(x-1)+f(x-2)
 - 并行执行无伤害。
 - Copy-Paste 重构代码无伤害。
 - 函数的执行没有顺序上的问题。
+
+
+
+### 柯里化（Curring）
+
+柯里化，Currying，将一个函数的多个参数分解成多个函数， 然后将函数多层封装起来，每层函数都返回一个函数去接收下一个参数，这可以简化函数的多个参数。在 C++ 中，这很像 STL 中的 bind1st 或是 bind2nd。
+
+```javascript
+// 普通的add函数
+function add(x, y) {
+    return x + y
+}
+
+// Currying后
+function curryingAdd(x) {
+    return function (y) {
+        return x + y
+    }
+}
+
+add(1, 2)           // 3
+curryingAdd(1)(2)   // 3
+```
+
+技术实践：
+
+```javascript
+// 实现一个add方法，使计算结果能够满足如下预期：
+add(1)(2)(3) = 6;
+add(1, 2, 3)(4) = 10;
+add(1)(2)(3)(4)(5) = 15;
+
+function add() {
+    // 第一次执行时，定义一个数组专门用来存储所有的参数
+    var _args = Array.prototype.slice.call(arguments);
+
+    // 在内部声明一个函数，利用闭包的特性保存_args并收集所有的参数值
+    var _adder = function() {
+        _args.push(...arguments);
+        return _adder;
+    };
+
+    // 利用toString隐式转换的特性，当最后执行时隐式转换，并计算最终的值返回
+    _adder.toString = function () {
+        return _args.reduce(function (a, b) {
+            return a + b;
+        });
+    }
+    return _adder;
+}
+
+add(1)(2)(3)                // 6
+add(1, 2, 3)(4)             // 10
+add(1)(2)(3)(4)(5)          // 15
+add(2, 6)(1)                // 9
+
+```
+
+
+
+## 参考资料
+
+- [编程范式游记](https://time.geekbang.org/column/article/2711)
+
+- [详解JS函数柯里化](https://www.jianshu.com/p/2975c25e4d71)
