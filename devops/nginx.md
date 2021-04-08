@@ -754,6 +754,24 @@ KiB Swap:  1048572 total,  1027824 free,    20748 used.  1072372 avail Mem
 
 
 
+### 日志切割
+
+修改配置文件：${nginx_home}/conf/vhost/www.conf
+
+<img src="../images/nginx-log-rotate.png" alt="image-20210408200725946" style="zoom:50%;" />
+
+
+
+<img src="../images/nginx-demo.png" alt="image-20210408201245785" style="zoom:50%;" />
+
+若日志没有生成，可能是目录权限不够，需要：
+
+```bash
+chown -R www:www ${log_dir}
+```
+
+
+
 ### 设置worker进程数
 
 ```bash
