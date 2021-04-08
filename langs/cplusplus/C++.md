@@ -357,6 +357,78 @@ Python 的关键字 yield，它是一个类似 return 的关键字，只是这�
 
 
 
+## 修饰器模式
+
+Python 有语法糖。Python 的 Decorator 在使用上和 Java 的 Annotation（以及 C# 的 Attribute）很相似，就是在方法名前面加一个 @XXX 注解来为这个方法装饰一些东西。但是，Java/C# 的 Annotation 也很让人望而却步，太过于复杂了。你要玩它，需要先了解一堆 Annotation 的类库文档，感觉几乎就是在学另外一门语言。
+
+```python
+def hello(fn):
+    def wrapper():
+        print "hello, %s" % fn.__name__
+        fn()
+        print "goodbye, %s" % fn.__name__
+    return wrapper
+ 
+@hello
+def Hao():
+    print "i am Hao Chen"
+ 
+Hao()
+```
+
+
+
+运行：
+
+```bash
+$ python hello.py
+hello, Hao
+i am Hao Chen
+goodbye, Hao
+```
+
+Go语言版：
+
+```go
+
+package main
+
+import "fmt"
+
+func decorator(f func(s string)) func(s string) {
+    return func(s string) {
+        fmt.Println("Started")
+        f(s)
+        fmt.Println("Done")
+    }
+}
+
+func Hello(s string) {
+    fmt.Println(s)
+}
+
+func main() {
+    decorator(Hello)("Hello, World!")
+
+  hello := decorator(Hello)
+  hello("Hello!")
+}
+```
+
+
+
+## 面向对象编程
+
+
+
+## 基于原型编程
+
+
+
+## Go语言的委托模式
+
+
+
 ## 参考资料
 
 - [编程范式游记](https://time.geekbang.org/column/article/2711)
