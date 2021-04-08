@@ -192,7 +192,7 @@ suod vim /usr/local/nginx/conf/nginx.conf
 5. [nginx](http://nginx.org/en/download.html) 下周后，编译安装
 
    ```bash
-   cd /Users/apple/devops/nginx-1.18.0
+   cd nginx-1.18.0
    ./configure
    make
    sudo make install
@@ -224,7 +224,7 @@ suod vim /usr/local/nginx/conf/nginx.conf
 7. 启动脚本：
 
    ```bash
-   nginx -c /Users/apple/devops/nginx-1.18.0/conf/nginx.conf
+   nginx -c nginx-1.18.0/conf/nginx.conf
    ```
 
 8. 配置文件示例
@@ -521,7 +521,7 @@ IO多路复用的特点是通过一种机制一个进程能同时等待多个文
 | 工作模式             | LT水平触发                                       | LT水平触发                                     | 支持ET高效模式                                               |
 | fd拷贝               | 每次调用select都需要把fd集合从用户态拷贝到内核态 | 每次调用poll都需要把fd集合从用户态拷贝到内核态 | 使用mmap()文件映射进内存来加速与内核空间的消息传递，减少复制开销 |
 
-> 水平触发LT：默认工作模式，即当epoll_wait检测到某描述符事件就绪并通知应用程序，应用程序可以不立即处理该事件；下次调用epoll_wait时，会在册通知此事件
+> 水平触发LT：默认工作模式，即当epoll_wait检测到某描述符事件就绪并通知应用程序，应用程序可以不立即处理该事件；下次调用epoll_wait时，会再次通知此事件。
 >
 > 边缘触发ET：当epoll_wait检测到某描述符事件就绪并通知应用程序时，应用程序必须立即处理该事件。如果不处理，下次调用epoll_wait时，不会再次通知此事件。即只在状态由未就绪变为就绪时只通知一次。
 
@@ -538,7 +538,7 @@ write(sockfd, buf, len);
 
 缺点：
 
-当map的这个文件被另一个进程截断（truncate）时，write系统调用会因为访问非法地址而被 `SIGBUG` 信号终止！SIGBUS信号默认会杀死你的进程并产生一个coredump。。可使用文件租借锁：
+当map的这个文件被另一个进程截断（truncate）时，write系统调用会因为访问非法地址而被 `SIGBUG` 信号终止！SIGBUS信号默认会杀死你的进程并产生一个coredump。。可使用**文件租借锁**：
 
 ```c
 // 在mmap文件之前加锁，并且在操作完文件后解锁：
@@ -595,7 +595,7 @@ if(fcntl(diskfd, F_SETLEASE, l_type)){
 
 <img src="./pictures/io-compare.png" alt="image-20210217113320345"  />
 
-![](/Users/apple/wikis/devops/pictures/io-benchmark.png)
+![](./pictures/io-benchmark.png)
 
 > 其中kqueue是在FreeBSD平台上实现的I/O多路复用模型，和epoll非常类似。
 
