@@ -10,7 +10,29 @@ import (
 
 type Pxy struct {
 }
-
+// swagger:operation PUT /api/v1/addr/update/{id} addr del
+// ---
+// summary: 修改用户地址
+// description: 修改指定用户的addr
+// parameters:
+// - name: token
+//   in: header
+//   description: token
+//   type: string
+//   required: true
+// - name: id
+//   in: path
+//   description: 地址id
+//   type: string
+//   required: true
+// - name: addr
+//   in: body
+//   description: addr
+//   type: string
+//   required: true
+// responses:
+//   200: repoResp
+//   400: badReq
 func (p *Pxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 
 	fmt.Printf("正向代理接收到请求：%s %s %s\n", req.Method, req.Host, req.RemoteAddr)

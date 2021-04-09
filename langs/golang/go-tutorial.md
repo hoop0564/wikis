@@ -1774,6 +1774,46 @@ paper-code/examples/groupevent
 
 
 
+## go-swagger
+
+go-swagger规范：
+
+```go
+// swagger:operation PUT /api/v1/addr/update/{id} addr del
+// ---
+// summary: 修改用户地址
+// description: 修改指定用户的addr
+// parameters:
+// - name: token
+//   in: header
+//   description: token
+//   type: string
+//   required: true
+// - name: id
+//   in: path
+//   description: 地址id  
+//   type: string
+//   required: true
+// - name: addr
+//   in: body
+//   description: addr
+//   type: string
+//   required: true
+// responses:
+//   200: repoResp
+//   400: badReq
+```
+
+常用命令：
+
+```bash
+# 根据swagger规范 创建 swagger.json 规范文档
+swagger generate spec -o ./swagger.json   
+
+# 启动一个http 服务同时将json文档放入http://petstore.swagger.io 执行
+swagger serve -F=swagger swagger.json     
+```
+
 
 
 ## 参考资料
@@ -1783,5 +1823,6 @@ paper-code/examples/groupevent
 - [golang CSP并发模型](https://www.jianshu.com/p/36e246c6153d)
 - [Go语言在select语句中实现优先级-liwenzhou](https://www.liwenzhou.com/posts/Go/priority_in_go_select/)
 - [Go语言编程模式实战](https://time.geekbang.org/column/article/330178)
-
 - [Go 面向包的设计和架构分层（cmd, internal, pkg)](https://studygolang.com/articles/30164)
+
+- [go-swagger的简单使用](https://www.cnblogs.com/xiaobaiskill/p/10696621.html)
