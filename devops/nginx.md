@@ -1129,7 +1129,7 @@ service iptables stop
 ```bash
 /etc/named.conf
 /etc/named.rfc1912.zones
-/etc/named/${自定义zone目录}
+/etc/named/
 ```
 
 DNS的正向解释和反向解释：
@@ -1175,3 +1175,6 @@ logging {
 - [与程序员相关的CPU缓存知识](https://coolshell.cn/articles/20793.html)
 
 - [Web缓存基础](https://www.cnblogs.com/kuexun/p/web_cache_1.html)
+
+- [P2.Linux服务器项目实训-DNS服务器配置（bind的正向解释和反向解释）](https://www.bilibili.com/video/BV1JK411p7uz?t=1231)
+

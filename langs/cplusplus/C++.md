@@ -415,6 +415,66 @@ func main() {
 }
 ```
 
+用 Reflection 机制写的一个比较通用的修饰器:
+
+```go
+
+func Decorator(decoPtr, fn interface{}) (err error) {
+    var decoratedFunc, targetFunc reflect.Value
+ 
+    decoratedFunc = reflect.ValueOf(decoPtr).Elem()
+    targetFunc = reflect.ValueOf(fn)
+ 
+    v := reflect.MakeFunc(targetFunc.Type(),
+        func(in []reflect.Value) (out []reflect.Value) {
+            fmt.Println("before")
+            out = targetFunc.Call(in)
+            fmt.Println("after")
+            return
+        })
+ 
+    decoratedFunc.Set(v)
+    return
+}
+```
+
+上面这个 Decorator() 需要两个参数：
+
+- 第一个是出参 decoPtr ，就是完成修饰后的函数。
+- 第二个是入参 fn ，就是需要修饰的函数。
+
+使用：
+
+```go
+
+func foo(a, b, c int) int {
+    fmt.Printf("%d, %d, %d \n", a, b, c)
+    return a + b + c
+}
+ 
+func bar(a, b string) string {
+    fmt.Printf("%s, %s \n", a, b)
+    return a + b
+}
+
+
+type MyFoo func(int, int, int) int
+var myfoo MyFoo
+Decorator(&myfoo, foo)
+myfoo(1, 2, 3)
+
+
+mybar := bar
+Decorator(&mybar, bar)
+mybar("hello,", "world!")
+```
+
+修饰器模式其实是在做下面的几件事。
+
+- 表面上看，修饰器模式就是扩展现有的一个函数的功能，让它可以干一些其他的事，或是在现有的函数功能上再附加上一些别的功能。
+- 除了我们可以感受到函数式编程下的代码扩展能力，我们还能感受到函数的互相和随意拼装带来的好处。
+- 但是深入看一下，我们不难发现，Decorator 这个函数其实是可以修饰几乎所有的函数的。于是，这种可以通用于其它函数的编程方式，可以很容易地将一些非业务功能的、属于控制类型的代码给抽象出来（所谓的控制类型的代码就是像 for-loop，或是打日志，或是函数路由，或是求函数运行时间之类的非业务功能性的代码）。
+
 
 
 ## 面向对象编程
