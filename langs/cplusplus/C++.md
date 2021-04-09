@@ -479,6 +479,116 @@ mybar("hello,", "world!")
 
 ## 面向对象编程
 
+函数式编程总结起来就是把一些功能或逻辑代码通过函数拼装方式来组织的玩法。
+
+函数式编程需要我们写出无状态的代码。
+
+对于**状态和数据的处理**，需要使用“**面向对象编程**”（Object-oriented programming，OOP）这个编程范式了。面向对象的编程有三大特性：**封装、继承和多态**。
+
+
+
+### 策略模式
+
+商品价格策略：
+
+```java
+// 输入一个原始的价格，输出一个根据相应的策略计算出来的价格。
+interface BillingStrategy {
+    public double GetActPrice(double rawPrice);
+}
+
+// Normal billing strategy (unchanged price)
+class NormalStrategy implements BillingStrategy {
+    @Override
+    public double GetActPrice(double rawPrice) {
+        return rawPrice;
+    }
+}
+
+// Strategy for Happy hour (50% discount)
+class HappyHourStrategy implements BillingStrategy {
+    @Override
+    public double GetActPrice(double rawPrice) {
+        return rawPrice * 0.5;
+    }
+}
+```
+
+订单项 OrderItem，其包含了每个商品的原始价格和数量，以及计算价格的策略：
+
+```java
+class OrderItem {
+    public String Name;
+    public double Price;
+    public int Quantity;
+    public BillingStrategy Strategy;
+    public OrderItem(String name, double price, int quantity, BillingStrategy strategy) {
+        this.Name = name;
+        this.Price = price;
+        this.Quantity = quantity;
+        this.Strategy = strategy;
+    }
+}
+```
+
+订单类—— Order 中封装了 OrderItem 的列表，即商品列表。并在操作订单添加购买商品时，加入一个计算价格的 BillingStrategy：
+
+```java
+class Order {
+    private List<OrderItem> orderItems = new ArrayList<OrderItem>();
+    private BillingStrategy strategy = new NormalStrategy();
+
+    public void Add(String name, double price, int quantity, BillingStrategy strategy) {
+        orderItems.add(new OrderItem(name, price, quantity, strategy));
+    }
+    
+    // Payment of bill
+    public void PayBill() {
+        double sum = 0;
+        for (OrderItem item : orderItems) {
+            
+            actPrice = item.Strategy.GetActPrice(item.price * item.quantity);
+            sum += actPrice;
+            
+            System.out.println("%s -- %f(%d) - %f", 
+                item.name, item.price, item.quantity, actPrice);
+        }
+        System.out.println("Total due: " + sum);
+    }
+}
+```
+
+“设计模式中最为经典的模式，充分体现了面向对象编程的方式。”
+
+
+
+### 代理模式
+
+```c++
+class lock_guard {
+  private: 
+    mutex &_m;
+  public:
+    lock_guard(mutex &m):_m(m) { _m.lock(); }
+    ~lock_guard() { _m.unlock(); }
+};
+
+
+mutex m;
+
+void foo() {
+  lock_guard guard(m);
+  Func();
+  if ( ! everythingOk() ) {
+    return;
+  } 
+  ...
+  ...
+}
+```
+
+这个技术叫 **RAII**（Resource Acquisition Is Initialization，资源获取就是初始化）， 是 C++ 中的一个利用了面向对象的技术。这个设计模式叫“代理模式”。我们可以把一些控制资源分配和释放的逻辑交给这些代理类，然后，只需要关注业务逻辑代码了。而且，在我们的业务逻辑代码中，减少了这些和业务逻辑不相关的程序控制的代码。
+
 
 
 ## 基于原型编程
