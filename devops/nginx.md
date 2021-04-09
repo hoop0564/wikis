@@ -469,7 +469,61 @@ server {
 
 
 
-## Linux网络IO模型
+## nginx主配置文件优化
+
+
+
+### 设置进程静态优先级
+
+在Linux中调整`NICE`值，即静态优先级 `-20~19` 的大小来实现。NICE数值越小，CPU执行此进程的时间片优先级越高！
+
+```bash
+# /etc/nginx/nginx.conf
+worker_priority -20;
+```
+
+```bash
+[root@c93a66f92342 conf.d]# top -u nginx
+Tasks:   6 total,   1 running,   5 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  0.0 us,  0.5 sy,  0.0 ni, 99.5 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+KiB Mem :  2038340 total,   110024 free,   390076 used,  1538240 buff/cache
+KiB Swap:  1048572 total,  1027824 free,    20748 used.  1072372 avail Mem 
+
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND                                                                                                                                                  
+  407 nginx     20   0   46984   3612   2376 S   0.0  0.2   0:00.00 nginx                                                                                                                                                    
+  408 nginx     20   0   46984   3612   2376 S   0.0  0.2   0:00.00 nginx    
+```
+
+
+
+### 日志切割
+
+修改配置文件：${nginx_home}/conf/vhost/www.conf
+
+<img src="../images/nginx-log-rotate.png" alt="image-20210408200725946" style="zoom:50%;" />
+
+
+
+<img src="../images/nginx-demo.png" alt="image-20210408201245785" style="zoom:50%;" />
+
+若日志没有生成，可能是目录权限不够，需要：
+
+```bash
+chown -R www:www ${log_dir}
+```
+
+
+
+### 设置worker进程数
+
+```bash
+# /etc/nginx/nginx.conf
+worker_process auto;
+```
+
+
+
+# Linux网络IO模型
 
 
 
@@ -601,7 +655,7 @@ if(fcntl(diskfd, F_SETLEASE, l_type)){
 
 
 
-## TCP/IP
+# TCP/IP
 
 ![image-20210217140201379](./pictures/tcp-IP.png)
 
@@ -723,61 +777,6 @@ sudo hping3 -c 10000 192.168.48.100 -p 80 -a 1.1.1.1 -S --flood
      - web服务器软件，例如nginx
    - 如果没有特征，只能带宽扩容，较低ddos的攻击危害
    - 使用CDN，使得用户可以就近访问到CDN的资源，主站减少压力，所有请求先到CDN，如果CDN没有，从CDN上访问主站，但注意不要泄露主站的地址，但CDN只能放置静态资源。
-
-
-
-## nginx主配置文件优化
-
-
-
-### 设置进程静态优先级
-
-在Linux中调整`NICE`值，即静态优先级 `-20~19` 的大小来实现。NICE数值越小，CPU执行此进程的时间片优先级越高！
-
-```bash
-# /etc/nginx/nginx.conf
-worker_priority -20;
-```
-
-```bash
-
-[root@c93a66f92342 conf.d]# top -u nginx
-Tasks:   6 total,   1 running,   5 sleeping,   0 stopped,   0 zombie
-%Cpu(s):  0.0 us,  0.5 sy,  0.0 ni, 99.5 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
-KiB Mem :  2038340 total,   110024 free,   390076 used,  1538240 buff/cache
-KiB Swap:  1048572 total,  1027824 free,    20748 used.  1072372 avail Mem 
-
-  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND                                                                                                                                                  
-  407 nginx     20   0   46984   3612   2376 S   0.0  0.2   0:00.00 nginx                                                                                                                                                    
-  408 nginx     20   0   46984   3612   2376 S   0.0  0.2   0:00.00 nginx    
-```
-
-
-
-### 日志切割
-
-修改配置文件：${nginx_home}/conf/vhost/www.conf
-
-<img src="../images/nginx-log-rotate.png" alt="image-20210408200725946" style="zoom:50%;" />
-
-
-
-<img src="../images/nginx-demo.png" alt="image-20210408201245785" style="zoom:50%;" />
-
-若日志没有生成，可能是目录权限不够，需要：
-
-```bash
-chown -R www:www ${log_dir}
-```
-
-
-
-### 设置worker进程数
-
-```bash
-# /etc/nginx/nginx.conf
-worker_process auto;
-```
 
 
 
@@ -1050,10 +1049,6 @@ for(int _c=0; _c<col; _c++) {
 
 对 `http://www.a.com` 的访问全部跳转至：`https://www.a.com`，且请求URI和参数 `$query_string` 要保留下来
 
-### 
-
-
-
 ```bash
 server {
 	listen			80;
@@ -1115,6 +1110,61 @@ Web缓存指的是从发起请求的客户端，到执行功能的web服务器�
 3：反向代理服务器缓存 - nginx
 
 4：Web服务器端的缓存，通常是应用程序来实现的动态页面缓存
+
+
+
+# 内网DNS解析
+
+Linux上使用bind服务
+
+```bash
+# 安装bind安装包
+yum install bind-chroot -y
+# 关闭防火墙
+service iptables stop
+```
+
+其配置文件有：
+
+```bash
+/etc/named.conf
+/etc/named.rfc1912.zones
+/etc/named/${自定义zone目录}
+```
+
+DNS的正向解释和反向解释：
+
+正向解释：
+
+```mermaid
+graph LR;
+域名-->|解释|IP
+```
+
+反向解释：
+
+```mermaid
+graph LR;
+IP-->|解释|域名
+```
+
+```conf
+// named.conf
+options {
+	listen-on port 53 { any; };
+	listen-on-v6 port 53 { ::1; };
+	directory		"/var/named";
+	dump-file		"/var/named/data/cache_dump.db"
+	allow-query	{ any;};
+}
+
+logging {
+	channel default_debug {
+		file			"data/named.run";
+		severity	dynamic;
+	}
+}
+```
 
 
 
