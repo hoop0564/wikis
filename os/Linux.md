@@ -57,7 +57,9 @@ lsof  -i @fw.google.com:2150=2180
 kill  -HUP `lsof -t -c sshd`
 ```
 
-参考资料：[Linux 命令神器：lsof](https://www.jianshu.com/p/a3aa6b01b2e1)
+参考资料：
+
+- [Linux 命令神器：lsof](https://www.jianshu.com/p/a3aa6b01b2e1)
 
 
 
@@ -87,11 +89,61 @@ tcpdump  -XvvennSs 0 -i eth0 tcp[20:2]=0x4745 or tcp[20:2]=0x4854
 
 tcpdump 对截获的数据并没有进行彻底解码，数据包内的大部分内容是使用十六进制的形式直接打印输出的。显然这不利于分析网络故障，通常的解决办法是先使用带-w参数的tcpdump 截获数据并保存到文件中，然后再使用其他程序(如Wireshark)进行解码分析。当然也应该定义过滤规则，以避免捕获的数据包填满整个硬盘。
 
-参考资料：[Linux tcpdump命令详解](https://www.cnblogs.com/ggjucheng/archive/2012/01/14/2322659.html)
+
+
+参考资料：
+
+- [Linux tcpdump命令详解](https://www.cnblogs.com/ggjucheng/archive/2012/01/14/2322659.html)
 
 
 
 ### iptables
+
+- iptables是Linux [内核](https://baike.baidu.com/item/内核/108410)集成的 IP 信息包过滤系统，有利于在 Linux 系统上更好地控制 IP 信息包过滤和[防火墙](https://baike.baidu.com/item/防火墙/52767)配置。
+
+- iptables是基于包过滤的防火墙工具、可以对流入、流出及流经服务器的数据包进行精细的控制。
+
+- iptables工作在OSI七层的二、三层、四层。
+
+- 防火墙在做[数据包过滤](https://baike.baidu.com/item/数据包过滤/7747768)决定时，有一套遵循和组成的规则，这些规则存储在专用的数据包过滤表中，而这些表集成在 Linux 内核中。在数据包过滤表中，规则被分组放在我们所谓的链（chain）中。而netfilter/iptables IP 数据包过滤系统是一款功能强大的工具，可用于添加、编辑和移除规则。
+
+- 虽然 netfilter/iptables IP 信息包过滤系统被称为单个实体，但它实际上由两个组件netfilter 和 iptables 组成。
+
+- **netfilter 组件也称为内核空间（kernelspace）**，是内核的一部分，由一些信息包过滤表组成，这些表包含内核用来控制信息包过滤处理的规则集。
+
+- **iptables 组件是一种工具，也称为用户空间（userspace）**，它使插入、修改和除去信息包过滤表中的规则变得容易。
+
+  ![img](../images/iptables-input-output.png)
+
+
+
+![img](../images/iptables-workflow.png)
+
+
+
+> 开放式系统互联通信参考模型（英语：Open System Interconnection Reference Model，缩写为 *OSI*），简称为*OSI*模型（*OSI* model），一种概念模型，由国际标准化组织提出，一个试图使各种计算机在世界范围内互连为网络的标准框架。
+
+基本术语：
+
+| Netfileter/iptables | 表（tables） | 链（chains） |  规则（policy）  |
+| ------------------- | ------------ | ------------ | :--------------: |
+| 小区的一栋楼        | 楼里的房子   | 房子里的柜子 | 增加、摆放的规则 |
+
+```bash
+# 例如：为了防止DOS太多连接进来，那么可以允许最多15个初始连接，超过的丢弃.
+/sbin/iptables -A INPUT -s 192.186.1.0/24 -p tcp --syn -m connlimit --connlimit-above 15 -j DROP
+
+# ip范围应用
+iptables -A FORWARD -m iprange --src-range 192.168.1.5-192.168.1.124 -j ACCEPT
+```
+
+
+
+
+
+参考资料：
+
+- [iptables入门指南 --- iptables详解 ---iptbales 防火墙](https://www.cnblogs.com/liang2580/articles/8400140.html)
 
 
 
