@@ -129,12 +129,65 @@ tcpdump 对截获的数据并没有进行彻底解码，数据包内的大部分
 | ------------------- | ------------ | ------------ | :--------------: |
 | 小区的一栋楼        | 楼里的房子   | 房子里的柜子 | 增加、摆放的规则 |
 
+
+
+启动并查看iptables
+
+```bash
+# 启动
+/etc/init.d/iptables start
+
+# 查看帮助
+iptables -h
+
+# 查看当前规则
+iptables -L -v -x -n -t filter/nat
+# -L ：列出一个或所有链的规则
+# -v：显示详细信息、包括每条规则匹配包数量和匹配字节数
+# -x：在v的基础上、进制自动单位换算（K,M）
+# -n: 只显示IP地址和端口号码。不显示域名和服务名称
+# -t : 接表名、如果不加-t，默认就是 –t filter
+```
+
+栗子：
+
 ```bash
 # 例如：为了防止DOS太多连接进来，那么可以允许最多15个初始连接，超过的丢弃.
-/sbin/iptables -A INPUT -s 192.186.1.0/24 -p tcp --syn -m connlimit --connlimit-above 15 -j DROP
+iptable -A INPUT -s 192.186.1.0/24 -p tcp --sync -m connlimit --connlimit-above 15 -j DROP
 
 # ip范围应用
 iptables -A FORWARD -m iprange --src-range 192.168.1.5-192.168.1.124 -j ACCEPT
+
+# Syn-flood protection 洪水攻击保护:
+iptables -A FORWARD -p tcp --syn -m limit --limit 1/s -j ACCEPT
+
+# Furtive port scanner 端口扫描:
+iptables -A FORWARD -p tcp --tcp-flags SYN,ACK,FIN,RST RST -m limit --limit 1/s -j ACCEPT
+
+# Ping of death 禁止PING:
+iptables -A FORWARD -p icmp --icmp-type echo-request -m limit --limit 1/s -j ACCEPT
+
+# 禁止ssh默认的22端口 iptables 默认用的就是filter表 
+# --jump  -j target 
+# target 的常见的处理方法有ACCEPT（接受），DROP（丢弃），REJECT（拒接）其中、一般不使用REJECT行为、REJECT会带来安全隐患
+iptables -A INPUT -p tcp -dport 22 -j DROP
+iptables -t filter -A INPUT -p tcp --dport 22 -j DROP
+
+# 源地址不是192.168.132.201 的禁止连接
+iptables -A INPUT -I eth1 -s ! 192.168.132.201 -j DROP
+
+# db 仅允许内部合法ip段访问mysql数据库
+iptables –A INPUT –s 192.168.10.0/24 –p tcp –dport 3306 –j ACCEPT
+
+对外提供HTTP服务的业务，要允许http服务通过、并且不限制IP
+
+#http
+
+iptables –A INPUT –p tcp –dport 80 –j ACCEPT
+
+对内部提供http服务的业务、一般用特殊端口、并且限制合法IP连接或者VPN连接
+
+iptables –A INPUT –s 192.168.132.0 –p tcp –m multiport –dport 8080,8081,8082,8888 –j ACCEPT
 ```
 
 
