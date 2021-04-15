@@ -816,6 +816,30 @@ go-torch cpu.prof
   go mod download
   ```
 
+- 依赖的第三方包被下载到了$GOPATH/pkg/mod路径下
+
+- 依赖包中的地址失效了怎么办？比如 [golang.org/x/…](https://link.zhihu.com/?target=http%3A//golang.org/x/%E2%80%A6) 下的包都无法下载怎么办？
+
+  > 在go.mod文件里用 replace 替换包，例如
+  >
+  > replace [golang.org/x/text](https://link.zhihu.com/?target=http%3A//golang.org/x/text) => [golang/text](https://link.zhihu.com/?target=http%3A//github.com/golang/text) latest
+  >
+  > 这样，go会用 [github.com/golang/text](https://link.zhihu.com/?target=http%3A//github.com/golang/text) [替代golang.org/x/text，原理就是下载github.com/golang/text](https://link.zhihu.com/?target=http%3A//%E6%9B%BF%E4%BB%A3golang.org/x/text%EF%BC%8C%E5%8E%9F%E7%90%86%E5%B0%B1%E6%98%AF%E4%B8%8B%E8%BD%BDgithub.com/golang/text) 的最新版本到 $GOPATH/pkg/mod/golang.org/x/text下。
+
+- 依赖包的版本是怎么控制的？
+
+  > $GOPATH/pkg/mod里可以保存相同包的不同版本。
+  >
+  > 版本是在go.mod中指定的。
+  >
+  > 如果，在go.mod中没有指定，go命令会自动下载代码中的依赖的最新版本。
+  >
+  > 如果，在go.mod用require语句指定包和版本 ，go命令会根据指定的路径和版本下载包。
+  >
+  > 指定版本时可以用latest，这样它会自动下载指定包的最新版本；
+
+- 参考资料：[Go go.mod入门](https://zhuanlan.zhihu.com/p/126561786)
+
 
 
 ## CSP并发模型
