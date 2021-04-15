@@ -886,6 +886,62 @@ go-torch cpu.prof
 
 
 
+### go的共享内存
+
+要使用共享内存要执行以下几步：
+
+1. 发起一个系统调用，让系统帮你生产一块内存，或者取得一块已经存在的内存来使用。
+2. 把内存attach到当前进程，让当前进程可以使用。大家都知道，我们在进程中访问的是虚拟内存地址，系统会把它映射到物理内存中。如果没有这一步，第1步创建的内存就不能在当前进程访问。
+3. 这时就可以对内存进程读写操作了。
+4. 进程结束的时候要把上面attach的内存给释放。
+
+
+
+**关键代码1：**
+
+```go
+func Syscall(trap, a1, a2, a3 uintptr) (r1, r2 uintptr, err Errno)
+
+shmid, _, err := syscall.Syscall(syscall.SYS_SHMGET, 2, 4, IpcCreate|0600)
+shmaddr, _, err := syscall.Syscall(syscall.SYS_SHMAT, shmid, 0, 0)
+defer syscall.Syscall(syscall.SYS_SHMDT, shmaddr, 0, 0)
+```
+
+涉及到的系统调用有：
+
+`SYS_SHMGET`: 创建或者取得共享内存。
+`SYS_SHMAT`: 将共享内存attach到当前进程空间。
+`SYS_SHMDT`: 将共享内存从当前进程中deattach。
+
+对应：
+
+```c
+int shmget(key_t key, size_t size, int shmflg);  
+void *shmat(int shm_id, const void *shm_addr, int shmflg); 
+int shmdt(const void *shmaddr);
+```
+
+**关键代码2：**
+
+```go
+    handle, err := syscall.CreateFileMapping(0, nil, syscall.PAGE_READWRITE, 0, uint32(size), file)
+    defer syscall.CloseHandle(handle)
+    addr, err := syscall.MapViewOfFile(handle, syscall.FILE_MAP_WRITE, 0, 0, 0)
+
+    handle, err := syscall.CreateFileMapping(0, nil, syscall.PAGE_READONLY, 0, uint32(size), file)
+    defer syscall.CloseHandle(handle)
+    addr, err := syscall.MapViewOfFile(handle, syscall.FILE_MAP_READ, 0, 0, 0)
+    defer syscall.UnmapViewOfFile(addr)
+```
+
+**参考资料：**
+
+- [Golang直接操作共享内存](https://studygolang.com/articles/10203)
+
+- [golang 进程间共享内存](https://blog.csdn.net/az44yao/article/details/103463898)
+
+  
+
 ## 左耳听风《Go语言编程模式实战》
 
 ### 切片
