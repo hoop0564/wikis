@@ -818,6 +818,30 @@ go-torch cpu.prof
   go mod download
   ```
 
+- 依赖的第三方包被下载到了$GOPATH/pkg/mod路径下
+
+- 依赖包中的地址失效了怎么办？比如 [golang.org/x/…](https://link.zhihu.com/?target=http%3A//golang.org/x/%E2%80%A6) 下的包都无法下载怎么办？
+
+  > 在go.mod文件里用 replace 替换包，例如
+  >
+  > replace [golang.org/x/text](https://link.zhihu.com/?target=http%3A//golang.org/x/text) => [golang/text](https://link.zhihu.com/?target=http%3A//github.com/golang/text) latest
+  >
+  > 这样，go会用 [github.com/golang/text](https://link.zhihu.com/?target=http%3A//github.com/golang/text) [替代golang.org/x/text，原理就是下载github.com/golang/text](https://link.zhihu.com/?target=http%3A//%E6%9B%BF%E4%BB%A3golang.org/x/text%EF%BC%8C%E5%8E%9F%E7%90%86%E5%B0%B1%E6%98%AF%E4%B8%8B%E8%BD%BDgithub.com/golang/text) 的最新版本到 $GOPATH/pkg/mod/golang.org/x/text下。
+
+- 依赖包的版本是怎么控制的？
+
+  > $GOPATH/pkg/mod里可以保存相同包的不同版本。
+  >
+  > 版本是在go.mod中指定的。
+  >
+  > 如果，在go.mod中没有指定，go命令会自动下载代码中的依赖的最新版本。
+  >
+  > 如果，在go.mod用require语句指定包和版本 ，go命令会根据指定的路径和版本下载包。
+  >
+  > 指定版本时可以用latest，这样它会自动下载指定包的最新版本；
+
+- 参考资料：[Go go.mod入门](https://zhuanlan.zhihu.com/p/126561786)
+
 
 
 ## CSP并发模型
@@ -887,6 +911,62 @@ go-torch cpu.prof
 - [github项目: service_decorator](https://github.com/easierway/service_decorators/blob/master/README.md)
 
 
+
+### go的共享内存
+
+要使用共享内存要执行以下几步：
+
+1. 发起一个系统调用，让系统帮你生产一块内存，或者取得一块已经存在的内存来使用。
+2. 把内存attach到当前进程，让当前进程可以使用。大家都知道，我们在进程中访问的是虚拟内存地址，系统会把它映射到物理内存中。如果没有这一步，第1步创建的内存就不能在当前进程访问。
+3. 这时就可以对内存进程读写操作了。
+4. 进程结束的时候要把上面attach的内存给释放。
+
+
+
+**关键代码1：**
+
+```go
+func Syscall(trap, a1, a2, a3 uintptr) (r1, r2 uintptr, err Errno)
+
+shmid, _, err := syscall.Syscall(syscall.SYS_SHMGET, 2, 4, IpcCreate|0600)
+shmaddr, _, err := syscall.Syscall(syscall.SYS_SHMAT, shmid, 0, 0)
+defer syscall.Syscall(syscall.SYS_SHMDT, shmaddr, 0, 0)
+```
+
+涉及到的系统调用有：
+
+`SYS_SHMGET`: 创建或者取得共享内存。
+`SYS_SHMAT`: 将共享内存attach到当前进程空间。
+`SYS_SHMDT`: 将共享内存从当前进程中deattach。
+
+对应：
+
+```c
+int shmget(key_t key, size_t size, int shmflg);  
+void *shmat(int shm_id, const void *shm_addr, int shmflg); 
+int shmdt(const void *shmaddr);
+```
+
+**关键代码2：**
+
+```go
+    handle, err := syscall.CreateFileMapping(0, nil, syscall.PAGE_READWRITE, 0, uint32(size), file)
+    defer syscall.CloseHandle(handle)
+    addr, err := syscall.MapViewOfFile(handle, syscall.FILE_MAP_WRITE, 0, 0, 0)
+
+    handle, err := syscall.CreateFileMapping(0, nil, syscall.PAGE_READONLY, 0, uint32(size), file)
+    defer syscall.CloseHandle(handle)
+    addr, err := syscall.MapViewOfFile(handle, syscall.FILE_MAP_READ, 0, 0, 0)
+    defer syscall.UnmapViewOfFile(addr)
+```
+
+**参考资料：**
+
+- [Golang直接操作共享内存](https://studygolang.com/articles/10203)
+
+- [golang 进程间共享内存](https://blog.csdn.net/az44yao/article/details/103463898)
+
+  
 
 ## 左耳听风《Go语言编程模式实战》
 
