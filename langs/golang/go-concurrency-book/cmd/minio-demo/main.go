@@ -6,16 +6,23 @@ import (
 )
 
 func main() {
-	endpoint := "localhost"
-	accessKeyID := "Q3AM3UQ867SPQQA43P2F"
-	secretAccessKey := "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
+	endpoint := "127.0.0.1:9000"
+	accessKeyID := "minioadmin"
+	secretAccessKey := "minioadmin"
 	useSSL := false
 
 	// 初使化 minio client对象。
 	minioClient, err := minio.New(endpoint, accessKeyID, secretAccessKey, useSSL)
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatalln("new err", err)
+	}
+	buckets, err := minioClient.ListBuckets()
+	if err != nil {
+		log.Fatalln("list err", err)
 	}
 
-	log.Printf("%#v\n", minioClient) // minioClient初使化成功
+	for _, b := range buckets {
+		log.Println("bucket name is ", b.Name)
+	}
+
 }
