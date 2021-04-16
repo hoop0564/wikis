@@ -801,6 +801,8 @@ go-torch cpu.prof
   go env -w GO111MODULE=on
   # 配置依赖包的下载代理为国内阿里云
   go env -w GOPROXY=http://mirrors.aliyun.com/goproxy/
+  # 配置为goproxy中国（可解决minIO的V6包）
+  go env -w GOPROXY=https://goproxy.cn
   ```
 
 - 常用指令：
