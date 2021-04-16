@@ -527,7 +527,39 @@ A线程持有了mutexA，在等待mutexB，B线程持有了mutexB，在等待mut
   }
   ```
 
+
+
+
+## C++ Stream
+
+```c++
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+int main() {
+  int a = 123, b=456;
+  // 写文件 ios::out表示没有就创建，有则覆盖
+  ofstream out("d1.txt", ios::out);
+  out << a << " " << b;
+  out.close();
+  cout << "save done" << endl;
   
+  // 读文件
+  ifstream in("d1.txt");
+  int aa, bb;
+  in >> aa >> bb;
+  cout <<< "aa=" << aa << " bb=" << bb << endl;
+  in.close();
+  
+  system("pause");
+  return 0;
+}
+```
+
+
+
+
 
 ## C语言
 
