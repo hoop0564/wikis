@@ -1,4 +1,34 @@
-# HTTP/2
+# HTTP 1.0
+
+1996年发布
+
+- 内容包括header+body
+- method分get/post请求
+- 每次请求连接不能复用
+
+
+
+# HTTP 1.1
+
+1997年发布
+
+- connection默认是keep-alive
+- 因为并行的请求可能会导致浏览器的负载过重，所以比如Chrome会默认每个域名同时只有6个并发的请求
+
+- 明文传输，没有压缩
+- header太长
+- 传输慢
+
+
+
+# HTTP 2.0
+
+2015年发布。
+
+- 可实现了文件分块后的乱序传输，最后组装好的BT下载思想
+- 因为实现了server push，对客户端的单次请求，可以实现多次返回（js/css/html/imags/..)
+
+
 
 ## 核心概念
 
@@ -79,5 +109,18 @@
 > Tips：从图中可以看出服务端的 Settings - Max concurrent streams : 128 表示服务端允许的最大并发 Stream 数是 128，Settings - Max frame size : 16777215表示服务端允许的最大帧大小 16777215 字节。
 >
 
-参考资料：[HTTP/2 协议（帧、消息、流简单的抓包分析）](https://blog.csdn.net/qq_38937634/article/details/111352895?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control&dist_request_id=1331978.8272.16186134743356913&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control)
 
+
+## 参考资料：
+
+- [HTTP/2 协议（帧、消息、流简单的抓包分析）](https://blog.csdn.net/qq_38937634/article/details/111352895?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control&dist_request_id=1331978.8272.16186134743356913&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control)
+
+- [HTTP/2 协议-Stream 的状态变迁](https://blog.csdn.net/qq_38937634/article/details/111420205)
+
+
+
+# HTTP 3.0
+
+2019年发布
+
+- 从原来的基于TCP改为基于UDP
