@@ -1,10 +1,22 @@
+# HTTP 0.9
+
+1991年发布
+
+- 不支持请求头，只支持 `GET` 方法
+
+
+
 # HTTP 1.0
 
 1996年发布
 
-- 内容包括header+body
-- method分get/post请求
+- 在请求中加入了HTTP版本号，如：`GET /coolshell/index.html HTTP/1.0`
+- HTTP 开始有 header了，不管是request还是response 都有header了。
+- 增加了HTTP Status Code 标识相关的状态码。
+- 还有 `Content-Type` 可以传输其它的文件了。
+
 - 每次请求连接不能复用
+- 是串行请求
 
 
 
@@ -13,11 +25,61 @@
 1997年发布
 
 - connection默认是keep-alive
+
+  > 这是所谓的“**HTTP 长链接**” 或是 “**请求响应式的HTTP 持久链接**”。英文叫 HTTP Persistent connection.
+
+- 支持pipeline网络传输，只要第一个请求发出去了，不必等其回来，就可以发第二个请求出去，可以减少整体的响应时间。（注：非幂等的POST 方法或是有依赖的请求是不能被pipeline化的）
+
+- 支持 Chunked Responses ，也就是说，在Response的时候，不必说明 `Content-Length` 这样，客户端就不能断连接，直到收到服务端的EOF标识。这种技术又叫 “**服务端Push模型**”，或是 “**服务端Push式的HTTP 持久链接**”
+
+- 增加了 cache control 机制。
+
+- 协议头注增加了 Language, Encoding, Type 等等头，让客户端可以跟服务器端进行更多的协商。
+
+- 还正式加入了一个很重要的头—— `HOST`这样的话，服务器就知道你要请求哪个网站了。因为可以有多个域名解析到同一个IP上，要区分用户是请求的哪个域名，就需要在HTTP的协议中加入域名的信息，而不是被DNS转换过的IP信息。
+
+- 正式加入了 `OPTIONS` 方法，其主要用于 [跨源资源共享（CORS）](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CORS) 应用。
+
 - 因为并行的请求可能会导致浏览器的负载过重，所以比如Chrome会默认每个域名同时只有6个并发的请求
 
 - 明文传输，没有压缩
 - header太长
 - 传输慢
+
+
+
+在HTTP/1.1 下，HTTP已经支持四种网络协议：
+
+- 传统的短链接。
+- 可重用TCP的的长链接模型。
+- 服务端push的模型。
+- WebSocket模型。
+
+
+
+# HTTPS
+
+使用TLS协议的HTTP。
+
+生成HTTPS私有证书：
+
+> 私有证书在网页中访问会显示此站点是不受信任的，需要网页中点击【继续前往】
+
+```bash
+# under ubuntu os
+openssl genrsa -out ./server.key 2048
+openssl req -new -x509 -key ./server.key -out ./server.pem -days 365
+```
+
+gin中开启https：
+
+> gin中开启https会默认使用http2，如果不支持，就再切回http1.1
+
+```go
+r := gin.Default()
+...
+r.RunTLS(":9999", "./server.pem", "./server.key")
+```
 
 
 
@@ -111,16 +173,22 @@
 
 
 
-## 参考资料：
+# HTTP 3.0
+
+2018年发布，已被 Chrome，Firefox，和Cloudflare支持
+
+- 从原来的基于TCP改为基于UDP
+
+
+
+
+
+# 参考资料：
 
 - [HTTP/2 协议（帧、消息、流简单的抓包分析）](https://blog.csdn.net/qq_38937634/article/details/111352895?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control&dist_request_id=1331978.8272.16186134743356913&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control)
 
 - [HTTP/2 协议-Stream 的状态变迁](https://blog.csdn.net/qq_38937634/article/details/111420205)
 
+- [HTTP的前世今生-coolshell](https://coolshell.cn/articles/19840.html)
 
-
-# HTTP 3.0
-
-2019年发布
-
-- 从原来的基于TCP改为基于UDP
+# 
