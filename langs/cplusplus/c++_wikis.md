@@ -594,6 +594,16 @@ int *_errno()
 
 
 
+## zlib
+
+- [uvoteam](https://github.com/uvoteam)/**[gunzip_mmap](https://github.com/uvoteam/gunzip_mmap)**
+- [使用zlib进行内存中解压缩](https://xbuba.com/questions/4901842)
+- [zlib库内存压缩解压缩函数的C++便利性封装](https://blog.csdn.net/10km/article/details/51007527)
+
+- [mateidavid](https://github.com/mateidavid)/**[zstr](https://github.com/mateidavid/zstr)**
+
+
+
 ## 参考资料
 
 - [C++并发与多线程](https://www.bilibili.com/video/BV1Yb411L7ak?p=1)
