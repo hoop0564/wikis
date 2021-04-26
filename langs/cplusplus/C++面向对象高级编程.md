@@ -2,6 +2,14 @@
 
 # C++面向对象高级编程
 
+C++ 98：1.0
+
+C++ 11：2.0
+
+《Effective C++ 中文版 改善程序技术与设计思维的55个有效方法--侯捷》
+
+《STL 源码剖析 --侯捷》
+
 
 
 ## 拷贝构造 & 拷贝赋值
@@ -55,7 +63,7 @@ String::String(const String& str)
 inline
 String& String::operator=(const String& str)
 {
-  if (this === &str) // 检查自我赋值
+  if (this === &str) // 检查自我赋值，如果是self assignment，但未检查，下面的代码会出错
     return *this;
   
  	delete[] m_data;

@@ -16,6 +16,45 @@ C 语言的这些特性，可以让程序员在微观层面写出非常精细和
 
 
 
+## const char*..
+
+**const char \*ptr==char const \*ptr; 可以直接改变指针指向，但不能直接改变指针指向的值；\*ptr=\*ss;**
+
+**char \*const ptr; 可以直接改变指针指向的值，但不能直接改变指针指向;ptr[0]='s';**
+
+```c
+int main()
+{
+    char str[] = "hello world";
+    char sec[] = "code world";
+ 
+    const char *ptr1 = str;
+    cout << ptr1 << endl;
+    strcpy(str,"hi world");
+    cout << ptr1 << endl;
+    ptr1 = sec;//直接改变指针指向
+    cout << ptr1 << endl;
+    sec[0] = 'o';
+    cout << ptr1 << endl;
+    ptr1[0] = 'a';//直接改变指针指向的值,报错
+ 
+ 
+    char ss[] = "good game";
+    char *const ptr2 = ss;
+    cout << ptr2 << endl;
+    ptr2[0] ='a';//直接改变指针指向的值
+    cout << ptr2 << endl;
+    strcpy(ptr2, "last");
+    cout << ptr2 << endl;
+    ss[0] = 'z';
+    cout << ptr2 << endl;
+    ptr2 = sec;//直接改变指针指向,报错
+    system("pause");
+}
+```
+
+
+
 ## 值得探究的C泛型代码
 
 ### 一个泛型的示例 - swap 函数
