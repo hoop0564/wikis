@@ -96,6 +96,66 @@ int main() {
 
   > class with pointer members must have copy ctor and copy op=
 
+
+
+## 单例Singleton
+
+```c++
+class A {
+public:
+  static A& getInstance();
+  setup() {...}
+private:
+  A();
+  A(const A& rhs);
+  ...
+};
+
+A& A::getInstance()
+{
+  static A a;
+  return a;
+}
+
+// 使用
+A::getInstance().setup();
+```
+
+
+
+## 复数类complex
+
+```c++
+class complex
+{
+public:
+  complex(double r=0, double i=0)
+    : re(r), im(i)
+    {}
+  complex& operator += (const complex&);
+  double real() const {return re;}
+  double imag() const {return im;}
+private:
+  double re, im;
+  
+  friend complex& __doapl (complex*, const complex&);
+}
+```
+
+使用：
+
+```c++
+{
+  const complex c1(2,1);
+  cout << c1.real(); // 如果real()不是const成员函数，此处会报错！
+  cout << c1.imag();
+}
+```
+
+
+
+
+
 ## 参考资料
 
 - [C++面向对象高级编程(上)-基于对象＆面向对象](https://www.bilibili.com/video/BV1Lb4y1R7fs?p=7)
