@@ -132,12 +132,15 @@ public:
   complex(double r=0, double i=0)
     : re(r), im(i)
     {}
+  // return by reference 尽量
   complex& operator += (const complex&);
   double real() const {return re;}
   double imag() const {return im;}
 private:
   double re, im;
   
+  // 友元
+  // do assignment plus
   friend complex& __doapl (complex*, const complex&);
 }
 ```
@@ -155,6 +158,48 @@ private:
 > 传参时，尽量都穿引用，因为引用是广义的指针，传的时候，只占4个字节的空间，更快。
 >
 > 如果不希望参数被修改，就传：`pass by reference to const`
+
+
+
+## 操作符重载
+
+```c++
+ostream& operator << (ostream& os, const complex& x)
+{
+  return os << real(x) << ',' << imag(x);
+}
+```
+
+
+
+## 友元
+
+```c++
+inline complex&
+  __doapl(complex* ths, const complex& r) 
+{
+  // 自由取得friend的private成员
+  ths->res += r.re;
+  ths->im += r.im;;
+  return *ths;
+}
+```
+
+**相同class的各个object互为friend（友元）**
+
+```c++
+class complex
+{
+...
+int func(const complex& param) { return param.re + param.im};
+}
+
+{
+  complex c1(2,1);
+  complex c2;
+  c2.func(c1); // focus it !
+}
+```
 
 
 
