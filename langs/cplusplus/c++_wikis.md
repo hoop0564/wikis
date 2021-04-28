@@ -594,6 +594,18 @@ int *_errno()
 
 
 
+## 静态库 vs 动态库
+
+![image-20210428192753948](../../images/lib-vs-dll.png)
+
+
+
+![image-20210428193417824](../../images/c-c++-compile.png)
+
+- 静态库的代码如果有改动，所有依赖它的文件都要重新编译。动态库不用。
+
+
+
 ## zlib
 
 - [uvoteam](https://github.com/uvoteam)/**[gunzip_mmap](https://github.com/uvoteam/gunzip_mmap)**
