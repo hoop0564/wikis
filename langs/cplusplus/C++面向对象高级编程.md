@@ -125,6 +125,8 @@ A::getInstance().setup();
 
 ## 复数类complex
 
+> 此示例来自于 `STL` 源码，感谢 侯捷！
+
 ```c++
 class complex
 {
@@ -140,7 +142,8 @@ private:
   double re, im;
   
   // 友元
-  // do assignment plus
+  // do assignment plus 
+  // 注意：第一个参数为引用，第二个参数为const引用！
   friend complex& __doapl (complex*, const complex&);
 }
 ```
@@ -170,7 +173,7 @@ ostream& operator << (ostream& os, const complex& x)
 }
 ```
 
-
+![image-20210429082846058](../../images/operator-overloading1.png)
 
 ## 友元
 
