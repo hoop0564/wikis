@@ -173,7 +173,15 @@ ostream& operator << (ostream& os, const complex& x)
 }
 ```
 
-![image-20210429082846058](../../images/operator-overloading1.png)
+<img src="../../images/operator-overloading1.png" alt="image-20210429082846058" style="zoom:50%;" />
+
+
+
+<img src="../../images/operator-overloading2.png" alt="image-20210430080653395" style="zoom: 45%;" />
+
+注意上面是全局函数，非成员函数。
+
+
 
 ## 友元
 
@@ -203,6 +211,38 @@ int func(const complex& param) { return param.re + param.im};
   c2.func(c1); // focus it !
 }
 ```
+
+
+
+### return by reference
+
+好处：传递者无需知道接收者是以 `reference`接收
+
+```c++
+inline complex&
+  __doapl(complex* ths, const complex& r)
+{
+  ...
+  return *ths;
+}
+
+inline complex&
+  complex::operator += (const complex& r)
+{
+  return __doapl(this, r);
+}
+
+complex c1(2,1);
+complex c2(5);
+c2 += c1;
+c3 += c2 += c1; // 注意：+=的返回值不可为void，需要为complex&
+```
+
+<img src="../../images/return-by-reference-prohibit.png" alt="image-20210430081130627" style="zoom:55%;" />
+
+
+
+注意：`typename()` 表示要创建的是临时对象，例如 `int(i)`, `complex(1,2)`
 
 
 
