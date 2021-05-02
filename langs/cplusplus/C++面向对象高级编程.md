@@ -181,6 +181,29 @@ ostream& operator << (ostream& os, const complex& x)
 
 注意上面是全局函数，非成员函数。
 
+`<<` 操作符的重载，必须是全局函数，不可为成员函数。`<<` 是作用在左边的操作数上（c++就没有作用在右边的语法）
+
+`<<` 是很多年前就有的，只认识当时既有的，触发修改标准库的`ostream`实现
+
+```c++
+inline complex conj(const complex& x) // 共轭复数：实部相等，虚部相反
+{
+	return complex(real(x), -imag(x));  
+}
+
+ostream& operator << (ostream& os, const complex& x) // 不可为const成员函数；注意返回类型！可看下面的使用方式！
+{
+  return os << '(' << real(x) << ',' << img(x) << ')';
+}
+
+// use
+{
+  complex c1(2,1);
+  cout << conj(c1); // 注意此句！ (2,-1)
+  cout << c1 << conj(c2); // (2,1)(2,-1)
+}
+```
+
 
 
 ## 友元
