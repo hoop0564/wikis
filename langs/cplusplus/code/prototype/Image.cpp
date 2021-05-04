@@ -32,8 +32,9 @@ private:
 Image *Image::_prototypes[];
 int Image::_nextSlot;
 
-// client calls this public static member function when it needs instance 
+// client calls this public static member function when it needs an instance 
 // of an Image subclass
+// 实际编码中，不用imageType而是className来找
 Image *Image::findAndClone(imageType)
 {
 	for (int i = 0; i < _nextSlot; i++)
