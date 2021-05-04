@@ -273,11 +273,11 @@ c3 += c2 += c1; // 注意：+=的返回值不可为void，需要为complex&
 
 ### 组合 Composition
 
-![image-20210504102541819](../../images/cpp/class-composition.png)
+<img src="../../images/cpp/class-composition.png" alt="image-20210504102541819" style="zoom:30%;" />
 
 ### 委托Delegation
 
-![class-delegation](../../images/class-delegation.png)
+<img src="../../images/class-delegation.png" alt="class-delegation" style="zoom:33%;" />
 
 以上写法很有名：`pointer to implementation`,学术界没有 `by pointer`说法，只有 `by refrerence`说法。右边的`cpp`实现代码怎么变都不会影响左边的头文件`hpp`代码！有名“编译防火墙”！
 
@@ -285,7 +285,7 @@ c3 += c2 += c1; // 注意：+=的返回值不可为void，需要为complex&
 
 ### 继承 Inheritance
 
-![](../../images/class-inheritance.png)
+<img src="../../images/class-inheritance.png" style="zoom:33%;" />
 
 - 继承最重要的是搭配好虚函数！
 
@@ -314,9 +314,32 @@ c3 += c2 += c1; // 注意：+=的返回值不可为void，需要为complex&
 
 <img src="../../images/cpp/class-conc-deconc.png" alt="image-20210504115805347" style="zoom:50%;" />
 
-- 先里面，后外面！
-- 第一个是先构造Derived，后Component?
+- 第一个是:
+
+  ```bash
+  Base ctor
+  Component ctor
+  Derived ctor
+  Derived dector
+  Component dector
+  Base dector
+  ```
+
+  
+
 - 第二个是先构造Component，再Base，后Derived
+
+  ```bash
+  Component ctor
+  Base ctor
+  Derived ctor
+  Derived dector
+  Base dector
+  Component dector
+  ```
+
+  
+
 - todo：待编码做`cout`验证
 
 
