@@ -269,6 +269,24 @@ c3 += c2 += c1; // 注意：+=的返回值不可为void，需要为complex&
 
 
 
+## 类与类的关系
+
+### 组合 Composition
+
+![image-20210504102541819](../../images/cpp/class-composition.png)
+
+### 委托Delegation
+
+![class-delegation](../../images/class-delegation.png)
+
+以上写法很有名：`pointer to implementation`,学术界没有 `by pointer`说法，只有 `by refrerence`说法。右边的`cpp`实现代码怎么变都不会影响左边的头文件`hpp`代码！有名“编译防火墙”！
+
+
+
+### 继承 Inheritance
+
+![](../../images/class-inheritance.png)
+
 ## 参考资料
 
 - [C++面向对象高级编程(上)-基于对象＆面向对象](https://www.bilibili.com/video/BV1Lb4y1R7fs?p=7)
