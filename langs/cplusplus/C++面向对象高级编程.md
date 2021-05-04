@@ -301,10 +301,13 @@ c3 += c2 += c1; // 注意：+=的返回值不可为void，需要为complex&
 
 
 
-**class-inheritance-with-virtual：**
+## 设计模式实现
+
+### 模板模式实现FileOpen
 
 - 典型场景：对象调用父类的方法，父类的方法中调用的 virtual 函数又是被子类override的
 - 在模板模式（Template Pattern）中，一个抽象类公开定义了执行它的方法的方式/模板。它的子类可以按需要重写方法实现，但调用将以抽象类中定义的方式进行。这种类型的设计模式属于行为型模式。
+- 下面的栗子来自于MFC源码：
 
 ![image-20210504112730882](../../images/cpp/class-inheritance-with-virtual.png)
 
@@ -338,11 +341,22 @@ c3 += c2 += c1; // 注意：+=的返回值不可为void，需要为complex&
   Component dector
   ```
 
-  
-
-- todo：待编码做`cout`验证
 
 
+### 组合模式实现FileSystem
+
+![image-20210504170116146](../../images/cpp/delegation-inheritance-classic1.png)
+
+- `Component`相当于实体，`Primitive`相当于文件，`Composite`相当于目录！
+- 鼎鼎大名的`Composite`组合模式实现方式！经典！
+
+
+
+### Prototype原型模式
+
+![image-20210504170905240](../../images/cpp/prototype-pattern.png)
+
+- 相当于在父类中写了一个钩子 `clone`，后来的子类将其地址挂在这个钩子上，然后父类得以通过勾上的地址对新类进行操作！即多态！实现了多种形态的效果！
 
 ## 参考资料
 
