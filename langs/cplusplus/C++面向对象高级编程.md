@@ -287,6 +287,40 @@ c3 += c2 += c1; // 注意：+=的返回值不可为void，需要为complex&
 
 ![](../../images/class-inheritance.png)
 
+- 继承最重要的是搭配好虚函数！
+
+
+
+## 虚函数
+
+| 分类                  | 说明                                                         |
+| --------------------- | ------------------------------------------------------------ |
+| non-virtual 非虚函数  | 你不希望 `derived class`重新定义(override 复写/重写)实现它   |
+| virtual 虚函数        | 你希望 `derived class` 重新定义(override)实现它，它也已有默认定义 |
+| pure virtual 纯虚函数 | 你希望 `derived class` 一定要从新定义它，因为你对它没有默认定义 |
+
+
+
+**class-inheritance-with-virtual：**
+
+- 典型场景：对象调用父类的方法，父类的方法中调用的 virtual 函数又是被子类override的
+- 在模板模式（Template Pattern）中，一个抽象类公开定义了执行它的方法的方式/模板。它的子类可以按需要重写方法实现，但调用将以抽象类中定义的方式进行。这种类型的设计模式属于行为型模式。
+
+![image-20210504112730882](../../images/cpp/class-inheritance-with-virtual.png)
+
+
+
+构造和析构顺序：
+
+<img src="../../images/cpp/class-conc-deconc.png" alt="image-20210504115805347" style="zoom:50%;" />
+
+- 先里面，后外面！
+- 第一个是先构造Derived，后Component?
+- 第二个是先构造Component，再Base，后Derived
+- todo：待编码做`cout`验证
+
+
+
 ## 参考资料
 
 - [C++面向对象高级编程(上)-基于对象＆面向对象](https://www.bilibili.com/video/BV1Lb4y1R7fs?p=7)
