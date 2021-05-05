@@ -66,6 +66,7 @@ String& String::operator=(const String& str)
   if (this === &str) // 检查自我赋值，如果是self assignment，但未检查，下面的代码会出错
     return *this;
   
+  // 先清空之前的内存，因为使用时是：s3 = s1，左边可能是有值的！
   delete[] m_data;
   m_data = new char[strlen(str.m_data)+1];
   strcpy(m_data, str.m_data);
@@ -95,6 +96,52 @@ int main() {
 - 如果类中有指针型的成员变量，就需要明确给出 拷贝构造 和 拷贝赋值 函数，以免在被使用的时候，出现浅拷贝（理当是深拷贝）
 
   > class with pointer members must have copy ctor and copy op=
+
+
+
+## new/delete
+
+![image-20210505105758443](../../images/cpp/new-class-object.png)
+
+`malloc` 只能分配内存，`new` 先分配内存，再调用类的构造函数！
+
+![image-20210505110751975](../../images/cpp/delete.png)
+
+
+
+### 单个对象的内存分配
+
+- 首先分配上下两个 `cookie`
+- 灰色区域是因为在调试模式下编译器给分配的内存
+- 内存以16个byte为单位，所以最终实际分配以16的整数倍
+- 内存中的第一个`byte`都需要给出去，例如图一的 `00000040`，所以是从`00000041`开始
+
+![image-20210505114419835](../../images/cpp/memory-alloc.png)
+
+
+
+
+
+### 数组的内存分配
+
+- `array new` 要搭配 `array delete`，否则会出错
+
+  ```c++
+  char *p = new char[100];
+  ...
+  delete[] p;
+  ```
+
+
+
+![image-20210505180806348](../../images/cpp/memory-array.png)
+
+- 其中的3为数组的大小
+- 黄色区域为`debugger header`
+
+<img src="../../images/cpp/memory-array-delete[].png" alt="image-20210505181426108" style="zoom:25%;" />
+
+- 上图只对类中有动态内存分配的才必须如此，如果没有内存分配，不使用 `array delete`也不会产生内存泄露
 
 
 
