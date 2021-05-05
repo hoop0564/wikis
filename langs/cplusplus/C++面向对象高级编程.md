@@ -99,6 +99,49 @@ int main() {
 
 
 
+## static
+
+调用类中static函数的方法：
+
+1. 通过object调用
+
+2. 通过class name调用
+
+   ```c++
+   class Account {
+     public:
+     static void set_rate(const double& rate);
+   }
+   
+   {
+     Account a;
+     a.set_rate(0.3);
+     
+     Account::set_rate(0.4);
+   }
+   ```
+
+
+
+## cout
+
+```c++
+class _IO_ostream_withassign : public ostream {
+  ...
+};
+extern _IO_ostream_withassign cout;
+
+class ostream : virtual public ios 
+{
+public:
+  ostream& operator<<(char c);
+  ostream& operator<<(unsigned char c) {return (*this) << (char)c; }
+  ...
+}
+```
+
+虚基类 `virtual public`：由于C++支持多重继承，所以对于一个派生类中有几个直接父类，而几个直接父类中有几个可能分别继承自某一个基类（就是父类的父类），这样在构造最终派生类时，会出现最终派生类中含有多个同一个基类的情况，就会产生二义性的问题（不知道该调用哪个基类的成员变量和函数），为解决此问题，需要使用虚基类，即只对此基类生成一块内存区域，这样最终派生类中就只会含有一个基类了
+
 ## new/delete
 
 ![image-20210505105758443](../../images/cpp/new-class-object.png)
