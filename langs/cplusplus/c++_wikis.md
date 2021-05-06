@@ -303,8 +303,9 @@ c++11中的线程：传参数需要用std::ref或右值引用
 
 ```c++
 std::thread t1(func);
-std::thread t2 = std::move(t1); // thread对象不可拷贝，只可移动
-const threadNum = std::thread::hardward_concurrency(); //返回可以创建多少个线程
+// thread(const thread&) = delete;
+std::thread t2 = std::move(t1); // thread对象不可拷贝构造，只可移动
+const threadNum = std::thread::hardware_concurrency(); //返回可以创建多少个线程
 ```
 
 
