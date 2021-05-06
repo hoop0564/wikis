@@ -142,6 +142,33 @@ public:
 
 虚基类 `virtual public`：由于C++支持多重继承，所以对于一个派生类中有几个直接父类，而几个直接父类中有几个可能分别继承自某一个基类（就是父类的父类），这样在构造最终派生类时，会出现最终派生类中含有多个同一个基类的情况，就会产生二义性的问题（不知道该调用哪个基类的成员变量和函数），为解决此问题，需要使用虚基类，即只对此基类生成一块内存区域，这样最终派生类中就只会含有一个基类了
 
+
+
+## class template类模板
+
+```c++
+template<typename T>
+class complex
+{
+public:
+  complex(T r=0, T i=0):re(r), im(i) {...}
+  complex& operator += (const complex&);
+  T real() const {return re;}
+  T imag() const {return im;}
+private:
+  T re, im;
+  friend complex& __doap(complex*, const complex&);
+};
+
+{
+  // 以下生成两份代码
+  complex<double> c1(2.5,1.5); 
+  complex<int> c2(2,6);
+}
+```
+
+
+
 ## new/delete
 
 ![image-20210505105758443](../../images/cpp/new-class-object.png)
