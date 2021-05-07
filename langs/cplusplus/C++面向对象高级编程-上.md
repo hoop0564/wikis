@@ -425,11 +425,20 @@ c3 += c2 += c1; // 注意：+=的返回值不可为void，需要为complex&
 - deque：双端队列
 - 标准库中是完全用deque实现了queue
 
+<img src="../../images/cpp/composition-memory.png" alt="image-20210507213351409" style="zoom:23%;" />
+
+like 穿衣服、脱衣服：
+
+<img src="../../images/cpp/composition-ctor-dtor.png" alt="image-20210507214704558" style="zoom:25%;" />
+
+- 构造由内到外：如果默认的Component无参构造无法满足case，就显式的在`initialization list`中给出显示的有参构造！
+- 析构由外到内
+
 ### 委托Delegation
 
 <img src="../../images/class-delegation.png" alt="class-delegation" style="zoom:33%;" />
 
-以上写法很有名：`pointer to implementation`,学术界没有 `by pointer`说法，只有 `by refrerence`说法。右边的`cpp`实现代码怎么变都不会影响左边的头文件`hpp`代码！有名“编译防火墙”！
+以上写法很有名：`pointer to implementation`,学术界没有 `by pointer`说法，只有 `by refrerence`说法。右边的`cpp`实现代码怎么变都不会影响左边的头文件`hpp`代码！有名“**编译防火墙**”！
 
 
 
