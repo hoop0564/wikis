@@ -421,6 +421,10 @@ c3 += c2 += c1; // 注意：+=的返回值不可为void，需要为complex&
 
 <img src="../../images/cpp/class-composition.png" alt="image-20210504102541819" style="zoom:30%;" />
 
+- queue：单端队列，先入先出
+- deque：双端队列
+- 标准库中是完全用deque实现了queue
+
 ### 委托Delegation
 
 <img src="../../images/class-delegation.png" alt="class-delegation" style="zoom:33%;" />
