@@ -169,6 +169,35 @@ private:
 
 
 
+## function template 函数模板
+
+<img src="../../images/cpp/function-template.png" alt="image-20210507065511546" style="zoom:30%;" />
+
+- 引数 即 实参
+- C++标准库中的算法，都是 `function template`，如上图的 `min()`实现
+
+
+
+## namespace
+
+```c++
+// demo2
+using namespace std;
+cout << "hello";
+
+// demo2
+using std::cout; 
+cout << "hello";
+```
+
+
+
+## More details
+
+<img src="../../images/cpp/more-details.png" alt="image-20210507072639759" style="zoom:33%;" />
+
+
+
 ## new/delete
 
 ![image-20210505105758443](../../images/cpp/new-class-object.png)
