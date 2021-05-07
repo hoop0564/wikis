@@ -1898,6 +1898,24 @@ swagger serve -F=swagger swagger.json
 
 
 
+## 开发环境
+
+使用VsCode开发，若遇到 `gopls` crashed：
+
+1. 可到目录 `C:\Users\zhongcai.guan\go\pkg\mod\golang.org\x`，移除有问题的版本，形如：
+
+   `tools@v0.1.1-0.20210201201750-4d4ee958a9b7`
+
+2. 重新设置 `go env proxy` 为阿里云的
+
+   ```bash
+   go env -w GOPROXY=http://mirrors.aliyun.com/goproxy/
+   ```
+
+3. 在到vscode中根据提示，执行安装 `gopls`。
+
+
+
 ## 参考资料
 
 - [教程课件](https://gitee.com/geektime-geekbang/go_learning)
