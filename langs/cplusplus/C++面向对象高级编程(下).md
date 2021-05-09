@@ -18,3 +18,7 @@ explict Fraction(int num, int den=1);
 
 
 
+## pointer-like classes
+
+![image-20210509083112903](../../images/cpp/pointer-like-classes.png)
+
