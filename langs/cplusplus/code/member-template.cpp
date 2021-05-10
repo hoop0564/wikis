@@ -17,3 +17,38 @@ struct pair
 	template <class U1, class U2>
 	pair(const pair<U1, U2>& p) : first(p.first), second(p.second){};
 };
+
+
+// 实际案例，标准库中共有很多此设计手法
+{
+	class Base1 {}; // 鱼类
+	class Derived1: public Base1 {}; // 鲫鱼
+
+	class Base2 {}; // 鸟类
+	class Derived2: public Base2 {}; // 麻雀
+
+	{
+		pair<Derived1, Derived2> p; // T1, T2
+		pair<Base1, Base2> p2(p); 
+		// 上句等价于:
+		pair<Base1, Base2> p2(pair<Derived1, Derived2>());
+	}
+
+}
+
+
+{
+	template <typename _Tp>
+	class shared_ptr: public __shared_ptr<_Tp>
+	{
+		...
+		template<typename _Tp1>
+		explicit shared_ptr(_Tp1* __p) : __shared_ptr<_Tp1>(__p) {}
+		...
+	}
+
+	{
+		Base1* ptr = new Derived1; // up-cast
+		shared_ptr<Base1> sptr(new Derived1); // 模拟up-cast, _Tp是Base1，_Tp1是Derived1
+	}
+}
