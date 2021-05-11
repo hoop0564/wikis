@@ -88,4 +88,21 @@ struct hash<int>
   }
   ```
 
-  
+
+
+
+## 标准库
+
+<img src="../../images/cpp/STL.png" alt="image-20210512065638695" style="zoom:43%;" />
+
+```c++
+// 确认C++版本：macro __cpluscplus 此值是如何编译器都要设的值
+{
+  cout << __cpluscplus;
+}
+// 201103
+```
+
+
+
+## variadic template 数量不定的模板参数
