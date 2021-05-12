@@ -105,4 +105,23 @@ struct hash<int>
 
 
 
-## variadic template 数量不定的模板参数
+## ranged-base for
+
+```c++
+vector<int> vec;
+for (auto& elem : vec) { // pass by reference
+  elem *= 3;
+}
+```
+
+
+
+## reference
+
+> 侯捷：引用就是指针！因为，所有的编译器实现引用的方式，都是用pointer去做！
+>
+> 或者说，reference就是const类型的pointer！
+>
+> 地址就是一种指针！指针就是地址的一种形式！
+
+![image-20210512082221959](../../images/cpp/reference.png)
