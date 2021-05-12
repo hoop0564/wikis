@@ -125,3 +125,37 @@ for (auto& elem : vec) { // pass by reference
 > 地址就是一种指针！指针就是地址的一种形式！
 
 ![image-20210512082221959](../../images/cpp/reference.png)
+
+`reference` 通常不用于声明变量，而用于参数类型（`parameter type`）和返回类型（`return type`）的描述。
+
+
+
+以下被视为 `same signature`（不能并存！）：
+
+```c++
+double imag(const double& im) { ... }
+double imag(const double  im) { ... } 	// Ambiguity
+```
+
+const的成员函数是算作函数签名的一部分！
+
+
+
+## 构造和析构顺序
+
+构造由内而外
+
+析构由外而内
+
+![image-20210513073418314](../../images/cpp/ctor-dctor-seq.png)
+
+```mermaid
+graph LR;
+Base构造-->Component构造-->Derived构造;
+```
+
+```mermaid
+graph LR;
+Derived析构-->Component析构-->Base析构;
+```
+
