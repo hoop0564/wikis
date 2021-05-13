@@ -159,3 +159,13 @@ graph LR;
 Derived析构-->Component析构-->Base析构;
 ```
 
+
+
+## vptr和vtbl
+
+![image-20210513082419103](../../images/cpp/vptr-vtbl.png)
+
+vtbl: virtual table, table里面放的都是函数指针！指向虚函数所在的位置！
+
+> 虚指针指向一个虚函数表，虚函数表里保存着每个对象锁含的虚函数的地址
+
