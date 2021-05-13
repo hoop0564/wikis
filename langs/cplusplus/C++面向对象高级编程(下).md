@@ -163,9 +163,29 @@ Derived析构-->Component析构-->Base析构;
 
 ## vptr和vtbl
 
+继承时重写`override`的实现：
+
+![image-20210513213205164](../../images/cpp/vptr-vtbl1.png)
+
+
+
+多态的实现：
+
 ![image-20210513082419103](../../images/cpp/vptr-vtbl.png)
 
-vtbl: virtual table, table里面放的都是函数指针！指向虚函数所在的位置！
+
+
+父子类的多态实例（MFC）：
+
+![image-20210513220317284](../../images/cpp/MFC-CDocument.png)
+
+
+
+vtbl: virtual table, table里面放的都是函数指针！指向虚函数所在的位置！此处叫动态绑定！而不再是C语言里的 `call xxx()`的静态绑定！
 
 > 虚指针指向一个虚函数表，虚函数表里保存着每个对象锁含的虚函数的地址
+
+C++类中的所有成员函数，都有个隐藏参数 `this`，实现了多态的指向。
+
+
 
