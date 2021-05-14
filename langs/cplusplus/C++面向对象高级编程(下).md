@@ -228,9 +228,59 @@ a.vfunc1(); // 此处调用的是对象A的vfunc1，静态绑定，因为用的�
 ## new delete
 
 - 代码中使用的 `new`、`delete` 都是expression，表达式
+
 - new的内部实现的第一个步骤 `operator new`是new操作符重载，这一步的内部实现是 `malloc`。同理 `delete`。（free..)
+
 - new先分配内存，再执行构造函数
+
 - 我们自己设计的class，可以重载 new、delete，用于内存管理和内存池设计
 
-![image-20210514083044165](../../images/cpp/new-delete.png)
+  ```c++
+  // 重载operator new，operator delete，operator new[]，operator delete
+  
+  void* myAlloc(size_t size) {
+  	return malloc(size);
+  }
+  
+  void myFree(void* ptr) {
+  	return free(ptr);
+  }
+  
+  //它们不可用被声明于一个Namespace内
+  inline void* operator new(size_t size) {
+  	cout << "global new()\n";
+  	return myAlloc(size);
+  }
+  
+  inline void* operator new[](size_t size) {
+  	cout << "global new[]()\n";
+  	return myAlloc(size);
+  }
+  
+  
+  inline void* operator delete(void* ptr) {
+  	cout << "global delete()\n";
+  	return myFree(size);
+  }
+  
+  inline void* operator delete[](void* ptr) {
+  	cout << "global delete[]()\n";
+  	return myFree(size);
+  }
+  ```
 
+  
+
+
+
+![image-20210514201020415](../../images/cpp/class-overload-new-delete.png)
+
+- 接管之后，做一个内存池的设计
+
+![image-20210514201816031](../../images/cpp/class-overload-new-delete-array.png)
+
+
+
+示例：
+
+![image-20210514201948055](../../images/cpp/class-overload-new-delete-demo.png)
