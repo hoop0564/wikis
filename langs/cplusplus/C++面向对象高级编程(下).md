@@ -199,3 +199,38 @@ A a = (A)b; // 对象的强制转换
 a.vfunc1(); // 此处调用的是对象A的vfunc1，静态绑定，因为用的不是指针，从下文编译器的汇编执行代码可以逻辑推演出来
 ```
 
+
+
+## const
+
+- 非常量对象不能调用非常量成员函数
+
+  |                                                           | const object<br />(data members 不得变动) | non-const object<br />(data memebers 可变动) |
+  | --------------------------------------------------------- | ----------------------------------------- | -------------------------------------------- |
+  | const member functions<br />(保证不更改 data memebers)    | 可                                        | 可                                           |
+  | non-const member functions<br />(不保证data memebers不变) | 否                                        | 否                                           |
+
+  ```c++
+  const String str("hello"); // 此处为const对象
+  str.print(); // 此处的print()必须为String的const成员函数，否则此处报错！不应该！
+  						 // 因为print()语义是不会修改成员变量的，理当为const成员函数，设计才够合格。
+  ```
+
+  
+
+![image-20210514081135239](../../images/cpp/const.png)
+
+- `copy on write` 重载的`[]`，上面的一个是读场景，下面一个是写场景
+- 如果是常量字符串，调用`[]`，调用的会是上面的那个
+
+
+
+## new delete
+
+- 代码中使用的 `new`、`delete` 都是expression，表达式
+- new的内部实现的第一个步骤 `operator new`是new操作符重载，这一步的内部实现是 `malloc`。同理 `delete`。（free..)
+- new先分配内存，再执行构造函数
+- 我们自己设计的class，可以重载 new、delete，用于内存管理和内存池设计
+
+![image-20210514083044165](../../images/cpp/new-delete.png)
+
