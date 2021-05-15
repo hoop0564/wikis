@@ -2,9 +2,9 @@
 class Foo
 {
 public:
-	int _id;
-	long _data;
-	string _str;
+	int _id; 	// 4bytes
+	long _data;	// 4bytes
+	string _str;	// 4bytes Foo的对象占用12个字节！
 
 public:
 	Foo() : _id(0) {

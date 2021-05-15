@@ -284,3 +284,14 @@ a.vfunc1(); // 此处调用的是对象A的vfunc1，静态绑定，因为用的�
 示例：
 
 ![image-20210514201948055](../../images/cpp/class-overload-new-delete-demo.png)
+
+
+
+内存分配：
+
+![image-20210515090420102](../../images/cpp/class-memory.png)
+
+- 其中`size:4`表示array的counter，数组元素个数的计数器，譬如上图里记录的是5，下图记录的是6
+- 下图的 `virtual dtor` 会多出一根指针，内存多出4个bytes
+- 上图：4 + 4 * 3 * 5 =64 ，数组元素个数+4个字节*3个成员变量 * 5 个对象，下图多了个虚指针
+
