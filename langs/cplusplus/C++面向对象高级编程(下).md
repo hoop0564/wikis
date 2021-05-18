@@ -295,3 +295,25 @@ a.vfunc1(); // 此处调用的是对象A的vfunc1，静态绑定，因为用的�
 - 下图的 `virtual dtor` 会多出一根指针，内存多出4个bytes
 - 上图：4 + 4 * 3 * 5 =64 ，数组元素个数+4个字节*3个成员变量 * 5 个对象，下图多了个虚指针
 
+
+
+## 栗子
+
+对于类中的placement new，如果在ctor中的异常，并不会自动调用 placement delete！
+
+```c++
+class Foo {
+public:
+  Foo() {cout << "Foo:Foo()" << endl; throw "ctor error!"}
+  
+  void* operator new(size_t size) {
+    return malloc(size);
+  }
+  
+  void operator delete(void*, size_t) {
+    cout << "operator delete()" << endl;
+  }
+}
+```
+
+![image-20210518080623683](../../images/cpp/ctor-throw-error.png)
