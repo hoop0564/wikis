@@ -297,23 +297,149 @@ a.vfunc1(); // 此处调用的是对象A的vfunc1，静态绑定，因为用的�
 
 
 
-## 栗子
+## placement new
 
-对于类中的placement new，如果在ctor中的异常，并不会自动调用 placement delete！
+一般来说，使用new申请空间时，是从系统的“堆”（heap）中分配空间。申请所得的空间的位置是根据当时的内存的实际使用情况决定的。但是，在某些特殊情况下，可能需要在**已分配的特定内存创建对象**，这就是所谓的“**定位放置new**”（placement new）操作。 
+
+
+
+分配内存这一操作就是由operator new(size_t)来完成的，如果类A重载了operator new，那么将调用A::operator new(size_t )，否则调用全局::operator new(size_t )，后者由C++默认提供。 
+
+operator new是函数，分为三种形式（前2种不调用构造函数，这点区别于new operator）：  
 
 ```c++
-class Foo {
+void* operator new (std::size_t size) throw (std::bad_alloc);  
+void* operator new (std::size_t size, const std::nothrow_t& nothrow_constant) throw();  
+void* operator new (std::size_t size, void* ptr) throw();  
+```
+
+第一种分配size个字节的存储空间，并将对象类型进行内存对齐。如果成功，返回一个非空的指针指向首地址。失败抛出bad_alloc异常。  
+第二种在分配失败时不抛出异常，它返回一个NULL指针。  
+第三种是placement new版本，它本质上是对operator new的重载，定义于#include <new>中。它不分配内存，调用合适的构造函数在ptr所指的地方构造一个对象，之后返回实参指针ptr。  
+第一、第二个版本可以被用户重载，定义自己的版本，第三种placement new不可重载。  
+
+```c++
+A* a = new A; //调用第一种  
+A* a = new(std::nothrow) A; //调用第二种  
+new (p)A(); //调用第三种  
+```
+
+`new (p)A() `调用`placement new`之后，还会在p上调用 `A::A()`，这里的p可以是堆中动态分配的内存，也可以是栈中缓冲。  
+
+栈中分配：
+
+```c++
+#include <iostream>
+using namespace std;
+ 
+class A
+{
 public:
-  Foo() {cout << "Foo:Foo()" << endl; throw "ctor error!"}
-  
-  void* operator new(size_t size) {
-    return malloc(size);
-  }
-  
-  void operator delete(void*, size_t) {
-    cout << "operator delete()" << endl;
-  }
+	A(){
+		cout << "A's constructor" << endl;
+	}
+ 
+ 
+	~A(){		cout << "A's destructor" << endl;
+	}
+	
+	void show()
+	{
+		cout << "num:" << num << endl;
+	}
+	
+private:
+	int num;
+};
+ 
+int main()
+{
+	char mem[100];
+	mem[0] = 'A';
+	mem[1] = '\0';
+	mem[2] = '\0';
+	mem[3] = '\0';
+	cout << (void*)mem << endl;
+	A* p = new (mem)A;
+	cout << p << endl;
+	p->show();
+	p->~A();
+	getchar();
 }
 ```
 
+堆总分配：
+
+```c++
+#include <iostream>
+using namespace std;
+ 
+class B
+{
+public:
+    B()
+    {
+        cout<<"B's constructor"<<endl;
+    }
+ 
+ 
+    ~B()
+    {
+        cout<<"B's destructor"<<endl;
+    }
+ 
+ 
+    void SetNum(int n)
+    {
+        num = n;
+    }
+ 
+ 
+    int GetNum()
+    {
+        return num;
+    }
+ 
+ 
+private:
+    int num;
+};
+ 
+int main()
+{
+	char* mem = new char[10 * sizeof(B)];
+	cout << (void*)mem << endl;
+	B *p = new(mem)B;
+	cout << p << endl;
+	p->SetNum(10);
+	cout << p->GetNum() << endl;
+	p->~B();
+	delete[]mem;
+	getchar();
+}
+```
+
+
+
+
+
+对于类中的`placement new`，如果在ctor中的异常，并不会自动调用 placement delete！
+
 ![image-20210518080623683](../../images/cpp/ctor-throw-error.png)
+
+
+
+## basic_string栗子
+
+![image-20210518205036778](../../images/cpp/basic_string_operator_new.png)
+
+- 目的是做reference counting的控制用，计数器
+
+
+
+## 参考资料
+
+- [侯捷-C++面向对象高级编程(下)-兼谈对象模型（完结）](https://www.bilibili.com/video/BV1ZX4y157Bu?p=25&spm_id_from=pageDriver)
+
+- [C++中使用placement new](https://blog.csdn.net/linuxheik/article/details/80449059)
+
