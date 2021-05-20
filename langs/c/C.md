@@ -258,6 +258,39 @@ struct flock
 
 
 
+## 共享内存
+
+要使用共享内存要执行以下几步：
+
+1. 发起一个系统调用，让系统帮你生产一块内存，或者取得一块已经存在的内存来使用。
+2. 把内存attach到当前进程，让当前进程可以使用。大家都知道，我们在进程中访问的是虚拟内存地址，系统会把它映射到物理内存中。如果没有这一步，第1步创建的内存就不能在当前进程访问。
+3. 这时就可以对内存进程读写操作了。
+4. 进程结束的时候要把上面attach的内存给释放。
+
+系统调用（英语：system call），又称为系统呼叫，指运行在使用者空间的程序向操作系统内核请求需要更高权限运行的服务。系统调用提供用户程序与操作系统之间的接口。
+
+`SYS_SHMGET`: 创建或者取得共享内存。
+`SYS_SHMAT`: 将共享内存attach到当前进程空间。
+`SYS_SHMDT`: 将共享内存从当前进程中deattach。
+
+```c
+int shmget(key_t key, size_t size, int shmflg);  
+void *shmat(int shm_id, const void *shm_addr, int shmflg); 
+int shmdt(const void *shmaddr);
+```
+
+golang不提供使用共享内存来通信，golang中通过cgo来调c语言来实现的
+
+```go
+func Syscall(trap, a1, a2, a3 uintptr) (r1, r2 uintptr, err Errno)
+```
+
+```go
+shmid, _, err := syscall.Syscall(syscall.SYS_SHMGET, 2, 4, IpcCreate|0600)
+```
+
+
+
 ## 参考资料
 
 - [30 | 编程范式游记（1）- 起源](https://time.geekbang.org/column/article/301)
@@ -265,3 +298,6 @@ struct flock
 - [exec函数族-百度百科](https://baike.baidu.com/item/exec%E5%87%BD%E6%95%B0%E6%97%8F/3489348?fromtitle=EXEC&fromid=9077756&fr=aladdin)
 
 - [fctl-百度百科](https://baike.baidu.com/item/fcntl/6860021?fr=aladdin)
+
+- [Golang直接操作共享内存](https://studygolang.com/articles/10203)
+
