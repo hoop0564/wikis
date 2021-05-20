@@ -1926,3 +1926,7 @@ swagger serve -F=swagger swagger.json
 - [Go 面向包的设计和架构分层（cmd, internal, pkg)](https://studygolang.com/articles/30164)
 
 - [go-swagger的简单使用](https://www.cnblogs.com/xiaobaiskill/p/10696621.html)
+
+- [go处理文件上传](https://astaxie.gitbooks.io/build-web-application-with-golang/content/zh/04.5.html)
+- [GitBook 从懵逼到入门](https://blog.csdn.net/lu_embedded/article/details/81100704)
+
