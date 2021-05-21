@@ -1,3 +1,74 @@
+# HTTP规范
+
+## MIME-Type
+
+- Multipupose Internet Mail Extensions
+
+- **MIME-type** （现在称为“媒体类型(media type)”，但有时也是“内容类型(content type)”）是指示文件类型的字符串，与文件一起发送（例如，一个声音文件可能被标记为 `audio/ogg` ，一个图像文件可能是 `image/png` ）。它与传统Windows上的文件扩展名有相同目的。
+
+  ```json
+  Content-Type：text/HTML
+  ```
+
+  
+
+- Email 附件的类型也是通过 MIME Type 指定的
+
+
+
+## 客户端请求消息
+
+客户端发送一个HTTP请求到服务器的请求报文消息包括四部分：
+
+- 请求行（request line）
+- 请求头部（header）
+- 空行
+- 请求数据
+
+![img](../images/os/http-request-format.png)
+
+
+
+```http
+GET /hello.txt HTTP/1.1
+User-Agent: curl/7.16.3 libcurl/7.16.3 OpenSSL/0.9.7l zlib/1.2.3
+Host: www.example.com
+Accept-Language: en, mi
+```
+
+
+
+## 服务器响应消息
+
+HTTP响应也由四个部分组成，分别是：
+
+- 状态行
+- 消息报头
+- 空行
+- 响应正文
+
+![img](../images/httpmessage.jpg)
+
+```http
+HTTP/1.1 200 OK
+Date: Mon, 27 Jul 2009 12:28:53 GMT
+Server: Apache
+Last-Modified: Wed, 22 Jul 2009 19:15:56 GMT
+ETag: "34aa387-d-1568eb00"
+Accept-Ranges: bytes
+Content-Length: 51
+Vary: Accept-Encoding
+Content-Type: text/plain
+
+Hello World! My payload includes a trailing CRLF.
+```
+
+
+
+
+
+
+
 # HTTP 0.9
 
 1991年发布
@@ -10,11 +81,11 @@
 
 1996年发布
 
+- HTTP1.0 定义了三种请求方法： GET, POST 和 HEAD方法。
 - 在请求中加入了HTTP版本号，如：`GET /coolshell/index.html HTTP/1.0`
 - HTTP 开始有 header了，不管是request还是response 都有header了。
 - 增加了HTTP Status Code 标识相关的状态码。
 - 还有 `Content-Type` 可以传输其它的文件了。
-
 - 每次请求连接不能复用
 - 是串行请求
 
@@ -23,6 +94,8 @@
 # HTTP 1.1
 
 1997年发布
+
+- HTTP1.1 新增了六种请求方法：OPTIONS、PUT、PATCH、DELETE、TRACE 和 CONNECT 方法。
 
 - connection默认是keep-alive
 
@@ -43,8 +116,22 @@
 - 因为并行的请求可能会导致浏览器的负载过重，所以比如Chrome会默认每个域名同时只有6个并发的请求
 
 - 明文传输，没有压缩
+
 - header太长
+
 - 传输慢
+
+| 方法    | 描述                                                         |
+| ------- | ------------------------------------------------------------ |
+| GET     | 请求指定的页面信息，并返回实体主体。                         |
+| HEAD    | 类似于 GET 请求，只不过返回的响应中没有具体的内容（`body`），用于`获取报头` |
+| POST    | 向指定资源提交数据进行处理请求（例如提交表单或者上传文件）。数据被包含在请求体中。POST 请求可能会导致新的资源的建立和/或已有资源的修改。 |
+| PUT     | 从客户端向服务器传送的数据取代指定的文档的内容。             |
+| DELETE  | 请求服务器删除指定的页面。                                   |
+| CONNECT | HTTP/1.1 协议中预留给能够将连接改为管道方式的代理服务器。    |
+| OPTIONS | 允许客户端`查看服务器的性能`。                               |
+| TRACE   | 回显服务器收到的请求，主要用于`测试`或`诊断`。               |
+| PATCH   | 是对 PUT 方法的补充，用来对已知资源进行`局部更新` 。         |
 
 
 
@@ -56,6 +143,8 @@
 - WebSocket模型。
 
 
+
+序号方法描述1GET请求指定的页面信息，并返回实体主体。2HEAD类似于 GET 请求，只不过返回的响应中没有具体的内容，用于获取报头3POST向指定资源提交数据进行处理请求（例如提交表单或者上传文件）。数据被包含在请求体中。POST 请求可能会导致新的资源的建立和/或已有资源的修改。4PUT从客户端向服务器传送的数据取代指定的文档的内容。5DELETE请求服务器删除指定的页面。6CONNECTHTTP/1.1 协议中预留给能够将连接改为管道方式的代理服务器。7OPTIONS允许客户端查看服务器的性能。8TRACE回显服务器收到的请求，主要用于测试或诊断。9PATCH是对 PUT 方法的补充，用来对已知资源进行局部更新 。
 
 # HTTPS
 
@@ -177,7 +266,6 @@ r.RunTLS(":9999", "./server.pem", "./server.key")
 > Tips：从图中可以看出客户端 `Settings - Max concurrent streams : 1000` 表示客户端允许的最大并发 `Stream` 数量是 `1000`。
 >
 > Tips：从图中可以看出服务端的 Settings - Max concurrent streams : 128 表示服务端允许的最大并发 Stream 数是 128，Settings - Max frame size : 16777215表示服务端允许的最大帧大小 16777215 字节。
->
 
 
 
@@ -203,10 +291,11 @@ r.RunTLS(":9999", "./server.pem", "./server.key")
 
 # 参考资料：
 
+- [HTTP简介](https://www.runoob.com/http/http-tutorial.html)
+
 - [HTTP/2 协议（帧、消息、流简单的抓包分析）](https://blog.csdn.net/qq_38937634/article/details/111352895?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control&dist_request_id=1331978.8272.16186134743356913&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control)
 
 - [HTTP/2 协议-Stream 的状态变迁](https://blog.csdn.net/qq_38937634/article/details/111420205)
 
 - [HTTP的前世今生-coolshell](https://coolshell.cn/articles/19840.html)
 
-# 
