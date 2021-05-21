@@ -1916,6 +1916,13 @@ swagger serve -F=swagger swagger.json
 
 
 
+## gitbook
+
+- `node` 使用10.16.0版本，LTS
+- 
+
+
+
 ## 参考资料
 
 - [教程课件](https://gitee.com/geektime-geekbang/go_learning)
