@@ -255,15 +255,15 @@ curl -v -X GET localhost:2375/_ping
 
 基于这些RESTful API，可以在自己的平台上实现从编译到发布的全流程自动化。
 
-### Docker Registry选型
+## Docker Registry选型: Habor
 
 使用Habor。
 
-Habor以Docker公司开源的Registry为基础，提供了管理UI、基于角色的访问控制、AD/LDAP基础、日志审核等功能，还支持中文。是VMVare公司开源的企业级Docker Registry项目。
+- Habor以Docker公司开源的Registry为基础，提供了管理UI、基于角色的访问控制、AD/LDAP基础、日志审核等功能，还支持中文。是VMVare公司开源的企业级Docker Registry项目。
 
-Habor支持Docker Compose一键式安装。
+- Habor支持Docker Compose一键式安装。
 
-Habor支持镜像复制，可以在开发环境、测试环境、生产环境做镜像的复制
+- Habor支持镜像复制，可以在开发环境、测试环境、生产环境做镜像的复制
 
 
 
