@@ -48,6 +48,48 @@ func m2() {
 
 
 
+## cgo内存模型
+
+- Go语言因为函数栈的动态伸缩可能导致栈中内存地址的移动
+- C语言持有的是移动之前的Go指针，那么以旧指针访问Go对象时会导致程序崩溃。
+- 无法在Go语言中创建大于2GB内存的切片
+
+
+
+在C语言环境创建大于2GB的内存，然后转为Go语言的切片使用
+
+```go
+package main
+
+/*
+#include <stdlib.h>
+
+void* makeslice(size_t memsize) {
+	return malloc(memsize);
+}
+*/
+import "C"
+import "unsafe"
+
+func makeByteSlize(n int) []byte {
+	p := C.makeslice(C.size_t(n))
+	return ((*[1 << 31]byte)(p))[0:n:n]
+}
+
+func freeByteSlice(p []byte) {
+	C.free(unsafe.Pointer(&p[0]))
+}
+
+func main() {
+	s := makeByteSlize(1<<32+1)
+	s[len[s]-1] = 1234
+	print(s[len[s]-1])
+	freeByteSlice(p)
+}
+```
+
+> 通过makeByteSlize来创建大于4G内存大小的切片，从而绕过了Go语言实现的限制（需要代码验证）。而freeByteSlice辅助函数则用于释放从C语言函数创建的切片。
+
 
 
 ## 指针 - unsafe包的灵魂
@@ -401,4 +443,8 @@ func SayHello(s string) {
 - [深入cgo编程](https://www.bilibili.com/video/BV1rs411M75T?from=search&seid=3978510227066577408)
 
 - [cgo编程 - cntofu.com](https://www.cntofu.com/book/73/ch2-cgo/ch2-01-hello-cgo.md)
+
+- [Convert Go [\]byte to a C *char](https://stackoverflow.com/questions/35673161/convert-go-byte-to-a-c-char)
+
+- [How to return [\]byte from internal void * in C function by CGO?](https://stackoverflow.com/questions/52156444/how-to-return-byte-from-internal-void-in-c-function-by-cgo)
 
