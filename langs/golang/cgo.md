@@ -1,6 +1,52 @@
 # cgo
 
-unsafe包提供了一些跳过go语言类型安全限制的操作。
+- go build命令会在编译和链接阶段启动gcc编译器
+- unsafe包提供了一些跳过go语言类型安全限制的操作。
+
+![image-20210523200508379](pictures/unsafe.png)
+
+```go
+import "unsafe"
+
+type A struct {
+  a bool	// 偏移4字节，内存对齐
+  b int32	// 4字节对齐的依据！(64位平台上int默认为8字节，此处为int32)
+}
+
+func main() {
+  var c A
+  p := unsafe.Pointer(&c)
+  up0 := uintptr(p)
+  ps := (*bool)(p)
+  *ps = true
+  
+  up := up0 + uintptr(4)
+  p = unsafe.Pointer(up)
+  pm := (*int32)(p)
+  *pm = 100
+  fmt.Println(c.a, c.b)
+  
+  // output:
+	// true 100
+}
+
+func m2() {
+  var a A
+  fmt.Println(unsafe.Alignof(a))
+  p := unsafe.Pointer(&a)
+  up0 := uintptr(p)
+  up := up0 + unsafe.Offsetof(a.c)
+  ps := (*int32)(unsafe.Pointer(up))
+  *ps = 100
+  fmt.Println(a.b, a.c, unsafe.Offsetof(a.c))
+  
+  // output
+  // 4
+  // false 100 4
+}
+```
+
+
 
 
 
@@ -309,6 +355,43 @@ int c_add(int a, int b) {
 
 
 
+### Example D
+
+```go
+// extern void SayHello(GoString s);
+import "C"
+
+//export SayHello
+func SayHello(s string) {
+  fmt.Print(s)
+}
+```
+
+- 导出函数的参数是Go字符串
+- C类型为GoString，在 `_cgo_export.h` 文件定义
+- 要使用GoString类型就要引用 _cgo_export.h 文件
+- 注意：GoString 会出现循环依赖（？）
+
+
+
+### Example E
+
+```go
+// +build go1.10
+
+// extern void SayHello(_GoString_ s);
+import "C"
+
+//export SayHello
+func SayHello(s string) {
+  fmt.Print(s)
+}
+```
+
+- Go 1.10增加了 `_GoString_` 类型
+- `_GoString_`是预定义的类型，和GoString等价
+- 避免手写函数声明是出现循环依赖
+
 
 
 ## 参考资料
@@ -316,3 +399,6 @@ int c_add(int a, int b) {
 - [package unsafe](https://studygolang.com/pkgdoc)
 
 - [深入cgo编程](https://www.bilibili.com/video/BV1rs411M75T?from=search&seid=3978510227066577408)
+
+- [cgo编程 - cntofu.com](https://www.cntofu.com/book/73/ch2-cgo/ch2-01-hello-cgo.md)
+
