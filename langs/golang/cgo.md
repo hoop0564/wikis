@@ -450,7 +450,83 @@ CGO生成了哪些中间文件？
 
 
 
+## 代码示例
 
+```go
+package main
+
+// #include <stdio.h>
+// #include <stdlib.h>
+//
+// static void myprint(char* s) {
+//   printf("%s\n", s);
+// }
+import "C"
+import "unsafe"
+
+func main() {
+  cs := C.CString("Hello from stdio")
+  C.myprint(cs)
+  C.free(unsafe.Pointer(cs)) // 注: 去除这行将发生内存泄漏
+}
+```
+
+
+
+文档中也对`C.CString`的释放做了如下强调说明：
+
+- cgo介绍：https://golang.org/cmd/cgo/
+- cgo源码文档：https://github.com/golang/go/blob/master/src/cmd/cgo/doc.go
+
+```go
+// Go string to C string
+// The C string is allocated in the C heap using malloc.
+// It is the caller's responsibility to arrange for it to be
+// freed, such as by calling C.free (be sure to include stdlib.h
+// if C.free is needed).
+func C.CString(string) *C.char {}
+
+// 翻译成中文：
+// C string在C的堆上使用malloc申请。
+// 调用者有责任在合适的时候对该字符串进行释放，释放方式可以是调用C.free（调用C.free需包含stdlib.h）
+```
+
+以下几种类型转换，都会发生内存拷贝:
+
+```go
+// Go string to C string
+func C.CString(string) *C.char {}
+
+// Go []byte slice to C array
+// 这个和C.CString一样，也需要手动释放申请的内存
+func C.CBytes([]byte) unsafe.Pointer {}
+
+// C string to Go string
+func C.GoString(*C.char) string {}
+
+// C data with explicit length to Go string
+func C.GoStringN(*C.char, C.int) string {}
+
+// C data with explicit length to Go []byte
+func C.GoBytes(unsafe.Pointer, C.int) []byte {}
+```
+
+
+
+使用cgo时：
+
+1. 和日常Go对象被gc管理释放的表现略有不同的是，Go和c代码的类型相互转化传递时，有时需要在调用结束后手动释放内存。
+2. 有时类型转换伴随着内存拷贝的开销。
+3. 如果想消除拷贝开销，可以通过`unsafe.Pointer`获取原始指针进行传递。
+4. c代码中的内存泄漏，依然可以使用valgrind检查。但是需要注意，像`C.CString`这种泄漏，valgrind无法给出泄漏的准确位置。
+5. `go pprof`无法检查c代码中的内存泄漏。
+
+
+
+作者：就想叫yoko
+链接：https://www.jianshu.com/p/0b89e3c72315
+来源：简书
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 
 ## 参考资料
 
@@ -463,4 +539,6 @@ CGO生成了哪些中间文件？
 - [Convert Go [\]byte to a C *char](https://stackoverflow.com/questions/35673161/convert-go-byte-to-a-c-char)
 
 - [How to return [\]byte from internal void * in C function by CGO?](https://stackoverflow.com/questions/52156444/how-to-return-byte-from-internal-void-in-c-function-by-cgo)
+
+- [Go语言使用cgo时的内存管理笔记](https://www.jianshu.com/p/0b89e3c72315)
 
