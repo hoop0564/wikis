@@ -436,6 +436,22 @@ func SayHello(s string) {
 
 
 
+## 内部机制
+
+CGO特性主要是通过一个叫cgo的命令行工具来辅助输出Go和C之间的桥接代码。
+
+CGO生成了哪些中间文件？
+
+- 在构建一个cgo包时增加一个`-work`输出中间生成文件所在的目录并且在构建完成时保留中间文件。
+
+- 也可以直接通过手工调用`go tool cgo`命令来查看生成的中间文件。
+
+![img](../../images/ch2-cgo-generated-files.dot.png)
+
+
+
+
+
 ## 参考资料
 
 - [package unsafe](https://studygolang.com/pkgdoc)
