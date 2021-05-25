@@ -501,6 +501,49 @@ runtime.GC() // 主动释放一次GC 会清除sync.pool中缓存的对象
 
 ## context与任务取消
 
+> Package context 定义了context类型，它跨API边界和进程之间携带截止日期、取消信号和其他请求范围内的值。
+>
+> 对服务器的传入请求应该创建Context，对服务器的传出调用应该接受Context。它们之间的函数调用链必须传播Context，可选地将其替换为使用WithCancel、WithDeadline、WithTimeout或WithValue创建的派生Context。当context被取消时，所有从它派生的context也被取消。
+>
+> WithCancel, WithDeadline和WithTimeout函数接受一个Context(父)，并返回一个派生的Context(子)和一个CancelFunc。调用CancelFunc将取消子进程及其子进程，删除父进程对子进程的引用，并停止任何关联的计时器。如果调用CancelFunc失败，就会泄漏子进程及其子进程，直到父进程被取消或计时器触发。go vet工具检查CancelFuncs是否用于所有控制流路径。
+>
+> 使用context的程序应该遵循以下规则，以保持包之间的接口一致，并允许静态分析工具检查上下文传播:
+>
+> 不要在结构类型中存储context;相反，将Context显式传递给每个需要它的函数。Context应该是第一个参数，通常命名为ctx:
+>
+> ```go
+> func DoSomething(ctx context.Context, arg Arg) error {
+> 	// ... use ctx ...
+> }
+> ```
+>
+> 不要传递nil Context，即使函数允许它。通过上下文。如果您不确定使用哪个context，则执行TODO。
+> context Values只用于传输进程和api的请求范围的数据，而不是用于向函数传递可选参数。
+> 相同的Context可以传递给运行在不同goroutine中的函数;context对于多个goroutine同时使用是安全的。
+> 请参阅https://blog.golang.org/context，以获得使用上下文的服务器的示例代码。
+
+
+
+- context是 goroutine 的上下文，包含 goroutine 的运行状态、环境、现场等信息。
+
+- context 主要用来在 goroutine 之间传递上下文信息，包括：取消信号、超时时间、截止时间、k-v 等。
+
+- 随着 context 包的引入，标准库中很多接口因此加上了 context 参数，例如 database/sql 包。**context 几乎成为了并发控制和超时控制的标准做法。**
+
+- context.Context 类型的值可以协调多个 groutine 中的代码执行“取消”操作，并且可以存储键值对。**context是并发安全的**。
+
+- 与它协作的 API 都可以由外部控制执行“取消”操作，例如：取消一个 HTTP 请求的执行。
+
+  ![request](pictures/goroutine-context.png)
+
+用简练一些的话来说，在Go 里，我们不能直接杀死协程，协程的关闭一般会用 `channel+select` 方式来控制。但是在某些场景下，例如处理一个请求衍生了很多协程，这些协程之间是相互关联的：需要共享一些全局变量、有共同的 deadline 等，而且可以同时被关闭。再用 `channel+select` 就会比较麻烦，这时就可以通过 context 来实现。
+
+一句话：context 用来解决 goroutine 之间`退出通知`、`元数据传递`的功能。
+
+
+
+
+
 - 根context：通过context.Background()获得
 
 - 子context：通过context.WithCancel(parentContext)来创建
@@ -513,7 +556,9 @@ runtime.GC() // 主动释放一次GC 会清除sync.pool中缓存的对象
 
 - 接收取消通知：<-ctx.Done()
 
-
+> 今日头条当前后端服务超过80%的流量是跑在 Go 构建的服务上。微服务数量超过100个，高峰 QPS 超过700万，日处理请求量超过3000亿，是业内最大规模的 Go 应用。
+>
+> - [今日头条Go建千亿级微服务的实践](https://zhuanlan.zhihu.com/p/26695984)
 
 ## 测试
 
@@ -1937,3 +1982,6 @@ swagger serve -F=swagger swagger.json
 - [go处理文件上传](https://astaxie.gitbooks.io/build-web-application-with-golang/content/zh/04.5.html)
 - [GitBook 从懵逼到入门](https://blog.csdn.net/lu_embedded/article/details/81100704)
 
+- [Package context - 标准库文档](http://doc.golang.ltd/)
+
+- [深度解密Go语言之context](https://www.cnblogs.com/qcrao-2018/p/11007503.html)
