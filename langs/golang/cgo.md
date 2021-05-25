@@ -218,7 +218,7 @@ q = (*X)(unsafe.Pointer(q))		// *Y => *X
 
 X和Y是结构相同但名称不相同的`struct`：
 
-<img src="../../images/os/array_X_Y_convert.png" alt="image-20210523114724213" style="zoom:50%;" />
+<img src="../../images/os/array_X_Y_convert.png" alt="image-20210523114724213" style="zoom:100%;" />
 
 - Go语言中切片，普通数据类型的切片，或结构体的切片，都有 `reflect.SliceHeader` 的指针，可以互转
 
