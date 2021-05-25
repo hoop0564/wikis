@@ -246,7 +246,7 @@ Sun引入新的JPA ORM规范出于两个原因：其一，简化现有Java EE和
 
 [Spring Data JPA 中常用注解](https://www.cnblogs.com/pascall/p/10280825.html)
 
-![image-20210312125237082](../../images/jpa-mybatis-jdbc.png)
+![image-20210312125237082](../../images/java/jpa-mybatis-jdbc.png)
 
 ### Hibernate
 
