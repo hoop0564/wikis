@@ -523,11 +523,6 @@ func C.GoBytes(unsafe.Pointer, C.int) []byte {}
 
 
 
-作者：就想叫yoko
-链接：https://www.jianshu.com/p/0b89e3c72315
-来源：简书
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
-
 ## 参考资料
 
 - [package unsafe](https://studygolang.com/pkgdoc)
