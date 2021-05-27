@@ -499,7 +499,9 @@ runtime.GC() // 主动释放一次GC 会清除sync.pool中缓存的对象
 
 
 
-## context与任务取消
+## context
+
+### context与任务取消
 
 > Package context 定义了context类型，它跨API边界和进程之间携带截止日期、取消信号和其他请求范围内的值。
 >
@@ -559,6 +561,152 @@ runtime.GC() // 主动释放一次GC 会清除sync.pool中缓存的对象
 > 今日头条当前后端服务超过80%的流量是跑在 Go 构建的服务上。微服务数量超过100个，高峰 QPS 超过700万，日处理请求量超过3000亿，是业内最大规模的 Go 应用。
 >
 > - [今日头条Go建千亿级微服务的实践](https://zhuanlan.zhihu.com/p/26695984)
+
+
+
+### 如何使用 context
+
+context 使用起来非常方便。源码里对外提供了一个创建根节点 context 的函数：
+
+```golang
+func Background() Context
+```
+
+background 是一个空的 context， 它不能被取消，没有值，也没有超时时间。
+
+有了根节点 context，又提供了四个函数创建子节点 context：
+
+```golang
+func WithCancel(parent Context) (ctx Context, cancel CancelFunc)
+func WithDeadline(parent Context, deadline time.Time) (Context, CancelFunc)
+func WithTimeout(parent Context, timeout time.Duration) (Context, CancelFunc)
+func WithValue(parent Context, key, val interface{}) Context
+```
+
+context 会在函数传递间传递。只需要在适当的时间调用 cancel 函数向 goroutines 发出取消信号或者调用 Value 函数取出 context 中的值。
+
+在官方博客里，对于使用 context 提出了几点建议：
+
+1. 不要将 Context 塞到结构体里。直接将 Context 类型作为函数的第一参数，而且一般都命名为 ctx。
+2. 不要向函数传入一个 nil 的 context，如果你实在不知道传什么，标准库给你准备好了一个 context：todo。
+3. 不要把本应该作为函数参数的类型塞到 context 中，context 存储的应该是一些共同的数据。例如：登陆的 session、cookie 等。
+4. 同一个 context 可能会被传递到多个 goroutine，别担心，context 是并发安全的。
+
+
+
+### 传递共享的数据
+
+对于 Web 服务端开发，往往希望将一个请求处理的整个过程串起来，这就非常依赖于 Thread Local（对于 Go 可理解为单个协程所独有） 的变量，而在 Go 语言中并没有这个概念，因此需要在函数调用的时候传递 context。
+
+```golang
+package main
+
+import (
+	"context"
+	"fmt"
+)
+
+func main() {
+	ctx := context.Background()
+	process(ctx)
+
+	ctx = context.WithValue(ctx, "traceId", "qcrao-2019")
+	process(ctx)
+}
+
+func process(ctx context.Context) {
+	traceId, ok := ctx.Value("traceId").(string)
+	if ok {
+		fmt.Printf("process over. trace_id=%s\n", traceId)
+	} else {
+		fmt.Printf("process over. no trace_id\n")
+	}
+}
+```
+
+运行结果：
+
+```shell
+process over. no trace_id
+process over. trace_id=qcrao-2019
+```
+
+### 取消 goroutine
+
+```go
+func Perform(ctx context.Context) {
+    for {
+        calculatePos()
+        sendResult()
+
+        select {
+        case <-ctx.Done():
+            // 被取消，直接返回
+            return
+        case <-time.After(time.Second):
+            // block 1 秒钟 
+        }
+    }
+}
+
+// demo
+{	
+  ctx, cancel := context.WithTimeout(context.Background(), time.Hour)
+	go Perform(ctx)
+
+	// app 端返回页面，调用cancel 函数
+	cancel()
+}
+```
+
+注意一个细节，WithTimeOut 函数返回的 context 和 cancelFun 是分开的。context 本身并没有取消函数，这样做的原因是取消函数只能由外层函数调用，防止子节点 context 调用取消函数，从而严格控制信息的流向：由父节点 context 流向子节点 context。
+
+
+
+### 防止 goroutine 泄漏
+
+```go
+func gen(ctx context.Context) <-chan int {
+	ch := make(chan int)
+	go func() {
+		var n int
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case ch <- n:
+				n++
+				time.Sleep(time.Second)
+			}
+		}
+	}()
+	return ch
+}
+
+func main() {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel() // 避免其他地方忘记 cancel，且重复调用不影响
+
+	for n := range gen(ctx) {
+		fmt.Println(n)
+		if n == 5 {
+			cancel()
+			break
+		}
+	}
+	// ……
+}
+```
+
+增加一个 context，在 break 前调用 cancel 函数，取消 goroutine。gen 函数在接收到取消信号后，直接退出，系统回收资源。
+
+> context 就是为 server 而设计的。
+>
+> 没错，Go 很适合写 server
+>
+> context 包到底解决了什么问题呢？答案是：`cancelation`。
+
+
 
 ## 测试
 
