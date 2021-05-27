@@ -708,6 +708,14 @@ func main() {
 
 
 
+### 参考资料
+
+- [GOLANG使用Context管理关联goroutine的方法](https://www.jb51.net/article/154561.htm)
+
+- [GOLANG使用Context实现传值、超时和取消的方法](https://www.jb51.net/article/154562.htm)
+
+
+
 ## 测试
 
 ### Unit Test单元测试
@@ -1038,6 +1046,8 @@ go-torch cpu.prof
 
 
 ## CSP并发模型
+
+- Communication Sequentail Processes
 
 - CSP模型用于描述两个独立的实体通过共享的通讯channel（管道）进行通信的并发模型。
 
