@@ -32,3 +32,37 @@ ip a
 sudo apt install firefox
 ```
 
+
+
+## 远程开发
+
+```bash
+cd /sourceDir
+# 将使用vscode打开此目录
+code .
+```
+
+vscode的插件安装
+
+搜索关键词：remote development，安装。
+
+
+
+## 安装zsh
+
+```bash
+apt install zsh
+```
+
+配置和管理zsh：
+
+github: ohmyzsh
+
+```xml
+plugin = {
+	git
+	minikube
+	zsh-autosuggestions
+}
+```
+
