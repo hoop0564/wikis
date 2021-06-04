@@ -374,7 +374,64 @@ https://n8bn2y81.mirror.aliyuncs.com加到"registry-mirrors"的数组里，点�
 
 
 
+## 实操
+
+### ENTRYPOINT
+
+类似于 CMD 指令，但其不会被 docker run 的命令行参数指定的指令所覆盖，而且这些命令行参数会被当作参数送给 ENTRYPOINT 指令指定的程序。
+
+但是, 如果运行 docker run 时使用了 --entrypoint 选项，将覆盖 CMD 指令指定的程序。
+
+**优点**：在执行 docker run 的时候可以指定 ENTRYPOINT 运行所需的参数。
+
+**注意**：如果 Dockerfile 中如果存在多个 ENTRYPOINT 指令，仅最后一个生效。
+
+格式：
+
+```dockerfile
+ENTRYPOINT ["<executeable>","<param1>","<param2>",...]
+```
+
+可以搭配 CMD 命令使用：一般是变参才会使用 CMD ，这里的 CMD 等于是在给 ENTRYPOINT 传参，以下示例会提到。
+
+示例：
+
+假设已通过 Dockerfile 构建了 nginx:test 镜像：
+
+```dockerfile
+FROM nginx
+
+ENTRYPOINT ["nginx", "-c"] # 定参
+CMD ["/etc/nginx/nginx.conf"] # 变参 
+```
+
+1、不传参运行
+
+```bash
+$ docker run  nginx:test
+```
+
+容器内会默认运行以下命令，启动主进程。
+
+```bash
+nginx -c /etc/nginx/nginx.conf
+```
+
+2、传参运行
+
+```
+$ docker run  nginx:test -c /etc/nginx/new.conf
+```
+
+容器内会默认运行以下命令，启动主进程(/etc/nginx/new.conf:假设容器内已有此文件)
+
+```bash
+nginx -c /etc/nginx/new.conf
+```
+
 ## 参考资料
 
 - [docker核心基础](https://www.bilibili.com/video/BV1Vs411E7AR?p=11)
+
+- [runnob-docker](https://www.runoob.com/docker/docker-dockerfile.html)
 
