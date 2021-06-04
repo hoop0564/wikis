@@ -429,6 +429,53 @@ $ docker run  nginx:test -c /etc/nginx/new.conf
 nginx -c /etc/nginx/new.conf
 ```
 
+
+
+
+
+# vagrant
+
+类似docker/visualBox，启动虚拟机，Hashicorp的另一个流行产品！[官网](https://www.vagrantup.com/)
+
+```bash
+$ vagrant init hashicorp/bionic64
+$ vagrant up
+  Bringing machine 'default' up with 'virtualbox' provider...
+  ==> default: Importing base box 'hashicorp/bionic64'...
+  ==> default: Forwarding ports...
+  default: 22 (guest)
+  => 2222 (host) (adapter 1)
+  ==> default: Waiting for machine to boot...
+
+$ vagrant ssh
+  vagrant@bionic64:~$ _
+```
+
+useful commands:
+
+```bash
+# 显示ssh配置
+vagrant ssh-config
+
+# 异地访问
+ssh vagrant@host-ip -i ".vagrant/machines/default/hyperv/private_key"
+# 密码默认也是vagrant
+
+# 修改password可以登录的选项
+# PasswordAuthentication yes
+vim /etc/ssh/sshd_config
+```
+
+
+
+# vscode远程开发
+
+安装 `remote-ssh`插件，左侧会多出一个按钮：`Remote Explorer`
+
+然后添加一个新的target，可以分不同平台例如WSL或SSH，SSH的会自动发现 `.ssh/config` 的中配置，自动发现远程主机
+
+![image-20210605073856081](../images/vagrant-vscode.png)
+
 ## 参考资料
 
 - [docker核心基础](https://www.bilibili.com/video/BV1Vs411E7AR?p=11)
