@@ -431,6 +431,112 @@ nginx -c /etc/nginx/new.conf
 
 
 
+### extra_hosts
+
+添加主机名映射。类似 docker client --add-host。
+
+```yaml
+extra_hosts:
+ - "somehost:162.242.195.82"
+ - "otherhost:50.31.209.229"
+```
+
+以上会在此服务的内部容器中 /etc/hosts 创建一个具有 ip 地址和主机名的映射关系：
+
+```
+162.242.195.82  somehost
+50.31.209.229   otherhost
+```
+
+
+
+### secrets
+
+存储敏感数据，例如密码：
+
+```yaml
+version: "3.1"
+services:
+
+mysql:
+  image: mysql
+  environment:
+    MYSQL_ROOT_PASSWORD_FILE: /run/secrets/my_secret
+  secrets:
+    - my_secret
+
+secrets:
+  my_secret:
+    file: ./my_secret.txt
+```
+
+
+
+### stop_grace_period
+
+指定在容器无法处理 SIGTERM (或者任何 stop_signal 的信号)，等待多久后发送 SIGKILL 信号关闭容器。
+
+```yaml
+stop_grace_period: 1s # 等待 1 秒
+stop_grace_period: 1m30s # 等待 1 分 30 秒 
+```
+
+默认的等待时间是 10 秒。
+
+
+
+### stop_signal
+
+设置停止容器的替代信号。默认情况下使用 SIGTERM 。
+
+以下示例，使用 SIGUSR1 替代信号 SIGTERM 来停止容器。
+
+```yaml
+stop_signal: SIGUSR1
+```
+
+
+
+### ASP .net core 
+
+方法1：
+
+```dockerfile
+# syntax=docker/dockerfile:1
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
+WORKDIR /app
+
+# Copy csproj and restore as distinct layers
+COPY *.csproj ./
+RUN dotnet restore
+
+# Copy everything else and build
+COPY ../engine/examples ./
+RUN dotnet publish -c Release -o out
+
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:3.1
+WORKDIR /app
+COPY --from=build-env /app/out .
+ENTRYPOINT ["dotnet", "aspnetapp.dll"]
+```
+
+方法2：
+
+```dockerfile
+  # syntax=docker/dockerfile:1
+  FROM mcr.microsoft.com/dotnet/aspnet:5.0
+  COPY bin/Release/netcoreapp3.1/publish/ App/
+  WORKDIR /App
+  ENTRYPOINT ["dotnet", "aspnetapp.dll"]
+```
+
+此方法假定您的项目已经构建，并且它从发布文件夹复制构建工件。请参阅有关[容器化 .Net Core 应用程序](https://docs.microsoft.com/en-us/dotnet/core/docker/build-container?tabs=windows#create-the-dockerfile)的 Microsoft 文档。
+
+`docker build`这里的步骤将比方法 1 快得多，因为所有工件（artifacts）都在`docker build`步骤之外构建，并且与构建基础镜像相比，基础镜像的大小要小得多。
+
+这种方法是 Jenkins、Azure DevOps、GitLab CI 等 CI 工具的首选，因为如果 Docker 不是唯一使用的部署模型，您可以在多个部署模型中使用相同的工件。此外，您将能够运行单元测试并发布代码覆盖率报告，或在 CI 构建的工件上使用自定义插件。
+
 
 
 # vagrant
