@@ -519,7 +519,7 @@ network:
 docker network create -d bridge hello
 ```
 
-
+文件夹hello目录中的 `docker-compose.yml`:（目录名hello也即project名）
 
 ```yaml
 version "3.2"
@@ -545,11 +545,37 @@ services:
 		networks:
   		- hello
 	
+	mysql:
+		image: mysql:5.7.32
+		container_name: mysql
+		ports:
+			- "3307:3306"
+		volumes:
+    	- mysqldata:/var/lib/mysql
+    	- mysqlconf:/etc/mysql
+    environment:
+    	- MYSQL_ROOT_PASSWORD=root
+    network:
+    	- hello
+	
+	redis:
+		image: redis:5.0.10
+		container_name: redis
+		ports:
+			- "6379:6379"
+		volumes:
+    	- redisdata:/data
+    networks:
+    	- hello
+    command: "redis-server --appendonly yes" # 覆盖容器内的原默认命令	
+	
 volumes:	# 声明上面服务所使用的自动创建的卷名
 	tomcatwebapps01: # 声明制定的卷名 compose会自动创建该卷名，在前面加入项目名（即dc.yml所在的目录名）
 		external:
 			false
 	tomcatwebapps02:
+	mysqldata: 	# inspect会发现目录在：/var/lib/docker/volumes/hello_mysqldata/_data
+	mysqlconf:
 
 networks: # 定义服务用到的桥
 	hello:	# 定义上面用到的网桥名称 默认创建就是bridge类型
@@ -649,4 +675,6 @@ vim /etc/ssh/sshd_config
 - [docker核心基础](https://www.bilibili.com/video/BV1Vs411E7AR?p=11)
 
 - [runnob-docker](https://www.runoob.com/docker/docker-dockerfile.html)
+
+- [Docker —— 从入门到实践](https://yeasy.gitbook.io/docker_practice/)
 
