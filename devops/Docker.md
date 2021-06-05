@@ -497,6 +497,68 @@ stop_signal: SIGUSR1
 
 
 
+### useful commands
+
+volume：
+
+```bash
+# 删除unused映射卷
+docker volume prune
+
+# 显示正在使用的映射卷
+docker volume ls
+
+# 手动创建此卷名
+docker volume create tomcatwebapps
+```
+
+network:
+
+```bash
+# 手动创建网络
+docker network create -d bridge hello
+```
+
+
+
+```yaml
+version "3.2"
+
+services:
+	tomcat01:
+		container_name: tomcat01 # 指定容器名称 默认是项目名_服务名
+		image: tomcat:8.0-jre8
+		ports:
+			- "8080:8080"
+		volumes: # 完成宿主机和容器中目录数据卷共享
+			#- /root/apps:/user/local/tomcat/webapps # 使用自定义路径映射 前者是容器中path
+			- tomcatwebapps01:/user/local/tomcat/webapps
+		networks: # 代表当前服务使用哪个网络桥
+  		- hello # 表示和tomcat02在一个网络中
+
+	tomcat02:
+		image: tomcat:8.0-jre8
+		ports:
+			- "8080:8080"
+		volumes: # 完成宿主机和容器中目录数据卷共享
+			- tomcatwebapps02:/user/local/tomcat/webapps
+		networks:
+  		- hello
+	
+volumes:	# 声明上面服务所使用的自动创建的卷名
+	tomcatwebapps01: # 声明制定的卷名 compose会自动创建该卷名，在前面加入项目名（即dc.yml所在的目录名）
+		external:
+			false
+	tomcatwebapps02:
+
+networks: # 定义服务用到的桥
+	hello:	# 定义上面用到的网桥名称 默认创建就是bridge类型
+		external:
+			true	# 使用外部指定的网桥 需要已存在
+```
+
+
+
 ### ASP .net core 
 
 方法1：
