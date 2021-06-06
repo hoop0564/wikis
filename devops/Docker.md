@@ -497,9 +497,20 @@ stop_signal: SIGUSR1
 
 
 
-### useful commands
+## docker-compose
 
-volume：
+- `-p, --project-name NAME` 指定项目名称，默认使用所在目录名称作为项目名
+- `--x-network-driver DRIVER`  指定网络后端的驱动，默认为 `bridge`
+
+
+
+### up
+
+- 默认情况下，若服务容器已经存在，`docker-compose up` 将会尝试停止容器，然后重新创建（保持使用 `volumes-from` 挂在的卷），以保证新启动的服务匹配 `docker-compose.ym`文件的最新内容
+
+
+
+### volume
 
 ```bash
 # 删除unused映射卷
@@ -512,14 +523,14 @@ docker volume ls
 docker volume create tomcatwebapps
 ```
 
-network:
+### network
 
 ```bash
 # 手动创建网络
 docker network create -d bridge hello
 ```
 
-docker：
+### docker
 
 ```bash
 # 删除停止了的容器
@@ -531,7 +542,7 @@ docker rmi -f $(docker images mycentos7 -qa)
 
 
 
-
+### docker-compose.yml示例
 
 文件夹hello目录中的 `docker-compose.yml`:（目录名hello也即project名）
 
@@ -549,6 +560,15 @@ services:
 			- tomcatwebapps01:/user/local/tomcat/webapps
 		networks: # 代表当前服务使用哪个网络桥
   		- hello # 表示和tomcat02在一个网络中
+  	depends_on:
+  		- tomcat02
+  		- redis
+  		- mysql
+  	healthcheck:
+    	test: ["CMD", "curl", "-f", "http://localhost"]
+    	interval: 1m30s
+    	timeout: 10s
+    	retries: 3
 
 	tomcat02:
 		image: tomcat:8.0-jre8
@@ -608,9 +628,55 @@ networks: # 定义服务用到的桥
 MYSQL_ROOT_PASSWORD=root
 ```
 
+useful commands:
+
+```bash
+# 使用服务id进入容器
+docker-compose exec tomcat01 bash
+
+# 列出当前运行的
+docker-compose ps
+
+# -f强制 -v数据卷
+docker-compose rm [SERVICE] -f -v
+
+# 重启 -t超时 默认10秒
+docker-compose restart [SERVICE] -t 
+
+# 查看容器内运行的进程
+docker-compose top [SERVICE]
+
+# 暂停和继续
+docker-compose pause [SERVICE]
+docker-compose unpause [SERVICE] 
+```
+
+- docker面向的是容器
+- docker-compose面向的是服务
+
+- 网桥？？
 
 
-### ASP .net core 
+
+
+
+## portainer
+
+docker最专业的可视化工具。生产环境用的非常多！！
+
+```bash
+docker pull portainer/portainer
+docker volume create portainer_data
+docker run -d -P --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer
+
+# docker run -d -p 8000:8000 -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer
+```
+
+登录网页后端：`http://localhost:9000`
+
+
+
+## ASP .net core 
 
 方法1：
 
