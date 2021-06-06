@@ -519,6 +519,20 @@ network:
 docker network create -d bridge hello
 ```
 
+docker：
+
+```bash
+# 删除停止了的容器
+docker rm -f $(docker ps -qa)
+
+# 删除不用的image: 删除所有tag的mycentos7镜像
+docker rmi -f $(docker images mycentos7 -qa)
+```
+
+
+
+
+
 文件夹hello目录中的 `docker-compose.yml`:（目录名hello也即project名）
 
 ```yaml
@@ -555,6 +569,8 @@ services:
     	- mysqlconf:/etc/mysql
     environment:
     	- MYSQL_ROOT_PASSWORD=root
+    env_file:
+    	- ./mysql.env
     network:
     	- hello
 	
@@ -581,6 +597,15 @@ networks: # 定义服务用到的桥
 	hello:	# 定义上面用到的网桥名称 默认创建就是bridge类型
 		external:
 			true	# 使用外部指定的网桥 需要已存在
+```
+
+`env_file`: 替换yml中的environment。从文件中获取环境变量。env文件中支持`#`注释，且都是`key=value`的写法
+
+`mysql.env`：
+
+```env
+# MySQL的环境变量
+MYSQL_ROOT_PASSWORD=root
 ```
 
 
