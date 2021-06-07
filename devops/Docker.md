@@ -380,7 +380,38 @@ https://n8bn2y81.mirror.aliyuncs.com加到"registry-mirrors"的数组里，点�
 
 
 
-## 实操
+## dockerfile
+
+![image-20210606220210762](../images/dockerfile.png)
+
+
+
+
+
+![image-20210606220604049](../images/dockerfile-flow.png)
+
+### WORKDIR
+
+会一层层的迭路径
+
+```dockerfile
+WORKDIR /data
+WORKDIR bb # 此处表示相对路径，即位于容器中的目录在：/data/bb
+ADD https://mirros.../tomcat-8.5.tar.gz /data/bb
+
+ENV BASE_DIR /data/bb
+COPY . $BASE_DIR
+
+
+```
+
+
+
+### ADD
+
+可以指定一个url，复制到容器中，甚至是个归档包，会做自动的解包
+
+
 
 ### ENTRYPOINT
 
@@ -398,7 +429,7 @@ https://n8bn2y81.mirror.aliyuncs.com加到"registry-mirrors"的数组里，点�
 ENTRYPOINT ["<executeable>","<param1>","<param2>",...]
 ```
 
-可以搭配 CMD 命令使用：一般是变参才会使用 CMD ，这里的 CMD 等于是在给 ENTRYPOINT 传参，以下示例会提到。
+可以搭配 CMD 命令使用：**一般是变参才会使用 CMD ，这里的 CMD 等于是在给 ENTRYPOINT 传参**，以下示例会提到。
 
 示例：
 
@@ -433,6 +464,19 @@ $ docker run  nginx:test -c /etc/nginx/new.conf
 
 ```bash
 nginx -c /etc/nginx/new.conf
+```
+
+Example：
+
+```dockerfile
+...
+ENTRYPOINT ["ls", "/data"]
+```
+
+构建镜像时附加一个参数，会和ENTRYPOINT一并执行，即打印出两个目录下的ls：
+
+```bash
+docker run imageName /data/bb
 ```
 
 
@@ -527,6 +571,9 @@ docker volume ls
 
 # 手动创建此卷名
 docker volume create tomcatwebapps
+
+# 容器内只读，宿主机读写，-v 宿主机路径:容器内路径
+docker run -d -p 8090:8080 --name tomcat90 -v /root/apps:/usr/local/tomcat/webapps:ro tomcat:8.0-jre8
 ```
 
 ### network
