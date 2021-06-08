@@ -11,6 +11,8 @@
 | 创建速度       | 提前统一配置、统一管理                                       | 容器是利用宿主机的系统内核创建的，可以在几秒内大量创建   |
 | 缺点           | 会有计算、I/O、网络性能损耗，因本质多了一层软件，运行一个完整的OS。 | 因共享内核，对安全和隔离问题做出了一定妥协。             |
 
+由于容器不需要进行硬件虚拟以及运行完整操作系统等额外开销，`Docker` 对系统资源的利用率更高。无论是应用执行速度、内存损耗或者文件存储速度，都要比传统虚拟机技术更高效。
+
 
 
 ### docker技术实现要点
@@ -552,11 +554,22 @@ stop_signal: SIGUSR1
 - `-p, --project-name NAME` 指定项目名称，默认使用所在目录名称作为项目名
 - `--x-network-driver DRIVER`  指定网络后端的驱动，默认为 `bridge`
 
+- 建议把 `docker-compose`命名给起个alias别名：`dc`
+- 容器服务自动注册IP到consul中？
+
 
 
 ### up
 
 - 默认情况下，若服务容器已经存在，`docker-compose up` 将会尝试停止容器，然后重新创建（保持使用 `volumes-from` 挂在的卷），以保证新启动的服务匹配 `docker-compose.ym`文件的最新内容
+
+```bash
+dc up
+dc stop
+dc start
+dc down
+dc rm
+```
 
 
 
@@ -613,6 +626,8 @@ services:
 			- tomcatwebapps01:/user/local/tomcat/webapps
 		networks: # 代表当前服务使用哪个网络桥
   		- hello # 表示和tomcat02在一个网络中
+    links:
+    	- tomcat02 # 要访问它，会在/etc/hosts里生成一个域名解析
   	depends_on:
   		- tomcat02
   		- redis
@@ -711,9 +726,13 @@ docker-compose unpause [SERVICE]
 
 
 
+# docker容器日志
+
+每个容器的日志默认都会以json-file的格式存储于 `/var/lib/docker/containers/containerID`下，生产中，对此目录做 `filebeat`的日志收集到ELK中。
 
 
-## portainer
+
+# portainer
 
 docker最专业的可视化工具。生产环境用的非常多！！
 
@@ -729,7 +748,7 @@ docker run -d -P --name=portainer --restart=always -v /var/run/docker.sock:/var/
 
 
 
-## ASP .net core 
+# ASP .net core 
 
 方法1：
 
