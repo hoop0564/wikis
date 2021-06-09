@@ -594,7 +594,25 @@ docker run -d -p 8090:8080 --name tomcat90 -v /root/apps:/usr/local/tomcat/webap
 ```bash
 # 手动创建网络
 docker network create -d bridge hello
+
+# 子网192.168.0.0/16 表示前面16位固定为192.168，后面的随意，即可选IP范围为：65535-2
+# 子网192.168.0.0/24 表示前面24位固定为192.168.0，后面的随意，即可选IP范围为：255-1
+# 255.255.0.0 为广播地址
+docker network create --driver bridge --subnet 192.168.0.0/16 --gateway 192.168.0.1 mynet
 ```
+
+### 网络互连
+
+```bash
+# tomcat01将会出现两个IP！
+# 两个网络直接互通是麻烦的，但可以把容器加入到了另一个网络中！
+docker network connect mynet tomcat01
+
+# 如此这般，就ping的通了
+docker exec -it tomcat01 ping tomcat-net-01 
+```
+
+
 
 ### docker
 
