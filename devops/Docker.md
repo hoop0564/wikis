@@ -764,6 +764,8 @@ docker run -d -P --name=portainer --restart=always -v /var/run/docker.sock:/var/
 
 登录网页后端：`http://localhost:9000`
 
+- 操作另一台电脑，需要把 `/etc/docker/daemon.conf`中添加`http://remoteIP:2357`，然后从起docker，portainer这边就可管理了。
+
 
 
 # ASP .net core 
@@ -805,6 +807,22 @@ ENTRYPOINT ["dotnet", "aspnetapp.dll"]
 `docker build`这里的步骤将比方法 1 快得多，因为所有工件（artifacts）都在`docker build`步骤之外构建，并且与构建基础镜像相比，基础镜像的大小要小得多。
 
 这种方法是 Jenkins、Azure DevOps、GitLab CI 等 CI 工具的首选，因为如果 Docker 不是唯一使用的部署模型，您可以在多个部署模型中使用相同的工件。此外，您将能够运行单元测试并发布代码覆盖率报告，或在 CI 构建的工件上使用自定义插件。
+
+
+
+# redis-cluster
+
+3个主节点，3个从节点
+
+```bash
+# redis容器中执行:创建集群
+redis-cli --cluster create 172.38.0.11:6379 172.38.0.12:6379 172.38.0.13:6379 172.38.0.14:6379 172.38.0.15:6379 172.38.0.16:6379 --cluster-replicas 1
+
+# 连接集群
+redis-cli -c
+127.0.0.1:6379> cluster info
+127.0.0.1:6379> cluster nodes
+```
 
 
 

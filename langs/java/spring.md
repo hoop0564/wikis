@@ -84,7 +84,49 @@ spring是如何简化java开发的？4种关键策略：
 
 
 
-## 
+
+
+## 应用打包
+
+使用Ideal的maven的package，即可完成打包，输出的单个jar包出现在target目录中，执行：
+
+```bash
+java -jar xxx-SNAPSHOT.jar
+```
+
+![image-20210609214023447](../../images/java/java-package.png)
+
+
+
+## jar vs war
+
+**1.jar包的介绍**
+
+JAR（Java Archive，Java 归档文件）是与平台无关的文件格式，它允许将许多文件组合成一个压缩文件。**JavaSE程序可以打包成Jar包**(J其实可以理解为Java了)。
+
+JAR 文件格式以流行的 ZIP 文件格式为基础。与 ZIP 文件不同的是，JAR 文件不仅用于压缩和发布，而且还用于部署和封装**库**、**组件**和**插件程序**，并可被像编译器和 JVM 这样的工具直接使用。在 JAR 中包含特殊的文件，如 manifests 和部署描述符，用来指示工具如何处理特定的 JAR。
+
+简单来说，jar包就是别人已经写好的一些类，然后对这些类进行打包。可以将这些jar包引入到你的项目中，可以直接使用这些jar包中的类和属性，这些jar包一般放在lib目录下。
+
+
+
+**2.war包的介绍**
+
+war是一个可以直接运行的web模块，通常用于网站，打成包部署到容器中。以Tomcat来说，将war包放置在其\webapps\目录下，然后启动Tomcat，这个包就会自动解压，就相当于发布了。
+
+war包是Sun提出的一种web应用程序格式，与jar类似，是很多文件的压缩包。war包中的文件按照一定目录结构来组织。根据其根目录下包含有html和jsp文件，或者包含有这两种文件的目录，另外还有WEB-INF目录。通常在WEB-INF目录下含有一个web.xml文件和一个classes目录，web.xml是这个应用的配置文件，而classes目录下则包含编译好的servlet类和jsp，或者servlet所依赖的其他类（如JavaBean）。通常这些所依赖的类也可以打包成jar包放在WEB-INF下的lib目录下。
+
+简单来说，**war包是JavaWeb程序打的包**，war包里面包括写的代码编译成的class文件，依赖的包，配置文件，所有的网站页面，包括html，jsp等等。一个war包可以理解为是一个web项目，里面是项目的所有东西。
+
+
+
+**3.区别：**（**WAR文件代表了一个Web应用程序，JAR是类的归档文件。**）
+
+**4.部署war包到Tomcat**
+
+- [Java程序员的日常](https://www.jianshu.com/p/3b5c45e8e5bd)
+
+
 
 ## 参考资料
 
