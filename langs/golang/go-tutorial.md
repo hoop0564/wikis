@@ -419,16 +419,29 @@ write_only := make(chan<- int)
 定义只读或只写的channel意义不大，一般用于参数传递中：
 
 ```go
-func send(<-ch int){
+// 只写
+func send(c <-ch int){
   for i := 0; i < 10; i++ {
     c <- i
   }
 }
 
+// 只读
 func recv(c ch<- int) {
   for i := range c {
     fmt.Println(i)
   }
+}
+```
+
+```go
+// 生成数的平方 in为只写 out为只读
+func generateSquares(in chan <- int, out <- chan int)  {
+	for x := range out {
+		in <- x * x
+	}
+	close(in)
+	//close(out) // 报错，因为out是只读，此处不可关闭；关闭是写操作；关闭后还可以读，但不可以写
 }
 ```
 

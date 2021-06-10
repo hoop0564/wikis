@@ -51,6 +51,15 @@ func structAnonymous()  {
 	fmt.Printf("%+v", user)
 }
 
+// 生成数的平方 in为只写 out为只读
+func generateSquares(in chan <- int, out <- chan int)  {
+	for x := range out {
+		in <- x * x
+	}
+	close(in)
+	//close(out) // 报错，因为out是只读，此处不可关闭；关闭是写操作；关闭后还可以读，但不可以写
+}
+
 func main() {
 	structAnonymous()
 	data := make(chan int)
