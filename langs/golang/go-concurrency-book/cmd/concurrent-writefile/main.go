@@ -40,7 +40,19 @@ func consume(data chan int, done chan bool) {
 	done <- true
 }
 
+// 匿名结构体
+func structAnonymous()  {
+	var user struct{
+		Name string
+		Age int
+	}
+	user.Name = "gzc"
+	user.Age = 22
+	fmt.Printf("%+v", user)
+}
+
 func main() {
+	structAnonymous()
 	data := make(chan int)
 	done := make(chan bool)
 	wg := sync.WaitGroup{}
