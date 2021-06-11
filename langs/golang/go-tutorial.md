@@ -213,6 +213,42 @@ func (e *Employ) GetString2() string {
 }
 ```
 
+我们可以把接口看作内部的一个元组 `(type, value)`。 `type` 是接口底层的具体类型（Concrete Type），而 `value` 是具体类型的值。
+
+```go
+package main
+
+import (  
+    "fmt"
+)
+
+type Test interface {  
+    Tester()
+}
+
+type MyFloat float64
+
+func (m MyFloat) Tester() {  
+    fmt.Println(m)
+}
+
+func describe(t Test) {  
+    fmt.Printf("Interface type %T value %v\n", t, t)
+}
+
+func main() {  
+    var t Test
+    f := MyFloat(89.7)
+    t = f
+    describe(t)
+    t.Tester()
+}
+
+// output
+// Interface type main.MyFloat value 89.7  
+// 89.7
+```
+
 
 
 ## Go routine
