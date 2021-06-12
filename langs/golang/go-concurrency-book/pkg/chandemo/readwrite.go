@@ -19,7 +19,7 @@ func createWorker(id int) chan int {
 	return c
 }
 
-func Demo1() {
+func Working() {
 	var channels [3] chan int
 
 	// 启动并发协程
