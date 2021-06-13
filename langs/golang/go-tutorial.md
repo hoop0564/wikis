@@ -1122,6 +1122,31 @@ go-torch cpu.prof
 
 
 
+## Golang并发实现
+
+主要靠`goroutine+chan+select` 实现：
+
+- 程序并发执行（goroutine）
+
+- 多个goroutine间的数据同步和通信（channels）
+
+- 多个channel选择数据读取或获取写入（select）
+
+  ```go
+  select {
+  case v := <- c1:
+    fmt.Println("chan 1 sends", v)
+  case v := <- c2:
+    fmt.Println("chan 2 sends", v)
+  default:
+    	fmt.Println("neither chan is ready")
+  }
+  ```
+
+  
+
+
+
 ## 架构设计的关键部分
 
 - 重用&隔离：即同一个系统，部署多份，每份起的作用可以不一样，起到隔离的作用
