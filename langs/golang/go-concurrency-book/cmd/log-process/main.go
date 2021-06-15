@@ -68,6 +68,7 @@ func (r *ReadFromFile) Read(rc chan []byte) {
 	for {
 		line, err := rd.ReadBytes('\n')
 		if err == io.EOF {
+			// TODO：日志轮转时，文件名不会变，此处要重新open这个文件
 			time.Sleep(500 * time.Millisecond)
 			continue
 		} else if err != nil {
@@ -105,8 +106,8 @@ func main() {
 		influxDBDsn: "username&password&host:port",
 	}
 	lp := &LogProcess{
-		rc:    make(chan []byte),
-		wc:    make(chan string),
+		rc:    make(chan []byte, 200),
+		wc:    make(chan string, 200),
 		read:  r,
 		write: w,
 	}
@@ -114,8 +115,12 @@ func main() {
 	// 此写法也可以！但golang考虑到可读性，用下面的写法也OK
 	// go (*lp).ReadFromFile()
 	go lp.read.Read(lp.rc)
-	go lp.Process()
-	go lp.write.Write(lp.wc)
+	for i := 0; i < 5; i++ {
+		go lp.Process()
+	}
+	for i := 0; i < 20; i++ {
+		go lp.write.Write(lp.wc)
+	}
 
 	m := &Monitor{
 		startTime: time.Now(),
