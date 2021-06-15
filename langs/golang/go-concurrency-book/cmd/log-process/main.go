@@ -2,8 +2,10 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -24,6 +26,28 @@ type LogProcess struct {
 	wc    chan string // 写入chan
 	read  Reader
 	write Writer
+}
+
+type SystemInfo struct {
+	HandleRequest int    `json:"handleRequest"` // 已处理请求数
+	Tps           int    `json:"tps"`           // 系统总吞吐量
+	RunTime       string `json:"runTime"`       // 运行时间
+	ErrNum        int    `json:"errNum"`        // 错误数
+}
+
+type Monitor struct {
+	startTime time.Time // 启动时间
+	data      SystemInfo
+}
+
+func (m *Monitor) start(lp *LogProcess) {
+	http.HandleFunc("/monitor", func(writer http.ResponseWriter, request *http.Request) {
+		m.data.RunTime = time.Now().Sub(m.startTime).String()
+		ret, _ := json.MarshalIndent(m.data, "", "\t")
+		io.WriteString(writer, string(ret))
+	})
+
+	http.ListenAndServe(":9193", nil)
 }
 
 type ReadFromFile struct {
@@ -55,6 +79,7 @@ func (r *ReadFromFile) Read(rc chan []byte) {
 
 // Process 解析模块
 func (l *LogProcess) Process() {
+	// todo 解析为message结构体，以直接传入写入模块
 	for v := range l.rc {
 		l.wc <- strings.ToUpper(string(v))
 	}
@@ -92,6 +117,9 @@ func main() {
 	go lp.Process()
 	go lp.write.Write(lp.wc)
 
-	time.Sleep(100 * time.Second)
-	fmt.Println("exit")
+	m := &Monitor{
+		startTime: time.Now(),
+		data:      SystemInfo{},
+	}
+	m.start(lp)
 }
