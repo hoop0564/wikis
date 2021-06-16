@@ -175,6 +175,21 @@ func main() {
 
 
 
+### 指针
+
+```go
+var i int = 8
+fmt.Println(&i) // 输出地址
+
+var pi *int // pi是int类型的指针
+pi = &i // pi中存放的是指向int类型变量的地址
+fmt.Println(pi)
+```
+
+指针就是一个变量，变量里面装着一个地址，这个地址指向特定的类型！
+
+
+
 ### struct结构体
 
 **空结构体的使用场景**
