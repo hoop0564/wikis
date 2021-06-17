@@ -483,9 +483,62 @@ docker run imageName /data/bb
 
 
 
+### LABEL
+
+```dockerfile
+FROM alpine
+LABEL k="v" k1="v1"
+```
+
+`LABEL`通常紧随`FROM`之后的下一行，在`docker inspect`的时候，会看到`LABEL`信息，用以打标签等目的
+
+
+
+### ONBUILD
+
+```dockerfile
+FROM alpine
+LABEL k="v" k1="v1"
+ONBUILD ENV C=100
+CMD echo $C
+```
+
+在自己的镜像里产生的容器不会输入任何东西，当如果以此为基础镜像而构建出来的容器，就会输出100！
+
+即：`ONBUILD`只在被当做基础镜像时，命令才有效。
+
+
+
+### ARG
+
+只在`build`时有效的变量声明，在`docker`命令中可以修改（囿于成见）：
+
+```bash
+docker build --build-args A=3 .
+```
+
+
+
+### ENV
+
+在`build`和`runtime`是都有效的变量声明
+
+```dockerfile
+ARG A=2
+ENV B $A
+```
+
+
+
+### MATAINER
+
+镜像的作者信息，在 `docker inspect` 中可以看到
+
+
+
 ### extra_hosts
 
-添加主机名映射。类似 docker client --add-host。
+添加主机名映射。类似 `docker client --add-host`。
 
 ```yaml
 extra_hosts:
