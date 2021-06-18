@@ -536,6 +536,74 @@ ENV B $A
 
 
 
+### 对续行的参数按照字母表排序
+
+以防止重复导入包
+
+```dockerfile
+RUN apt-get 
+```
+
+
+
+### 多阶段构建
+
+多阶段构建可以让我们大幅度减小最终的镜像大小，而不需要去想办法减少中间层和文件的数量。因为镜像是在生成过程的最后阶段生成的，所以可以利用生成缓存来最小化镜像层。
+
+
+
+例如，如果你的构建包含多个层，则可以将他们从变化频率较低（以确保生成缓存可重用）到变化频率较高的顺序排序：
+
+- 安装构建应用程序所需的依赖工具
+- 安装或更新依赖项
+- 构建你的应用
+
+比如我们构建一个Go应用程序的Dockerfile可能类似于这样：
+
+```dockerfile
+FROM golang:1.11-alpine AS build
+
+# 安装项目需要的工具
+# 运行 `docker build --no-cache .` 来更新依赖
+
+RUN apk add --no-cache git
+RUN go get github.com/golang/dep/cmd/dep
+
+# 通过 Gopkg.toml 和 Gopkg.lock 获取项目的依赖
+# 仅在更新 Gopkg 文件时才重新构建这些层（COPY/ADD时会自动检查文件是否变化）
+COPY Gopkg.lock Gopkg.toml /go/src/project/
+WORKDIR /go/src/project/
+# 安装依赖库
+RUN dep ensure -vendor-only
+
+# 拷贝整个项目进行构建
+# 当项目下面有文件变化的时候该层才会重新构建
+
+COPY . /go/src/project/
+RUN go build -o /bin/project
+
+# 将打包后的二进制文件拷贝到 scratch 镜像下面，将镜像大小降到最低
+FROM scratch 
+COPY --from=build /bin/project /bin/project
+ENTRYPOINT ["/bin/project"]
+CMD ["--help"]
+```
+
+
+
+### 尽量使用管道
+
+使用管道操作，所以没有中间文件需要删除
+
+```dockerfile
+RUN mkdir -p /user/src/things \
+		&& curl -SL http://example.com/big.tar.xz \
+		| tar -xJC /usr/src/things \
+		&& make -C /usr/src/things all
+```
+
+
+
 ### extra_hosts
 
 添加主机名映射。类似 `docker client --add-host`。
@@ -922,7 +990,7 @@ vim /etc/ssh/sshd_config
 
 ![image-20210605073856081](../images/vagrant-vscode.png)
 
-## 参考资料
+# 参考资料
 
 - [docker核心基础](https://www.bilibili.com/video/BV1Vs411E7AR?p=11)
 
@@ -931,3 +999,8 @@ vim /etc/ssh/sshd_config
 - [Docker —— 从入门到实践](https://yeasy.gitbook.io/docker_practice/)
 
 - [docker中文网](https://docker_practice.gitee.io/zh-cn/)
+
+- [Dockerfile最佳实践-video](https://www.bilibili.com/video/BV1kz4y1y7aC/?spm_id_from=333.788.recommend_more_video.4)
+
+- [Dockerfile最佳实践-text](https://k8s.coding3min.com/docker-jing-xiang/best-dockerfile)
+
