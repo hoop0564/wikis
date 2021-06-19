@@ -602,6 +602,14 @@ RUN mkdir -p /user/src/things \
 		&& make -C /usr/src/things all
 ```
 
+带管道的命令，其返回值是最有一台命令的返回值。所以如果管道前的命令出错而管道后的命令执行正常，则docker不会认为这条指令有问题。如果需要所有的管道命令都正常执行，可以增加 `set -o pipefail`:
+
+```dockerfile
+RUN ["bin/bash", "-c" "set -o pipefail && wget -O https://some.site | wc -l > /number"]
+```
+
+部分shell（比如默认的sh）不支持 `set -o pipefail`，但`bash`支持。
+
 
 
 ### extra_hosts

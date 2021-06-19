@@ -2211,9 +2211,17 @@ swagger serve -F=swagger swagger.json
 ## gitbook
 
 - `node` 使用10.16.0版本，LTS
-- 
 
 
+
+# 内存管理
+
+- 遵循了操作系统的虚拟内存和物理内存映射的管理方法
+- page是8k
+- 分成67个不同大小规格的内存块区域，每个块都放在一起
+- 如果介于两个不同大小的内存卡之间，就放在大一级的区域中
+
+<img src="pictures/memory-67-blocks.png" alt="image-20210619081715848" style="zoom:50%;" />
 
 ## 参考资料
 
@@ -2232,3 +2240,5 @@ swagger serve -F=swagger swagger.json
 - [Package context - 标准库文档](http://doc.golang.ltd/)
 
 - [深度解密Go语言之context](https://www.cnblogs.com/qcrao-2018/p/11007503.html)
+
+- [MSB-Go语言内存管理](https://www.bilibili.com/video/BV1S5411P7ky?p=4&spm_id_from=pageDriver)
